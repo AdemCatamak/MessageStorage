@@ -17,9 +17,9 @@ namespace MessageStorage.DI.Extension
             return serviceCollection;
         }
 
-        public static IServiceCollection AddMessageStorageClient<T>(this IServiceCollection serviceCollection, ServiceLifetime serviceLifetime = ServiceLifetime.Scoped) where T : class, IMessageStorageAdaptor
+        public static IServiceCollection AddMessageStorageClient<T>(this IServiceCollection serviceCollection, ServiceLifetime serviceLifetime = ServiceLifetime.Scoped) where T : class, IStorageAdaptor
         {
-            serviceCollection.TryAdd(new ServiceDescriptor(typeof(IMessageStorageAdaptor), typeof(T), serviceLifetime));
+            serviceCollection.TryAdd(new ServiceDescriptor(typeof(IStorageAdaptor), typeof(T), serviceLifetime));
             serviceCollection.TryAdd(new ServiceDescriptor(typeof(IMessageStorageClient), typeof(MessageStorageClient), serviceLifetime));
             serviceCollection.TryAdd(new ServiceDescriptor(typeof(IHandlerFactory), typeof(HandlerFactory), serviceLifetime));
             return serviceCollection;
@@ -29,7 +29,7 @@ namespace MessageStorage.DI.Extension
         {
             foreach (Assembly assembly in assemblies)
             {
-                var types = assembly.DefinedTypes;
+                IEnumerable<TypeInfo> types = assembly.DefinedTypes;
                 foreach (TypeInfo typeInfo in types)
                 {
                     if (!typeInfo.IsClass || typeInfo.IsAbstract)
@@ -38,7 +38,7 @@ namespace MessageStorage.DI.Extension
                     Type cType = typeInfo;
                     do
                     {
-                        var match = BaseTypeCheck(cType);
+                        bool match = BaseTypeCheck(cType);
                         if (match)
                             serviceCollection.TryAddSingleton(typeof(Handler), typeInfo);
                         cType = cType.BaseType;

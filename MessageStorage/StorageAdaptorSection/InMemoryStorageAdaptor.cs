@@ -4,34 +4,27 @@ using System.Collections.Generic;
 using System.Linq;
 using MessageStorage.Exceptions;
 
-namespace MessageStorage.MessageStorageAdaptorSection
+namespace MessageStorage.StorageAdaptorSection
 {
     /// <summary>
     /// This class should only used for test propose.
     /// </summary>
-    public class InMemoryMessageStorageAdaptor : IMessageStorageAdaptor
+    public class InMemoryStorageAdaptor : IStorageAdaptor
     {
         private readonly ConcurrentDictionary<Guid, Message> _messageStorage;
         private readonly ConcurrentDictionary<Guid, Job> _jobStorage;
         private readonly object _updateJobLockObj;
         private readonly object _setFirstWaitingJobToInProgressLockObj;
 
-        public InMemoryMessageStorageAdaptor()
+        public InMemoryStorageAdaptor()
         {
             _updateJobLockObj = new object();
             _setFirstWaitingJobToInProgressLockObj = new object();
             _messageStorage = new ConcurrentDictionary<Guid, Message>();
             _jobStorage = new ConcurrentDictionary<Guid, Job>();
         }
-
-
-        /// <summary>
-        /// Given payload is stored into memory and return a Message object
-        /// </summary>
-        /// <param name="message"></param>
-        /// <returns>Message is object that is kept relevant info together</returns>
-        /// <exception cref="MessageAddOperationFailedException">This exception occurs, when message could not added into ConcurrentDictionary</exception>
-        public Message Add(Message message)
+        
+        private Message Add(Message message)
         {
             var id = Guid.NewGuid();
             var newMessage = new Message(id, message.SerializedPayload, message.CreatedOn, message.TraceId);
@@ -44,7 +37,7 @@ namespace MessageStorage.MessageStorageAdaptorSection
 
         public Message Add(Message message, IEnumerable<Job> jobs)
         {
-            var m = Add(message);
+            Message m = Add(message);
             foreach (Job job in jobs)
             {
                 var id = Guid.NewGuid();

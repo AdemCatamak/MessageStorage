@@ -45,6 +45,8 @@ namespace MessageStorage
             LastOperationTime = DateTime.UtcNow;
             LastOperationInfo = failInfo;
         }
+        
+        public string TraceId => Message.TraceId;
     }
 
     public enum JobStatuses

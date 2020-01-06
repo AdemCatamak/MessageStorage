@@ -1,6 +1,5 @@
-using System.Collections.Generic;
 using MessageStorage.DI.Extension;
-using MessageStorage.MessageStorageAdaptorSection;
+using MessageStorage.StorageAdaptorSection;
 using MessageStorage.WebApi.Handlers;
 using MessageStorage.WebApi.HostedServices;
 using Microsoft.AspNetCore.Builder;
@@ -9,7 +8,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using Swashbuckle.AspNetCore.Swagger;
 
 namespace MessageStorage.WebApi
 {
@@ -28,7 +26,7 @@ namespace MessageStorage.WebApi
             services.AddHostedService<MessageStorageProcessService>();
 
             // InMemoryStorage should inject singleton
-            services.AddMessageStorageClient<InMemoryMessageStorageAdaptor>(ServiceLifetime.Singleton);
+            services.AddMessageStorageClient<InMemoryStorageAdaptor>(ServiceLifetime.Singleton);
             services.AddHandlers(new[] {typeof(NoteCreatedEventHandler).Assembly});
             services.AddMessageProcessServer();
 
