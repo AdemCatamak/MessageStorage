@@ -6,23 +6,29 @@ namespace MessageStorage
     {
         public Guid Id { get; private set; }
         public Message Message { get; private set; }
-        public string AssignedHandler { get; private set; }
+        public string AssignedAssignedHandlerName { get; private set; }
         public JobStatuses JobStatus { get; private set; }
         public DateTime LastOperationTime { get; private set; }
         public string LastOperationInfo { get; private set; }
 
-        internal Job(Guid id, Message message, string handlerName, JobStatuses jobStatus, DateTime lastOperationTime, string lastOperationInfo)
+        private Job(Guid id, Message message, string assignedHandlerNameName, JobStatuses jobStatus, DateTime lastOperationTime, string lastOperationInfo)
         {
             Id = id;
             Message = message;
-            AssignedHandler = handlerName;
+            AssignedAssignedHandlerName = assignedHandlerNameName;
             JobStatus = jobStatus;
             LastOperationInfo = lastOperationInfo;
             LastOperationTime = lastOperationTime;
         }
 
-        public Job(Message message, string handlerName) : this(default, message, handlerName, JobStatuses.Waiting, default, default)
+        public Job(Message message, string assignedHandlerName)
         {
+            Id = default;
+            Message = message;
+            AssignedAssignedHandlerName = assignedHandlerName;
+            JobStatus = JobStatuses.Waiting;
+            LastOperationInfo = null;
+            LastOperationTime = DateTime.UtcNow;
         }
 
         public void SetInProgress(string info = null)
@@ -45,7 +51,12 @@ namespace MessageStorage
             LastOperationTime = DateTime.UtcNow;
             LastOperationInfo = failInfo;
         }
-        
+
+        internal void SetId(Guid id)
+        {
+            Id = id;
+        }
+
         public string TraceId => Message.TraceId;
     }
 

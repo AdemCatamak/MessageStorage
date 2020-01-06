@@ -24,21 +24,16 @@ namespace MessageStorage.MessageStorageClientSection
 
         public void Add<T>(T payload, string traceId = null, bool autoJobCreator = true)
         {
-            IEnumerable<string> availableHandlerNames = _handlerFactory.GetAvailableHandlers(payload);
-            var message = new Message(payload, traceId);
-            var jobs = new List<Job>();
-            if (autoJobCreator)
-                jobs = availableHandlerNames.Select(handlerName => new Job(message, handlerName))
-                                            .ToList();
+            (Message message, IEnumerable<Job> jobs) = PrepareMessageAndJobs(payload, traceId, autoJobCreator);
 
             _storageAdaptor.Add(message, jobs);
         }
 
         public Task Handle(Job job)
         {
-            Handler handler = _handlerFactory.GetHandler(job.AssignedHandler);
+            Handler handler = _handlerFactory.GetHandler(job.AssignedAssignedHandlerName);
             if (handler == null)
-                throw new HandlerNotFoundException($"Could not found Handler as {job.AssignedHandler}");
+                throw new HandlerNotFoundException($"Could not found Handler as {job.AssignedAssignedHandlerName}");
 
             return handler.Handle(job.Message.Payload);
         }
@@ -46,6 +41,19 @@ namespace MessageStorage.MessageStorageClientSection
         public void Update(Job job)
         {
             _storageAdaptor.Update(job);
+        }
+
+        
+        protected Tuple<Message, IEnumerable<Job>> PrepareMessageAndJobs<T>(T payload, string traceId, bool autoJobCreator)
+        {
+            IEnumerable<string> availableHandlerNames = _handlerFactory.GetAvailableHandlers(payload);
+            var message = new Message(payload, traceId);
+            var jobs = new List<Job>();
+            if (autoJobCreator)
+                jobs = availableHandlerNames.Select(handlerName => new Job(message, handlerName))
+                                            .ToList();
+
+            return new Tuple<Message, IEnumerable<Job>>(message, jobs);
         }
     }
 }

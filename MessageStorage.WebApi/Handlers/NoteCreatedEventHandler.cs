@@ -10,7 +10,7 @@ namespace MessageStorage.WebApi.Handlers
 
     public class NoteCreatedEventHandler : Handler<NoteCreatedEvent>
     {
-        public override Task Handle(NoteCreatedEvent payload)
+        protected override Task Handle(NoteCreatedEvent payload)
         {
             Console.WriteLine($"Note is handled by {nameof(NoteCreatedEventHandler)}{Environment.NewLine}" +
                               $"{payload.Note}");

@@ -46,11 +46,6 @@ namespace MessageStorage.HandlerFactorySection
         }
 
         
-        /// <summary>
-        /// If handler could not found with specified name, result return null
-        /// </summary>
-        /// <param name="handlerName"></param>
-        /// <returns>Null or Handler</returns>
         public Handler GetHandler(string handlerName)
         {
             if (string.IsNullOrEmpty(handlerName))

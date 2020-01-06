@@ -5,6 +5,6 @@ namespace MessageStorage.Db
 {
     public interface IDbStorageAdaptor : IStorageAdaptor
     {
-        Message Add(Message message, IEnumerable<Job> jobs, IDbTransaction dbTransaction);
+        void Add(Message message, IEnumerable<Job> jobs, IDbTransaction dbTransaction);
     }
 }

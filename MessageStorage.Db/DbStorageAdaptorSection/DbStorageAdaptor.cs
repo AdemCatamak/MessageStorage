@@ -13,16 +13,15 @@ namespace MessageStorage.Db.DbStorageAdaptorSection
             _dbConnectionFactory = dbConnectionFactory ?? throw new ArgumentNullException(nameof(dbConnectionFactory));
         }
 
-        public Message Add(Message message, IEnumerable<Job> jobs)
+        public void Add(Message message, IEnumerable<Job> jobs)
         {
             using (IDbConnection dbConnection = _dbConnectionFactory.CreateConnection())
             {
                 dbConnection.Open();
                 using (IDbTransaction dbTransaction = dbConnection.BeginTransaction(IsolationLevel.Serializable))
                 {
-                    Message m = Add(message, jobs, dbTransaction);
+                    Add(message, jobs, dbTransaction);
                     dbTransaction.Commit();
-                    return m;
                 }
             }
         }
@@ -37,7 +36,7 @@ namespace MessageStorage.Db.DbStorageAdaptorSection
             throw new System.NotImplementedException();
         }
 
-        public Message Add(Message message, IEnumerable<Job> jobs, IDbTransaction dbTransaction)
+        public void Add(Message message, IEnumerable<Job> jobs, IDbTransaction dbTransaction)
         {
             throw new System.NotImplementedException();
         }

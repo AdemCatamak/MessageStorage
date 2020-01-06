@@ -41,20 +41,27 @@ namespace MessageStorage
             }
         }
 
-        internal Message(Guid id, object payload, DateTime createdOn, string traceId)
+        private Message(Guid id, string traceId, DateTime createdOn, string payloadClassName, string payloadClassNamespace, string serializedPayload)
         {
             Id = id;
             TraceId = traceId;
-            CreatedOn = createdOn == default ? DateTime.UtcNow : createdOn;
+            PayloadClassName = payloadClassName;
+            PayloadClassNamespace = payloadClassNamespace;
+            SerializedPayload = serializedPayload;
+            CreatedOn = createdOn;
+        }
+
+        public Message(object payload, string traceId)
+        {
+            Id = default;
+            TraceId = traceId;
+            CreatedOn = DateTime.UtcNow;
             Payload = payload;
         }
 
-        public Message(object payload) : this(default, payload, default, default)
+        internal void SetId(Guid id)
         {
-        }
-
-        public Message(object payload, string traceId) : this(default, payload, default, traceId)
-        {
+            Id = id;
         }
     }
 }
