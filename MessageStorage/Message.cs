@@ -59,8 +59,10 @@ namespace MessageStorage
             Payload = payload;
         }
 
-        internal void SetId(Guid id)
+        public void SetId(Guid id)
         {
+            if (id == default)
+                throw new ArgumentException("id should not be null");
             Id = id;
         }
     }
