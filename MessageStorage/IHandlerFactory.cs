@@ -4,12 +4,12 @@ namespace MessageStorage
 {
     public interface IHandlerFactory
     {
-        IReadOnlyCollection<IHandler> Handlers { get; }
+        IReadOnlyCollection<Handler> Handlers { get; }
         
         IEnumerable<string> GetAvailableHandlers(object payload);
 
-        void AddHandler<T>(IHandler handler);
+        void AddHandler<T>(Handler handler);
         void RemoveHandler(string handlerName);
-        IHandler GetHandler(string handlerName);
+        Handler GetHandler(string handlerName);
     }
 }

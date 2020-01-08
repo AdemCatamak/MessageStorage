@@ -7,12 +7,12 @@ namespace MessageStorage.HandlerFactorySection
 {
     public class HandlerFactory : IHandlerFactory
     {
-        public IReadOnlyCollection<IHandler> Handlers => _handlers.AsReadOnly();
-        private List<IHandler> _handlers;
+        public IReadOnlyCollection<Handler> Handlers => _handlers.AsReadOnly();
+        private List<Handler> _handlers;
 
-        public HandlerFactory(IEnumerable<IHandler> handlers = null)
+        public HandlerFactory(IEnumerable<Handler> handlers = null)
         {
-            _handlers = handlers?.ToList() ?? new List<IHandler>();
+            _handlers = handlers?.ToList() ?? new List<Handler>();
         }
 
         public IEnumerable<string> GetAvailableHandlers(object payload)
@@ -41,7 +41,7 @@ namespace MessageStorage.HandlerFactorySection
             return availableHandlers;
         }
 
-        public void AddHandler<T>(IHandler handler)
+        public void AddHandler<T>(Handler handler)
         {
             _handlers.Add(handler);
         }
@@ -53,7 +53,7 @@ namespace MessageStorage.HandlerFactorySection
         }
 
 
-        public IHandler GetHandler(string handlerName)
+        public Handler GetHandler(string handlerName)
         {
             if (string.IsNullOrEmpty(handlerName))
                 throw new HandlerNotFoundException($"Handler type does not supplied");

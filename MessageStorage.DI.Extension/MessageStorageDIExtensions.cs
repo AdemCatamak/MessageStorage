@@ -2,11 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using MessageStorage.HandlerFactorySection;
-using MessageStorage.JobServerSection;
-using MessageStorage.MessageStorageClientSection;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace MessageStorage.DI.Extension
 {
@@ -23,12 +19,12 @@ namespace MessageStorage.DI.Extension
         public static IServiceCollection AddHandlers(this IServiceCollection serviceCollection, IEnumerable<Assembly> assemblies)
         {
             IEnumerable<Type> handlerTypes = assemblies.SelectMany(s => s.GetTypes())
-                                                       .Where(p => typeof(IHandler).IsAssignableFrom(p));
+                                                       .Where(p => typeof(Handler).IsAssignableFrom(p));
 
 
             foreach (Type handlerType in handlerTypes)
             {
-                serviceCollection.Add(new ServiceDescriptor(typeof(IHandler), handlerType, ServiceLifetime.Singleton));
+                serviceCollection.Add(new ServiceDescriptor(typeof(Handler), handlerType, ServiceLifetime.Singleton));
             }
 
             return serviceCollection;

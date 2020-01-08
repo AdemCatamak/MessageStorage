@@ -1,5 +1,3 @@
-using System.ComponentModel;
-using System.ComponentModel.Design;
 using MessageStorage.JobServerSection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -13,6 +11,12 @@ namespace MessageStorage.DI.Extension
         public MessageStorageServiceCollection(IServiceCollection serviceCollection)
         {
             _serviceCollection = serviceCollection;
+        }
+
+        public IMessageStorageServiceCollection Add(ServiceDescriptor serviceDescriptor)
+        {
+            _serviceCollection.Add(serviceDescriptor);
+            return this;
         }
 
         public IMessageStorageServiceCollection TryAdd(ServiceDescriptor serviceDescriptor)

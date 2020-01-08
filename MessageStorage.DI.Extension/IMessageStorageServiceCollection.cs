@@ -1,10 +1,10 @@
-using System.ComponentModel;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace MessageStorage.DI.Extension
 {
     public interface IMessageStorageServiceCollection
     {
+        IMessageStorageServiceCollection Add(ServiceDescriptor serviceDescriptor);
         IMessageStorageServiceCollection TryAdd(ServiceDescriptor serviceDescriptor);
 
         IMessageStorageServiceCollection AddMessageStorageClient<T>(ServiceLifetime serviceLifetime) where T : IMessageStorageClient;

@@ -31,7 +31,7 @@ namespace MessageStorage.MessageStorageClientSection
 
         public Task Handle(Job job)
         {
-            IHandler handler = _handlerFactory.GetHandler(job.AssignedAssignedHandlerName);
+            Handler handler = _handlerFactory.GetHandler(job.AssignedAssignedHandlerName);
             if (handler == null)
                 throw new HandlerNotFoundException($"Could not found Handler as {job.AssignedAssignedHandlerName}");
 

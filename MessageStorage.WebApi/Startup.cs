@@ -1,5 +1,4 @@
 using MessageStorage.DI.Extension;
-using MessageStorage.StorageAdaptorSection;
 using MessageStorage.WebApi.Handlers;
 using MessageStorage.WebApi.HostedServices;
 using Microsoft.AspNetCore.Builder;
