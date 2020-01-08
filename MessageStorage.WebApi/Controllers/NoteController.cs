@@ -1,4 +1,5 @@
 ﻿using MessageStorage.WebApi.Handlers;
+using MessageStorage.WebApi.HttpRequests;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -18,13 +19,14 @@ namespace MessageStorage.WebApi.Controllers
         }
 
         [HttpPost]
-        public IActionResult PostNote(string note)
+        public IActionResult PostNote([FromBody] PostNoteHttpRequest postNoteHttpRequest)
         {
             _logger.LogInformation($"Note is stored into some storage");
 
             _messageStorageClient.Add(new NoteCreatedEvent
                                       {
-                                          Note = note
+                                          Id = postNoteHttpRequest.Identifier,
+                                          Note = postNoteHttpRequest.Content
                                       });
 
             _logger.LogInformation($"Note Created Event is stored into MessageStorage");

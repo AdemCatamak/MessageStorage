@@ -25,10 +25,12 @@ namespace MessageStorage.WebApi
             services.AddControllers();
             services.AddHostedService<MessageStorageProcessService>();
 
-            // InMemoryStorage should inject singleton
-            services.AddMessageStorageClient<InMemoryStorageAdaptor>(ServiceLifetime.Singleton);
+            services.AddMessageStorage(builder =>
+                                       {
+                                           builder.AddInMemoryMessageStorage()
+                                                  .AddMessageProcessServer();
+                                       });
             services.AddHandlers(new[] {typeof(NoteCreatedEventHandler).Assembly});
-            services.AddMessageProcessServer();
 
             services.AddSwaggerGen(c =>
                                    {

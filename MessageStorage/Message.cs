@@ -19,7 +19,7 @@ namespace MessageStorage
             {
                 if (SerializedPayload == null)
                     return null;
-                var result = JsonConvert.DeserializeObject<object>(SerializedPayload, new JsonSerializerSettings()
+                var result = JsonConvert.DeserializeObject<object>(SerializedPayload, new JsonSerializerSettings
                                                                                       {
                                                                                           TypeNameHandling = TypeNameHandling.All,
                                                                                           DateFormatHandling = DateFormatHandling.IsoDateFormat,
@@ -29,7 +29,7 @@ namespace MessageStorage
             }
             private set
             {
-                SerializedPayload = JsonConvert.SerializeObject(value, new JsonSerializerSettings()
+                SerializedPayload = JsonConvert.SerializeObject(value, new JsonSerializerSettings
                                                                        {
                                                                            Formatting = Formatting.None,
                                                                            TypeNameHandling = TypeNameHandling.All,
@@ -41,7 +41,7 @@ namespace MessageStorage
             }
         }
 
-        private Message(Guid id, string traceId, DateTime createdOn, string payloadClassName, string payloadClassNamespace, string serializedPayload)
+        public Message(Guid id, string traceId, DateTime createdOn, string payloadClassName, string payloadClassNamespace, string serializedPayload)
         {
             Id = id;
             TraceId = traceId;

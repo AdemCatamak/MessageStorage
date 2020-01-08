@@ -3,18 +3,18 @@ using System.Threading.Tasks;
 
 namespace MessageStorage
 {
-    public abstract class Handler
+    public interface IHandler
     {
-        public abstract Task Handle(object payload);
+        Task Handle(object payload);
 
-        public string Name => GetType().FullName;
+        string Name { get; }
     }
 
-    public abstract class Handler<T> : Handler where T : class
+    public abstract class Handler<T> : IHandler where T : class
     {
         protected abstract Task Handle(T payload);
 
-        public override Task Handle(object payload)
+        public Task Handle(object payload)
         {
             if (!(payload is T t))
             {
@@ -23,5 +23,7 @@ namespace MessageStorage
 
             return Handle(t);
         }
+
+        public string Name => GetType().FullName;
     }
 }

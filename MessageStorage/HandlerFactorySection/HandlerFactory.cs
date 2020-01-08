@@ -7,34 +7,41 @@ namespace MessageStorage.HandlerFactorySection
 {
     public class HandlerFactory : IHandlerFactory
     {
-        public IReadOnlyCollection<Handler> Handlers => _handlers.AsReadOnly();
-        private List<Handler> _handlers;
+        public IReadOnlyCollection<IHandler> Handlers => _handlers.AsReadOnly();
+        private List<IHandler> _handlers;
 
-        public HandlerFactory(IEnumerable<Handler> handlers = null)
+        public HandlerFactory(IEnumerable<IHandler> handlers = null)
         {
-            _handlers = handlers?.ToList() ?? new List<Handler>();
+            _handlers = handlers?.ToList() ?? new List<IHandler>();
         }
 
         public IEnumerable<string> GetAvailableHandlers(object payload)
         {
             Type payloadType = payload.GetType();
-            return _handlers.Where(h =>
-                                   {
-                                       Type t = h.GetType();
+            IEnumerable<string> availableHandlers = _handlers.Where(h =>
+                                                                    {
+                                                                        Type handlerType = h.GetType();
 
-                                       do
-                                       {
-                                           if (t.IsGenericType && t.GenericTypeArguments.Contains(payloadType))
-                                               return true;
-                                           t = t.BaseType;
-                                       } while (t != null);
+                                                                        do
+                                                                        {
+                                                                            if (handlerType.IsGenericType)
+                                                                            {
+                                                                                IEnumerable<Type> handlerGenericArgumentTypes = handlerType.GenericTypeArguments;
+                                                                                bool isAssignable = handlerGenericArgumentTypes.Any(x => x.IsAssignableFrom(payloadType));
+                                                                                return isAssignable;
+                                                                            }
 
-                                       return false;
-                                   })
-                            .Select(handler => handler.Name);
+                                                                            handlerType = handlerType.BaseType;
+                                                                        } while (handlerType != null);
+
+                                                                        return false;
+                                                                    })
+                                                             .Select(handler => handler.Name);
+
+            return availableHandlers;
         }
 
-        public void AddHandler<T>(Handler handler)
+        public void AddHandler<T>(IHandler handler)
         {
             _handlers.Add(handler);
         }
@@ -45,8 +52,8 @@ namespace MessageStorage.HandlerFactorySection
                                  .ToList();
         }
 
-        
-        public Handler GetHandler(string handlerName)
+
+        public IHandler GetHandler(string handlerName)
         {
             if (string.IsNullOrEmpty(handlerName))
                 throw new HandlerNotFoundException($"Handler type does not supplied");

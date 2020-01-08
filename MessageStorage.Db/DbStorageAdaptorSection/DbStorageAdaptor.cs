@@ -8,10 +8,12 @@ namespace MessageStorage.Db.DbStorageAdaptorSection
     public abstract class DbStorageAdaptor : IDbStorageAdaptor
     {
         private readonly IDbConnectionFactory _dbConnectionFactory;
+        private readonly MessageStorageDbConfiguration _messageStorageDbConfiguration;
 
-        protected DbStorageAdaptor(IDbConnectionFactory dbConnectionFactory)
+        protected DbStorageAdaptor(IDbConnectionFactory dbConnectionFactory, MessageStorageDbConfiguration messageStorageDbConfiguration)
         {
             _dbConnectionFactory = dbConnectionFactory ?? throw new ArgumentNullException(nameof(dbConnectionFactory));
+            _messageStorageDbConfiguration = messageStorageDbConfiguration;
         }
 
         public void Add(Message message, IEnumerable<Job> jobs)
@@ -29,7 +31,7 @@ namespace MessageStorage.Db.DbStorageAdaptorSection
 
         public void Update(Job job)
         {
-            (string commandText, IEnumerable<IDbDataParameter> dbDataParameters) = PrepareUpdateCommand(job);
+            (string commandText, IEnumerable<IDbDataParameter> dbDataParameters) = PrepareUpdateCommand(job, _messageStorageDbConfiguration);
 
             using (IDbConnection dbConnection = _dbConnectionFactory.CreateConnection())
             {
@@ -52,7 +54,7 @@ namespace MessageStorage.Db.DbStorageAdaptorSection
 
         public Job SetFirstWaitingJobToInProgress()
         {
-            (string commandText, IEnumerable<IDbDataParameter> dbDataParameters) = SetFirstWaitingJobToInProgressCommand();
+            (string commandText, IEnumerable<IDbDataParameter> dbDataParameters) = SetFirstWaitingJobToInProgressCommand(_messageStorageDbConfiguration);
             using (IDbConnection dbConnection = _dbConnectionFactory.CreateConnection())
             {
                 dbConnection.Open();
@@ -94,7 +96,7 @@ namespace MessageStorage.Db.DbStorageAdaptorSection
 
         private IDbCommand CreateInsertCommand(Job job, IDbTransaction dbTransaction)
         {
-            (string commandText, IEnumerable<IDbDataParameter> dbDataParameters) = PrepareInsertCommand(job);
+            (string commandText, IEnumerable<IDbDataParameter> dbDataParameters) = PrepareInsertCommand(job, _messageStorageDbConfiguration);
 
             IDbCommand insertJobCommand = dbTransaction.Connection.CreateCommand();
             insertJobCommand.CommandText = commandText;
@@ -106,7 +108,7 @@ namespace MessageStorage.Db.DbStorageAdaptorSection
 
         private IDbCommand CreateInsertCommand(Message message, IDbTransaction dbTransaction)
         {
-            (string commandText, IEnumerable<IDbDataParameter> dbDataParameters) = PrepareInsertCommand(message);
+            (string commandText, IEnumerable<IDbDataParameter> dbDataParameters) = PrepareInsertCommand(message, _messageStorageDbConfiguration);
 
             IDbCommand insertMessageCommand = dbTransaction.Connection.CreateCommand();
             insertMessageCommand.CommandText = commandText;
@@ -117,10 +119,10 @@ namespace MessageStorage.Db.DbStorageAdaptorSection
         }
 
 
-        protected abstract (string, IEnumerable<IDbDataParameter>) PrepareInsertCommand(Message message);
-        protected abstract (string, IEnumerable<IDbDataParameter>) PrepareInsertCommand(Job job);
-        protected abstract (string, IEnumerable<IDbDataParameter>) PrepareUpdateCommand(Job job);
-        protected abstract (string, IEnumerable<IDbDataParameter>) SetFirstWaitingJobToInProgressCommand();
+        protected abstract (string, IEnumerable<IDbDataParameter>) PrepareInsertCommand(Message message, MessageStorageDbConfiguration messageStorageDbConfiguration);
+        protected abstract (string, IEnumerable<IDbDataParameter>) PrepareInsertCommand(Job job, MessageStorageDbConfiguration messageStorageDbConfiguration);
+        protected abstract (string, IEnumerable<IDbDataParameter>) PrepareUpdateCommand(Job job, MessageStorageDbConfiguration messageStorageDbConfiguration);
+        protected abstract (string, IEnumerable<IDbDataParameter>) SetFirstWaitingJobToInProgressCommand(MessageStorageDbConfiguration messageStorageDbConfiguration);
         protected abstract IDataAdapter GetDataAdaptor(IDbCommand dbCommand);
         protected abstract IEnumerable<Job> MapData(DataRowCollection dataRowCollection);
     }

@@ -5,17 +5,18 @@ namespace MessageStorage
     public class Job
     {
         public Guid Id { get; private set; }
+        public Guid MessageId => Message.Id;
         public Message Message { get; private set; }
         public string AssignedAssignedHandlerName { get; private set; }
         public JobStatuses JobStatus { get; private set; }
         public DateTime LastOperationTime { get; private set; }
         public string LastOperationInfo { get; private set; }
 
-        private Job(Guid id, Message message, string assignedHandlerNameName, JobStatuses jobStatus, DateTime lastOperationTime, string lastOperationInfo)
+        public Job(Guid id, Message message, string assignedHandlerName, JobStatuses jobStatus, DateTime lastOperationTime, string lastOperationInfo)
         {
             Id = id;
             Message = message;
-            AssignedAssignedHandlerName = assignedHandlerNameName;
+            AssignedAssignedHandlerName = assignedHandlerName;
             JobStatus = jobStatus;
             LastOperationInfo = lastOperationInfo;
             LastOperationTime = lastOperationTime;
