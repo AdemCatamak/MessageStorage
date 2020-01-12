@@ -5,7 +5,7 @@ namespace MessageStorage
 {
     public class Message
     {
-        public Guid Id { get; private set; }
+        public long Id { get; private set; }
         public string TraceId { get; set; }
         public DateTime CreatedOn { get; private set; }
 
@@ -41,7 +41,7 @@ namespace MessageStorage
             }
         }
 
-        public Message(Guid id, string traceId, DateTime createdOn, string payloadClassName, string payloadClassNamespace, string serializedPayload)
+        public Message(long id, string traceId, DateTime createdOn, string payloadClassName, string payloadClassNamespace, string serializedPayload)
         {
             Id = id;
             TraceId = traceId;
@@ -59,7 +59,7 @@ namespace MessageStorage
             Payload = payload;
         }
 
-        public void SetId(Guid id)
+        public void SetId(long id)
         {
             if (id == default)
                 throw new ArgumentException("id should not be null");

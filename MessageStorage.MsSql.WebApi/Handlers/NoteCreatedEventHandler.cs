@@ -20,7 +20,7 @@ namespace MessageStorage.MsSql.WebApi.Handlers
         protected override Task Handle(IEntityCreatedEvent payload)
         {
             Console.WriteLine($"IEntityCreatedEvent handled by {nameof(EntityCreatedEventHandler)}{Environment.NewLine}" +
-                              $"{payload.Id}");
+                              $"{nameof(payload.Id)}:{payload.Id}");
 
             return Task.CompletedTask;
         }

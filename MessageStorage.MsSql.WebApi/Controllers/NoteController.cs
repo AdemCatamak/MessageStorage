@@ -28,7 +28,7 @@ namespace MessageStorage.MsSql.WebApi.Controllers
             using (DbTransaction dbTransaction = _noteDbContext.Database.BeginTransaction().GetDbTransaction())
             {
                 var noteModel = new NoteModel(postNoteHttpRequest.Title, postNoteHttpRequest.Content);
-                _noteDbContext.Notes.Add(noteModel);
+                _noteDbContext.NoteModel.Add(noteModel);
                 _noteDbContext.SaveChanges();
 
                 var noteCreatedEvent = new NoteCreatedEvent

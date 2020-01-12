@@ -9,6 +9,6 @@ namespace MessageStorage.MsSql.WebApi.DbContextSection
         {
         }
 
-        public virtual DbSet<NoteModel> Notes { get; set; }
+        public virtual DbSet<NoteModel> NoteModel { get; set; }
     }
 }

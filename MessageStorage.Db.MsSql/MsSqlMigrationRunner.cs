@@ -1,15 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using System.Linq;
-using MessageStorage.Db.MigrationRunnerSection;
 
 namespace MessageStorage.Db.MsSql
 {
     public class MsSqlMigrationRunner : MigrationRunner, IMsSqlMigrationRunner
     {
-        private IMsSqlDbConnectionFactory _msSqlDbConnectionFactory;
+        private readonly IMsSqlDbConnectionFactory _msSqlDbConnectionFactory;
 
         public MsSqlMigrationRunner(IMsSqlDbConnectionFactory dbConnectionFactory) : base(dbConnectionFactory)
         {
@@ -19,14 +18,15 @@ namespace MessageStorage.Db.MsSql
 
         protected override int GetLastExecutedVersionNumber(MessageStorageDbConfiguration messageStorageDbConfiguration)
         {
-            using (var dbConnection = _msSqlDbConnectionFactory.CreateConnection())
+            using (IDbConnection dbConnection = _msSqlDbConnectionFactory.CreateConnection())
             {
                 dbConnection.Open();
-                using (var dbCommand = dbConnection.CreateCommand())
+                using (IDbCommand dbCommand = dbConnection.CreateCommand())
                 {
                     string commandText = $"SELECT MAX(VersionNumber) FROM [{messageStorageDbConfiguration.Schema}].[{TableNames.VersionHistoryTable}]";
                     dbCommand.CommandText = commandText;
-                    int maxVersionNumber = int.Parse(dbCommand.ExecuteScalar().ToString());
+                    var result = dbCommand.ExecuteScalar();
+                    int maxVersionNumber = int.Parse(result is DBNull ? "0" : result.ToString());
                     return maxVersionNumber;
                 }
             }
@@ -36,20 +36,20 @@ namespace MessageStorage.Db.MsSql
         {
             int versionNumber = migration.VersionNumber;
             string migrationName = migration.GetType().Name;
-            DateTime executedTime = DateTime.UtcNow;
+            DateTime executionTime = DateTime.UtcNow;
 
-            using (var dbCommand = dbTransaction.Connection.CreateCommand())
+            using (IDbCommand dbCommand = dbTransaction.Connection.CreateCommand())
             {
                 List<SqlParameter> sqlParameters = new List<SqlParameter>();
                 sqlParameters.Add(new SqlParameter("@VersionNumber", versionNumber)
                                   {
                                       SourceColumn = "VersionNumber"
                                   });
-                sqlParameters.Add(new SqlParameter("@MigrationName", migrationName)
+                sqlParameters.Add(new SqlParameter("@VersionName", migrationName)
                                   {
-                                      SourceColumn = "MigrationName"
+                                      SourceColumn = "VersionName"
                                   });
-                sqlParameters.Add(new SqlParameter("@ExecutionTime", executedTime)
+                sqlParameters.Add(new SqlParameter("@ExecutionTime", executionTime)
                                   {
                                       SourceColumn = "ExecutionTime"
                                   });

@@ -1,23 +1,44 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using System.Linq;
-using MessageStorage.Db.DbStorageAdaptorSection;
 using MessageStorage.Db.Exceptions;
+using MessageStorage.Db.MsSql.Migrations;
 
 namespace MessageStorage.Db.MsSql
 {
-    public class MsSqlDbStorageAdaptor : DbStorageAdaptor, IMsSqlDbStorageAdaptor
+    public class MsSqlDbStorageAdaptor : DbStorageAdaptor, IMsSqlDbStorageAdaptor, IMsSqlDbConnectionFactory
     {
-        public MsSqlDbStorageAdaptor(IMsSqlDbConnectionFactory dbConnectionFactory, MessageStorageDbConfiguration messageStorageDbConfiguration) : base(dbConnectionFactory, messageStorageDbConfiguration)
+        public override void SetConfiguration(MessageStorageDbConfiguration messageStorageDbConfiguration)
         {
+            base.SetConfiguration(messageStorageDbConfiguration);
+            var msSqlMigrationRunner = new MsSqlMigrationRunner(this);
+            msSqlMigrationRunner.Run(GetMigrations(), messageStorageDbConfiguration);
+        }
+
+        private IEnumerable<IMigration> GetMigrations()
+        {
+            Type migrationType = typeof(IMigration);
+            IEnumerable<Type> migrationClasses = typeof(_0001_CreateSchema).Assembly.GetTypes()
+                                                                           .Where(p => migrationType.IsAssignableFrom(p));
+
+            IEnumerable<IMigration> migrations = migrationClasses.Select(t => Activator.CreateInstance(t) as IMigration);
+
+            return migrations;
+        }
+
+        public override IDbConnection CreateConnection()
+        {
+            string connectionStr = MessageStorageDbConfiguration.ConnectionStr;
+            var dbConnection = new SqlConnection(connectionStr);
+            return dbConnection;
         }
 
         protected override (string, IEnumerable<IDbDataParameter>) PrepareInsertCommand(Message message, MessageStorageDbConfiguration messageStorageDbConfiguration)
         {
             var sqlParameters = new List<SqlParameter>();
-            sqlParameters.Add(new SqlParameter("@TraceId", message.TraceId)
+            sqlParameters.Add(new SqlParameter("@TraceId", (object) message.TraceId ?? DBNull.Value)
                               {
                                   SourceColumn = "TraceId"
                               });
@@ -39,8 +60,8 @@ namespace MessageStorage.Db.MsSql
                               });
 
             string columns = string.Join(",", sqlParameters.Select(p => $"[{p.SourceColumn}]"));
-            string parameterNames = string.Join(",", sqlParameters.Select(p => $"[{p.ParameterName}]"));
-            string commandText = $"INSERT INTO [{messageStorageDbConfiguration.Schema}].[{TableNames.MessageStorageTable}] {columns} VALUES ({parameterNames}) SELECT SCOPE_IDENTITY()";
+            string parameterNames = string.Join(",", sqlParameters.Select(p => $"{p.ParameterName}"));
+            string commandText = $"INSERT INTO [{messageStorageDbConfiguration.Schema}].[{TableNames.MessageTable}] ({columns}) VALUES ({parameterNames}) SELECT SCOPE_IDENTITY()";
 
             return (commandText, sqlParameters);
         }
@@ -52,11 +73,11 @@ namespace MessageStorage.Db.MsSql
                               {
                                   SourceColumn = "JobStatus"
                               });
-            sqlParameters.Add(new SqlParameter("@AssignedAssignedHandlerName", job.AssignedAssignedHandlerName)
+            sqlParameters.Add(new SqlParameter("@AssignedHandlerName", job.AssignedHandlerName)
                               {
-                                  SourceColumn = "AssignedAssignedHandlerName"
+                                  SourceColumn = "AssignedHandlerName"
                               });
-            sqlParameters.Add(new SqlParameter("@LastOperationInfo", job.LastOperationInfo)
+            sqlParameters.Add(new SqlParameter("@LastOperationInfo", (object) job.LastOperationInfo ?? DBNull.Value)
                               {
                                   SourceColumn = "LastOperationInfo"
                               });
@@ -70,8 +91,8 @@ namespace MessageStorage.Db.MsSql
                               });
 
             string columns = string.Join(",", sqlParameters.Select(p => $"[{p.SourceColumn}]"));
-            string parameterNames = string.Join(",", sqlParameters.Select(p => $"[{p.ParameterName}]"));
-            string commandText = $"INSERT INTO [{messageStorageDbConfiguration.Schema}].[{TableNames.JobTable}] {columns} VALUES ({parameterNames}) SELECT SCOPE_IDENTITY()";
+            string parameterNames = string.Join(",", sqlParameters.Select(p => $"{p.ParameterName}"));
+            string commandText = $"INSERT INTO [{messageStorageDbConfiguration.Schema}].[{TableNames.JobTable}] ({columns}) VALUES ({parameterNames}) SELECT SCOPE_IDENTITY()";
 
             return (commandText, sqlParameters);
         }
@@ -84,11 +105,11 @@ namespace MessageStorage.Db.MsSql
                               {
                                   SourceColumn = "JobStatus"
                               });
-            sqlParameters.Add(new SqlParameter("@AssignedAssignedHandlerName", job.AssignedAssignedHandlerName)
+            sqlParameters.Add(new SqlParameter("@AssignedHandlerName", job.AssignedHandlerName)
                               {
-                                  SourceColumn = "AssignedAssignedHandlerName"
+                                  SourceColumn = "AssignedHandlerName"
                               });
-            sqlParameters.Add(new SqlParameter("@LastOperationInfo", job.LastOperationInfo)
+            sqlParameters.Add(new SqlParameter("@LastOperationInfo", (object) job.LastOperationInfo ?? DBNull.Value)
                               {
                                   SourceColumn = "LastOperationInfo"
                               });
@@ -109,29 +130,45 @@ namespace MessageStorage.Db.MsSql
             string setScript = string.Join(", ", sqlParameters.Select(p => $"[{p.SourceColumn}] = {p.ParameterName}"));
             string commandText = $"UPDATE [{messageStorageDbConfiguration.Schema}].[{TableNames.JobTable}] SET {setScript} WHERE [{idParameter.SourceColumn}] = {idParameter.ParameterName}";
 
-            return (commandText, sqlParameters);
+            return (commandText, new List<IDbDataParameter>(sqlParameters)
+                                 {
+                                     idParameter
+                                 });
         }
 
         protected override (string, IEnumerable<IDbDataParameter>) SetFirstWaitingJobToInProgressCommand(MessageStorageDbConfiguration messageStorageDbConfiguration)
         {
-            var jobStatusParameter = new SqlParameter("@JobStatus", (int) JobStatuses.Waiting)
-                                     {
-                                         SourceColumn = "JobStatus"
-                                     };
+            var waitingJobParameter = new SqlParameter("@WaitingJobParameter", (int) JobStatuses.Waiting)
+                                      {
+                                          SourceColumn = "JobStatus"
+                                      };
 
-            string commandText = $"DECLARE @Updated table( [JobId] int){Environment.NewLine}" +
-                                 $"UPDATE [{messageStorageDbConfiguration.Schema}].[{TableNames.JobTable}] SET [{jobStatusParameter.ParameterName}] = {(int) JobStatuses.InProgress} OUTPUT inserted.*{Environment.NewLine}" +
-                                 $"INTO @Updated{Environment.NewLine}" +
-                                 $"WHERE [{jobStatusParameter.ParameterName}] = {jobStatusParameter.ParameterName}{Environment.NewLine}" +
-                                 $"ORDER BY Id{Environment.NewLine}" +
-                                 $"OFFSET 0 ROWS FETCH FIRST 1 ROWS ONLY{Environment.NewLine}" +
-                                 $"{Environment.NewLine}" +
-                                 $"SELECT j.Id, j.JobStatus, j.AssignedAssignedHandlerName, j.LastOperationInfo, j.LastOperationTime, j.MessageId,{Environment.NewLine}" +
-                                 $"m.CreatedOn, m.SerializedPayload, m.TraceId, m.PayloadClassNamespace ,m.PayloadClassName {Environment.NewLine}" +
-                                 $"FROM  @Updated j{Environment.NewLine}" +
-                                 $"INNER JOIN [{messageStorageDbConfiguration.Schema}].{TableNames.MessageStorageTable} m on j.MessageId = m.Id";
+            var inProgressJobParameter = new SqlParameter("@InProgressJobParameter", (int) JobStatuses.InProgress)
+                                         {
+                                             SourceColumn = "JobStatus"
+                                         };
 
-            return (commandText, new List<IDbDataParameter> {jobStatusParameter});
+            string commandText = $@"
+DECLARE @Updated table( [JobId] bigint)
+
+UPDATE [{messageStorageDbConfiguration.Schema}].[{TableNames.JobTable}] SET [{inProgressJobParameter.SourceColumn}] = {inProgressJobParameter.ParameterName}
+OUTPUT INSERTED.Id
+INTO @Updated
+WHERE  Id = 
+(
+    SELECT TOP 1 Id 
+    FROM [{messageStorageDbConfiguration.Schema}].[{TableNames.JobTable}] WITH (UPDLOCK)
+    WHERE {waitingJobParameter.SourceColumn} = {waitingJobParameter.ParameterName}
+    ORDER  BY Id
+)
+SELECT j.Id, j.JobStatus, j.AssignedHandlerName, j.LastOperationInfo, j.LastOperationTime, j.MessageId,
+m.CreatedOn, m.SerializedPayload, m.TraceId, m.PayloadClassNamespace ,m.PayloadClassName
+    FROM  @Updated u
+    INNER JOIN [{messageStorageDbConfiguration.Schema}].[{TableNames.JobTable}] j on j.Id = u.JobId
+    INNER JOIN [{messageStorageDbConfiguration.Schema}].[{TableNames.MessageTable}] m on j.MessageId = m.Id
+";
+
+            return (commandText, new List<IDbDataParameter> {waitingJobParameter, inProgressJobParameter});
         }
 
         protected override IDataAdapter GetDataAdaptor(IDbCommand dbCommand)
@@ -163,7 +200,7 @@ namespace MessageStorage.Db.MsSql
             const string lastOperationTimeColumnName = "LastOperationTime";
             const string lastOperationInfoColumnName = "LastOperationInfo";
 
-            if (!(dataRow[idColumnName] is Guid id))
+            if (!(dataRow[idColumnName] is long id))
                 throw new DbGetOperationException($"{dataRow[idColumnName]} could not map");
 
             if (!(dataRow[assignedHandlerNameColumnName] is string assignedHandlerName))
@@ -175,8 +212,17 @@ namespace MessageStorage.Db.MsSql
             if (!(dataRow[lastOperationTimeColumnName] is DateTime lastOperationTime))
                 throw new DbGetOperationException($"{dataRow[lastOperationTimeColumnName]} could not map");
 
-            if (!(dataRow[lastOperationInfoColumnName] is string lastOperationInfo))
-                throw new DbGetOperationException($"{dataRow[lastOperationInfoColumnName]} could not map");
+            string lastOperationInfo = null;
+            switch (dataRow[lastOperationInfoColumnName])
+            {
+                case DBNull _:
+                    break;
+                case string x:
+                    lastOperationInfo = x;
+                    break;
+                default:
+                    throw new DbGetOperationException($"{dataRow[lastOperationInfoColumnName]} could not map");
+            }
 
             var job = new Job(id, message, assignedHandlerName, (JobStatuses) jobStatus, lastOperationTime, lastOperationInfo);
 
@@ -192,11 +238,20 @@ namespace MessageStorage.Db.MsSql
             const string payloadClassNamespaceColumnName = "PayloadClassNamespace";
             const string payloadClassNameColumnName = "PayloadClassName";
 
-            if (!(dataRow[messageIdColumnName] is Guid id))
+            if (!(dataRow[messageIdColumnName] is long id))
                 throw new DbGetOperationException($"{dataRow[messageIdColumnName]} could not map");
 
-            if (!(dataRow[traceIdColumnName] is string traceId))
-                throw new DbGetOperationException($"{dataRow[traceIdColumnName]} could not map");
+            string traceId = null;
+            switch (dataRow[traceIdColumnName])
+            {
+                case DBNull _:
+                    break;
+                case string x:
+                    traceId = x;
+                    break;
+                default:
+                    throw new DbGetOperationException($"{dataRow[traceIdColumnName]} could not map");
+            }
 
             if (!(dataRow[serializedPayloadColumnName] is string serializedPayload))
                 throw new DbGetOperationException($"{dataRow[serializedPayloadColumnName]} could not map");

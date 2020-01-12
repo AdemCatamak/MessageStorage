@@ -1,6 +1,3 @@
-using MessageStorage.HandlerFactorySection;
-using MessageStorage.MessageStorageClientSection;
-using MessageStorage.StorageAdaptorSection;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace MessageStorage.DI.Extension
@@ -9,9 +6,10 @@ namespace MessageStorage.DI.Extension
     {
         public static IMessageStorageServiceCollection AddInMemoryMessageStorage(this IMessageStorageServiceCollection serviceCollection)
         {
-            serviceCollection.AddMessageStorageClient<MessageStorageClient>(ServiceLifetime.Singleton)
-                             .AddStorageAdaptor<InMemoryStorageAdaptor>(ServiceLifetime.Singleton)
-                             .AddHandlerFactory<HandlerFactory>(ServiceLifetime.Singleton);
+            serviceCollection
+               .AddHandlerManager<HandlerManager>(ServiceLifetime.Singleton)
+               .Add<IMessageStorageClient>(provider => new MessageStorageClient(new InMemoryStorageAdaptor(), provider.GetRequiredService<IHandlerManager>()), ServiceLifetime.Singleton);
+
             return serviceCollection;
         }
     }

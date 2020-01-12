@@ -6,7 +6,7 @@ namespace MessageStorage.Db
     {
         public static MessageStorageDbConfiguration Create(string connectionStr, string schema = null)
         {
-            var messageStorageDbConfiguration = new MessageStorageDbConfiguration(schema);
+            var messageStorageDbConfiguration = new MessageStorageDbConfiguration(connectionStr, schema);
             return messageStorageDbConfiguration;
         }
     }

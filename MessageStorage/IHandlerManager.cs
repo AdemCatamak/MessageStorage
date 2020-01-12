@@ -3,14 +3,25 @@ using System.Collections.Generic;
 using System.Linq;
 using MessageStorage.Exceptions;
 
-namespace MessageStorage.HandlerFactorySection
+namespace MessageStorage
 {
-    public class HandlerFactory : IHandlerFactory
+    public interface IHandlerManager
+    {
+        IReadOnlyCollection<Handler> Handlers { get; }
+
+        IEnumerable<string> GetAvailableHandlers(object payload);
+
+        void AddHandler<T>(Handler handler);
+        void RemoveHandler(string handlerName);
+        Handler GetHandler(string handlerName);
+    }
+
+    public class HandlerManager : IHandlerManager
     {
         public IReadOnlyCollection<Handler> Handlers => _handlers.AsReadOnly();
         private List<Handler> _handlers;
 
-        public HandlerFactory(IEnumerable<Handler> handlers = null)
+        public HandlerManager(IEnumerable<Handler> handlers = null)
         {
             _handlers = handlers?.ToList() ?? new List<Handler>();
         }
