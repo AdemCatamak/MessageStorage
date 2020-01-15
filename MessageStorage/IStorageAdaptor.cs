@@ -1,4 +1,3 @@
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using MessageStorage.Exceptions;
@@ -14,15 +13,15 @@ namespace MessageStorage
 
     public class InMemoryStorageAdaptor : IStorageAdaptor
     {
-        private readonly ConcurrentDictionary<long, Message> _messageStorage;
-        private readonly ConcurrentDictionary<long, Job> _jobStorage;
+        private readonly Dictionary<long, Message> _messageStorage;
+        private readonly Dictionary<long, Job> _jobStorage;
         private readonly object _lockObj;
 
         public InMemoryStorageAdaptor()
         {
             _lockObj = new object();
-            _messageStorage = new ConcurrentDictionary<long, Message>();
-            _jobStorage = new ConcurrentDictionary<long, Job>();
+            _messageStorage = new Dictionary<long, Message>();
+            _jobStorage = new Dictionary<long, Job>();
         }
 
         public void Add(Message message, IEnumerable<Job> jobs)
@@ -30,7 +29,9 @@ namespace MessageStorage
             lock (_lockObj)
             {
                 AddMessage(message);
-                foreach (Job job in jobs ?? new List<Job>())
+
+                var filteredJobs = (jobs ?? new List<Job>()).Where(j => j != null);
+                foreach (Job job in filteredJobs)
                 {
                     AddJob(job);
                 }
@@ -58,33 +59,48 @@ namespace MessageStorage
             }
         }
 
+        
 
         private void AddMessage(Message message)
         {
-            int id = _messageStorage.Count + 1;
+            if (message == null)
+            {
+                throw new MessageNullException();
+            }
+
+            long maxKey = _messageStorage.OrderByDescending(pair => pair.Key).FirstOrDefault().Key;
+            long id = maxKey + 1;
             message.SetId(id);
-            bool success = _messageStorage.TryAdd(message.Id, message);
-            if (!success)
-                throw new MessageAddOperationFailedException();
+            if (_messageStorage.ContainsKey(message.Id))
+            {
+                throw new MessageAlreadyExistException(message.Id.ToString());
+            }
+
+            _messageStorage.Add(message.Id, message);
         }
 
         private void AddJob(Job job)
         {
-            var id = _jobStorage.Count + 1;
+            long maxKey = _jobStorage.OrderByDescending(pair => pair.Key).FirstOrDefault().Key;
+            long id = maxKey + 1;
             job.SetId(id);
-            bool success = _jobStorage.TryAdd(job.Id, job);
-            if (!success)
-                throw new JobAddOperationFailedException();
+            if (_jobStorage.ContainsKey(job.Id))
+            {
+                throw new JobAlreadyExistException(job.Id.ToString());
+            }
+
+            _jobStorage.Add(job.Id, job);
         }
-        
+
         private void UpdateJob(Job job)
         {
-            bool removeSuccess = _jobStorage.TryRemove(job.Id, out Job _);
-            if (!removeSuccess)
-                throw new JobRemoveOperationFailed();
-            bool addSuccess = _jobStorage.TryAdd(job.Id, job);
-            if (!addSuccess)
-                throw new JobAddOperationFailedException();
+            if (!_jobStorage.ContainsKey(job.Id))
+            {
+                throw new JobNotFoundException(job.Id.ToString());
+            }
+
+            _jobStorage.Remove(job.Id);
+            _jobStorage.Add(job.Id, job);
         }
     }
 }

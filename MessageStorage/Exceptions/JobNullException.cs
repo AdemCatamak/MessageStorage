@@ -2,7 +2,7 @@ using System;
 
 namespace MessageStorage.Exceptions
 {
-    public class JobRemoveOperationFailed : Exception
+    public class JobNullException : Exception
     {
     }
 }

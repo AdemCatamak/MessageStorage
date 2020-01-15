@@ -1,8 +1,6 @@
 using System;
-using System.Reflection;
 using System.Threading;
 using MessageStorage;
-using Newtonsoft.Json;
 using Xunit;
 
 namespace MessageStorageTests
