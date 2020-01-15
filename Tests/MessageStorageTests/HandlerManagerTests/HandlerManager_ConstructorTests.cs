@@ -6,8 +6,7 @@ using Xunit;
 
 namespace MessageStorageTests.HandlerManagerTests
 {
-    // ReSharper disable once InconsistentNaming
-    public class HandlerManager_Constructor
+    public class HandlerManager_ConstructorTests
     {
         [Fact]
         public void WhenConstructorExecuteWithParameterless__HandlersPropertyShouldReturnEmptyList()

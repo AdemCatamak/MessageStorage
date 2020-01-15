@@ -10,7 +10,7 @@ namespace MessageStorage
         public virtual string Name => GetType().FullName;
     }
 
-    public abstract class Handler<T> : Handler where T : class
+    public abstract class Handler<T> : Handler
     {
         protected abstract Task Handle(T payload);
 

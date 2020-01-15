@@ -54,7 +54,7 @@ namespace MessageStorage
         
         protected Tuple<Message, IEnumerable<Job>> PrepareMessageAndJobs<T>(T payload, string traceId, bool autoJobCreator)
         {
-            IEnumerable<string> availableHandlerNames = _handlerManager.GetAvailableHandlers(payload);
+            IEnumerable<string> availableHandlerNames = _handlerManager.GetAvailableHandlerNames(payload);
             var message = new Message(payload, traceId);
             var jobs = new List<Job>();
             if (autoJobCreator)

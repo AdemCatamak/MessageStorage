@@ -7,7 +7,6 @@ using Xunit;
 
 namespace MessageStorageTests.InMemoryStorageTests
 {
-    // ReSharper disable once InconsistentNaming
     public class InMemoryStorageAdaptor_SetFirstWaitingJobInProgressTests
     {
         private readonly InMemoryStorageAdaptor _sut;

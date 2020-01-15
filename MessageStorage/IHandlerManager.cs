@@ -9,9 +9,9 @@ namespace MessageStorage
     {
         IReadOnlyCollection<Handler> Handlers { get; }
 
-        IEnumerable<string> GetAvailableHandlers(object payload);
+        IEnumerable<string> GetAvailableHandlerNames(object payload);
 
-        void AddHandler<T>(Handler handler);
+        void AddHandler(Handler handler, bool suppressException = false);
         Handler GetHandler(string handlerName);
     }
 
@@ -29,7 +29,7 @@ namespace MessageStorage
             Handlers = _handlers.AsReadOnly();
         }
 
-        public IEnumerable<string> GetAvailableHandlers(object payload)
+        public IEnumerable<string> GetAvailableHandlerNames(object payload)
         {
             Type payloadType = payload.GetType();
             IEnumerable<string> availableHandlers = Handlers.Where(h =>
@@ -49,18 +49,20 @@ namespace MessageStorage
                                                                        } while (handlerType != null);
 
                                                                        return false;
-                                                                   })
+                                                                   }
+                                                                   )
                                                             .Select(handler => handler.Name);
 
             return availableHandlers;
         }
 
-        public void AddHandler<T>(Handler handler)
+        public void AddHandler(Handler handler, bool suppressException = false)
         {
             lock (_lockObj)
             {
                 if (_handlers.Any(h => h.Name == handler.Name))
                 {
+                    if (suppressException) return;
                     throw new HandlerAlreadyExist(handler.Name);
                 }
 
@@ -74,8 +76,11 @@ namespace MessageStorage
         public Handler GetHandler(string handlerName)
         {
             if (string.IsNullOrEmpty(handlerName))
-                throw new HandlerNotFoundException($"Handler type does not supplied");
-            return Handlers.FirstOrDefault(h => h.Name == handlerName);
+                throw new HandlerNotFoundException($"Handler Name does not supplied");
+            Handler handler = Handlers.FirstOrDefault(h => h.Name == handlerName);
+            if (handler == null)
+                throw new HandlerNotFoundException($"Handler could not found #{handlerName}");
+            return handler;
         }
     }
 }
