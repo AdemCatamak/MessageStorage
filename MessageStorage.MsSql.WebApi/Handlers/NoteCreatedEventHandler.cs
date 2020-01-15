@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace MessageStorage.WebApi.Handlers
+namespace MessageStorage.MsSql.WebApi.Handlers
 {
     public interface IEntityCreatedEvent
     {
@@ -11,7 +11,8 @@ namespace MessageStorage.WebApi.Handlers
     public class NoteCreatedEvent : IEntityCreatedEvent
     {
         public string Id { get; set; }
-        public string Note { get; set; }
+        public string Title { get; set; }
+        public string Content { get; set; }
     }
 
     public class EntityCreatedEventHandler : Handler<IEntityCreatedEvent>
@@ -19,18 +20,7 @@ namespace MessageStorage.WebApi.Handlers
         protected override Task Handle(IEntityCreatedEvent payload)
         {
             Console.WriteLine($"IEntityCreatedEvent handled by {nameof(EntityCreatedEventHandler)}{Environment.NewLine}" +
-                              $"{payload.Id}");
-
-            return Task.CompletedTask;
-        }
-    }
-
-    public class NoteCreatedEventHandler : Handler<NoteCreatedEvent>
-    {
-        protected override Task Handle(NoteCreatedEvent payload)
-        {
-            Console.WriteLine($"Note is handled by {nameof(NoteCreatedEventHandler)}{Environment.NewLine}" +
-                              $"{payload.Note}");
+                              $"{nameof(payload.Id)}:{payload.Id}");
 
             return Task.CompletedTask;
         }

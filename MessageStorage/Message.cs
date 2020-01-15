@@ -5,7 +5,7 @@ namespace MessageStorage
 {
     public class Message
     {
-        public Guid Id { get; private set; }
+        public long Id { get; private set; }
         public string TraceId { get; set; }
         public DateTime CreatedOn { get; private set; }
 
@@ -19,7 +19,7 @@ namespace MessageStorage
             {
                 if (SerializedPayload == null)
                     return null;
-                var result = JsonConvert.DeserializeObject<object>(SerializedPayload, new JsonSerializerSettings()
+                var result = JsonConvert.DeserializeObject<object>(SerializedPayload, new JsonSerializerSettings
                                                                                       {
                                                                                           TypeNameHandling = TypeNameHandling.All,
                                                                                           DateFormatHandling = DateFormatHandling.IsoDateFormat,
@@ -29,7 +29,7 @@ namespace MessageStorage
             }
             private set
             {
-                SerializedPayload = JsonConvert.SerializeObject(value, new JsonSerializerSettings()
+                SerializedPayload = JsonConvert.SerializeObject(value, new JsonSerializerSettings
                                                                        {
                                                                            Formatting = Formatting.None,
                                                                            TypeNameHandling = TypeNameHandling.All,
@@ -41,20 +41,29 @@ namespace MessageStorage
             }
         }
 
-        internal Message(Guid id, object payload, DateTime createdOn, string traceId)
+        public Message(long id, string traceId, DateTime createdOn, string payloadClassName, string payloadClassNamespace, string serializedPayload)
         {
             Id = id;
             TraceId = traceId;
-            CreatedOn = createdOn == default ? DateTime.UtcNow : createdOn;
+            PayloadClassName = payloadClassName;
+            PayloadClassNamespace = payloadClassNamespace;
+            SerializedPayload = serializedPayload;
+            CreatedOn = createdOn;
+        }
+
+        public Message(object payload, string traceId)
+        {
+            Id = default;
+            TraceId = traceId;
+            CreatedOn = DateTime.UtcNow;
             Payload = payload;
         }
 
-        public Message(object payload) : this(default, payload, default, default)
+        public void SetId(long id)
         {
-        }
-
-        public Message(object payload, string traceId) : this(default, payload, default, traceId)
-        {
+            if (id == default)
+                throw new ArgumentException("id should not be null");
+            Id = id;
         }
     }
 }

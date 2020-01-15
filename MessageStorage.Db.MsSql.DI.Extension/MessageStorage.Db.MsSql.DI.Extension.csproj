@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <RootNamespace>MessageStorage.Db.DI.Extension</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\MessageStorage.Db.MsSql\MessageStorage.Db.MsSql.csproj" />
+      <ProjectReference Include="..\MessageStorage.Db\MessageStorage.Db.csproj" />
+      <ProjectReference Include="..\MessageStorage.DI.Extension\MessageStorage.DI.Extension.csproj" />
+    </ItemGroup>
+
+</Project>
