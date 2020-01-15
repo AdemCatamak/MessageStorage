@@ -5,12 +5,14 @@ namespace MessageStorage
     public class Job
     {
         public long Id { get; private set; }
-        public long MessageId => Message.Id;
-        public Message Message { get; private set; }
         public string AssignedHandlerName { get; private set; }
         public JobStatuses JobStatus { get; private set; }
         public DateTime LastOperationTime { get; private set; }
         public string LastOperationInfo { get; private set; }
+        public Message Message { get; private set; }
+        public long MessageId => Message.Id;
+
+        public string TraceId => Message.TraceId;
 
         public Job(long id, Message message, string assignedHandlerName, JobStatuses jobStatus, DateTime lastOperationTime, string lastOperationInfo)
         {
@@ -28,20 +30,20 @@ namespace MessageStorage
             Message = message;
             AssignedHandlerName = assignedHandlerName;
             JobStatus = JobStatuses.Waiting;
-            LastOperationInfo = null;
+            LastOperationInfo = nameof(Job);
             LastOperationTime = DateTime.UtcNow;
         }
 
         public void SetInProgress(string info = null)
         {
-            LastOperationInfo = info;
+            LastOperationInfo = info ?? nameof(SetInProgress);
             LastOperationTime = DateTime.UtcNow;
             JobStatus = JobStatuses.InProgress;
         }
 
         public void SetDone(string info = null)
         {
-            LastOperationInfo = info;
+            LastOperationInfo = info ?? nameof(SetDone);
             LastOperationTime = DateTime.UtcNow;
             JobStatus = JobStatuses.Done;
         }
@@ -55,12 +57,8 @@ namespace MessageStorage
 
         public void SetId(long id)
         {
-            if (id == default)
-                throw new ArgumentException("id should not be null");
             Id = id;
         }
-
-        public string TraceId => Message.TraceId;
     }
 
     public enum JobStatuses

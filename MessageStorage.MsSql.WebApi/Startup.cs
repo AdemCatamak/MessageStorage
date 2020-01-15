@@ -25,7 +25,7 @@ namespace MessageStorage.MsSql.WebApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            string connectionStr = "Server=localhost,1433;Database=TestDb;User=sa;Password=kHyjGp7JH5;Trusted_Connection=False;";
+            var connectionStr = "Server=localhost,1433;Database=TestDb;User=sa;Password=kHyjGp7JH5;Trusted_Connection=False;";
 
             services.AddDbContext<NoteDbContext>(builder => builder.UseSqlServer(connectionStr));
 

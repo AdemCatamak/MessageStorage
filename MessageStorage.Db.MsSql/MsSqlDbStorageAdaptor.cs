@@ -265,7 +265,7 @@ m.CreatedOn, m.SerializedPayload, m.TraceId, m.PayloadClassNamespace ,m.PayloadC
             if (!(dataRow[createdOnColumnName] is DateTime createOn))
                 throw new DbGetOperationException($"{dataRow[createdOnColumnName]} could not map");
 
-            var message = new Message(id, traceId, createOn, payloadClassName, payloadClassNamespace, serializedPayload);
+            var message = new Message(id, createOn, traceId, payloadClassName, payloadClassNamespace, serializedPayload);
 
             return message;
         }
