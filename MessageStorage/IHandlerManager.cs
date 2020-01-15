@@ -12,7 +12,6 @@ namespace MessageStorage
         IEnumerable<string> GetAvailableHandlers(object payload);
 
         void AddHandler<T>(Handler handler);
-        void RemoveHandler(string handlerName);
         Handler GetHandler(string handlerName);
     }
 
@@ -66,17 +65,6 @@ namespace MessageStorage
                 }
 
                 _handlers.Add(handler);
-
-                Handlers = _handlers.AsReadOnly();
-            }
-        }
-
-        public void RemoveHandler(string handlerName)
-        {
-            lock (_lockObj)
-            {
-                _handlers = _handlers.Where(handler => handler.Name == handlerName)
-                                     .ToList();
 
                 Handlers = _handlers.AsReadOnly();
             }
