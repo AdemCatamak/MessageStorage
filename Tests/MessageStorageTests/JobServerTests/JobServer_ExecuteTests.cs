@@ -65,23 +65,6 @@ namespace MessageStorageTests.JobServerTests
         }
 
         [Fact]
-        public async Task WhenJobServerExecute_MessageStorageClientReturnAJob_and_MessageStorageClientHandleThrowsException__LogErrorWillBeExecuted_and_HandleNotExecuted()
-        {
-            _mockMessageStorageClient.Setup(client => client.SetFirstWaitingJobToInProgress())
-                                     .Returns(new Job(null, "assignedHandler"));
-
-            _mockMessageStorageClient.Setup(client => client.Handle(It.IsAny<Job>()))
-                                     .Throws<OperationCanceledException>();
-
-            await _sut.StartAsync();
-
-            await Task.Delay(10);
-
-            _mockMessageStorageClient.Verify(client => client.Handle(It.IsAny<Job>()), Times.AtLeastOnce());
-            _mockMessageStorageClient.Verify(client => client.Update(It.IsAny<Job>()), Times.AtLeastOnce());
-        }
-
-        [Fact]
         public async Task WhenJobServerExecute_MessageStorageClientReturnAJob_and_MessageStorageClientUpdateThrowsException__LogErrorWillBeExecuted()
         {
             _mockMessageStorageClient.Setup(client => client.SetFirstWaitingJobToInProgress())
