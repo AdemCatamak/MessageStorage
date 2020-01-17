@@ -9,66 +9,78 @@ namespace MessageStorage
     {
         IReadOnlyCollection<Handler> Handlers { get; }
 
-        IEnumerable<string> GetAvailableHandlers(object payload);
+        IEnumerable<string> GetAvailableHandlerNames(object payload);
 
-        void AddHandler<T>(Handler handler);
-        void RemoveHandler(string handlerName);
+        void AddHandler(Handler handler, bool suppressException = false);
         Handler GetHandler(string handlerName);
     }
 
     public class HandlerManager : IHandlerManager
     {
-        public IReadOnlyCollection<Handler> Handlers => _handlers.AsReadOnly();
+        public IReadOnlyCollection<Handler> Handlers { get; private set; }
         private List<Handler> _handlers;
+        private readonly object _lockObj;
 
         public HandlerManager(IEnumerable<Handler> handlers = null)
         {
-            _handlers = handlers?.ToList() ?? new List<Handler>();
+            _lockObj = new object();
+            _handlers = handlers?.ToList().GroupBy(h => h.Name).Select(g => g.First()).ToList()
+                     ?? new List<Handler>();
+            Handlers = _handlers.AsReadOnly();
         }
 
-        public IEnumerable<string> GetAvailableHandlers(object payload)
+        public IEnumerable<string> GetAvailableHandlerNames(object payload)
         {
             Type payloadType = payload.GetType();
-            IEnumerable<string> availableHandlers = _handlers.Where(h =>
-                                                                    {
-                                                                        Type handlerType = h.GetType();
+            IEnumerable<string> availableHandlers = Handlers.Where(h =>
+                                                                   {
+                                                                       Type handlerType = h.GetType();
 
-                                                                        do
-                                                                        {
-                                                                            if (handlerType.IsGenericType)
-                                                                            {
-                                                                                IEnumerable<Type> handlerGenericArgumentTypes = handlerType.GenericTypeArguments;
-                                                                                bool isAssignable = handlerGenericArgumentTypes.Any(x => x.IsAssignableFrom(payloadType));
-                                                                                return isAssignable;
-                                                                            }
+                                                                       do
+                                                                       {
+                                                                           if (handlerType.IsGenericType)
+                                                                           {
+                                                                               IEnumerable<Type> handlerGenericArgumentTypes = handlerType.GenericTypeArguments;
+                                                                               bool isAssignable = handlerGenericArgumentTypes.Any(x => x.IsAssignableFrom(payloadType));
+                                                                               return isAssignable;
+                                                                           }
 
-                                                                            handlerType = handlerType.BaseType;
-                                                                        } while (handlerType != null);
+                                                                           handlerType = handlerType.BaseType;
+                                                                       } while (handlerType != null);
 
-                                                                        return false;
-                                                                    })
-                                                             .Select(handler => handler.Name);
+                                                                       return false;
+                                                                   }
+                                                                   )
+                                                            .Select(handler => handler.Name);
 
             return availableHandlers;
         }
 
-        public void AddHandler<T>(Handler handler)
+        public void AddHandler(Handler handler, bool suppressException = false)
         {
-            _handlers.Add(handler);
-        }
+            lock (_lockObj)
+            {
+                if (_handlers.Any(h => h.Name == handler.Name))
+                {
+                    if (suppressException) return;
+                    throw new HandlerAlreadyExist(handler.Name);
+                }
 
-        public void RemoveHandler(string handlerName)
-        {
-            _handlers = _handlers.Where(handler => handler.Name == handlerName)
-                                 .ToList();
+                _handlers.Add(handler);
+
+                Handlers = _handlers.AsReadOnly();
+            }
         }
 
 
         public Handler GetHandler(string handlerName)
         {
             if (string.IsNullOrEmpty(handlerName))
-                throw new HandlerNotFoundException($"Handler type does not supplied");
-            return Handlers.FirstOrDefault(h => h.Name == handlerName);
+                throw new HandlerNotFoundException($"Handler Name does not supplied");
+            Handler handler = Handlers.FirstOrDefault(h => h.Name == handlerName);
+            if (handler == null)
+                throw new HandlerNotFoundException($"Handler could not found #{handlerName}");
+            return handler;
         }
     }
 }

@@ -40,7 +40,7 @@ namespace MessageStorage.Db.MsSql
 
             using (IDbCommand dbCommand = dbTransaction.Connection.CreateCommand())
             {
-                List<SqlParameter> sqlParameters = new List<SqlParameter>();
+                var sqlParameters = new List<SqlParameter>();
                 sqlParameters.Add(new SqlParameter("@VersionNumber", versionNumber)
                                   {
                                       SourceColumn = "VersionNumber"

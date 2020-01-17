@@ -41,7 +41,7 @@ namespace MessageStorage
             }
         }
 
-        public Message(long id, string traceId, DateTime createdOn, string payloadClassName, string payloadClassNamespace, string serializedPayload)
+        public Message(long id, DateTime createdOn, string traceId, string payloadClassName, string payloadClassNamespace, string serializedPayload)
         {
             Id = id;
             TraceId = traceId;
@@ -51,7 +51,7 @@ namespace MessageStorage
             CreatedOn = createdOn;
         }
 
-        public Message(object payload, string traceId)
+        public Message(object payload, string traceId = null)
         {
             Id = default;
             TraceId = traceId;
@@ -61,8 +61,6 @@ namespace MessageStorage
 
         public void SetId(long id)
         {
-            if (id == default)
-                throw new ArgumentException("id should not be null");
             Id = id;
         }
     }

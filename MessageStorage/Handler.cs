@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using MessageStorage.Exceptions;
 
 namespace MessageStorage
 {
@@ -7,10 +8,10 @@ namespace MessageStorage
     {
         public abstract Task Handle(object payload);
 
-        public string Name => GetType().FullName;
+        public virtual string Name => GetType().FullName;
     }
 
-    public abstract class Handler<T> : Handler where T : class
+    public abstract class Handler<T> : Handler
     {
         protected abstract Task Handle(T payload);
 
@@ -18,7 +19,7 @@ namespace MessageStorage
         {
             if (!(payload is T t))
             {
-                throw new ArgumentException($"{payload.GetType().Name} could not converted {nameof(T)}");
+                throw new ArgumentNotCompatibleException($"{payload.GetType().Name} could not converted {nameof(T)}");
             }
 
             return Handle(t);
