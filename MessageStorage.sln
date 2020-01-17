@@ -20,6 +20,17 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageStorage.Db.MsSql.DI.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageStorage.MsSql.WebApi", "MessageStorage.MsSql.WebApi\MessageStorage.MsSql.WebApi.csproj", "{6F244946-CEC6-415A-A87F-14A52719FB98}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BuildFiles", "BuildFiles", "{B3A21962-DD2F-46C8-B999-E14C7DEAF05A}"
+ProjectSection(SolutionItems) = preProject
+	appveyor.yml = appveyor.yml
+	bitbucket-pipelines.yml = bitbucket-pipelines.yml
+	build.cake = build.cake
+	build.config = build.config
+	build.ps1 = build.ps1
+	build.sh = build.sh
+	NuGet.config = NuGet.config
+EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
