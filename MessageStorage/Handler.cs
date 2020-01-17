@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using MessageStorage.Exceptions;
 
 namespace MessageStorage
 {
@@ -18,7 +19,7 @@ namespace MessageStorage
         {
             if (!(payload is T t))
             {
-                throw new ArgumentException($"{payload.GetType().Name} could not converted {nameof(T)}");
+                throw new ArgumentNotCompatibleException($"{payload.GetType().Name} could not converted {nameof(T)}");
             }
 
             return Handle(t);
