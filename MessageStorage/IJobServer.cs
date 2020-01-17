@@ -15,16 +15,18 @@ namespace MessageStorage
     public class JobServer : IJobServer, IDisposable
     {
         private readonly IMessageStorageClient _messageStorageClient;
+        private readonly CancellationToken _cancellationToken;
         private readonly ILogger<JobServer> _logger;
         private readonly JobServerConfiguration _jobServerConfiguration;
         private readonly CancellationTokenSource _cancellationTokenSource;
 
         private Task _executionTask;
 
-        public JobServer(IMessageStorageClient messageStorageClient, JobServerConfiguration jobServerConfiguration = null, ILogger<JobServer> logger = null)
+        public JobServer(IMessageStorageClient messageStorageClient, JobServerConfiguration jobServerConfiguration = null, ILogger<JobServer> logger = null, CancellationToken cancellationToken = default)
         {
             _jobServerConfiguration = jobServerConfiguration ?? new JobServerConfiguration();
             _messageStorageClient = messageStorageClient ?? throw new ArgumentNullException(nameof(messageStorageClient));
+            _cancellationToken = cancellationToken;
             _logger = logger ?? NullLogger<JobServer>.Instance;
 
             _cancellationTokenSource = new CancellationTokenSource();
@@ -34,7 +36,8 @@ namespace MessageStorage
 
         public Task StartAsync()
         {
-            _logger.LogInformation($"{nameof(JobServer)} is starting");
+            _logger.Log(LogLevel.Information, eventId: default, typeof(JobServer), exception: default,
+                        (type, exception) => $"{nameof(JobServer)} is starting");
             _executionTask = new Task(Execute, _cancellationTokenSource.Token);
             _executionTask.Start();
             return Task.CompletedTask;
@@ -42,18 +45,20 @@ namespace MessageStorage
 
         public Task StopAsync()
         {
-            _logger.LogInformation($"{nameof(JobServer)} is stopping");
+            _logger.Log(LogLevel.Information, eventId: default, typeof(JobServer), exception: default,
+                        (type, exception) => $"{nameof(JobServer)} is stopping");
 
             _cancellationTokenSource.Cancel();
-            _executionTask.Dispose();
+            _executionTask?.Dispose();
             return Task.CompletedTask;
         }
 
         private void Execute()
         {
-            while (!_cancellationTokenSource.IsCancellationRequested)
+            while (!_cancellationTokenSource.IsCancellationRequested && !_cancellationToken.IsCancellationRequested)
             {
-                _logger.LogDebug($"{nameof(JobServer)} => Execute {DateTime.UtcNow}");
+                _logger.Log(LogLevel.Debug, eventId: default, typeof(JobServer), exception: default,
+                            (type, exception) => $"{nameof(JobServer)} => Execute {DateTime.UtcNow}");
 
                 try
                 {
@@ -79,9 +84,10 @@ namespace MessageStorage
                 }
                 catch (Exception e)
                 {
-                    _logger.LogError(e, $"Unexpected error");
+                    _logger.Log(LogLevel.Error, eventId: default, typeof(JobServer), exception: e,
+                                (type, exception) => $"{nameof(JobServer)} => Unexpected error");
                 }
-                
+
                 Thread.Sleep(_jobServerConfiguration.WaitAfterMessageHandled);
             }
         }
