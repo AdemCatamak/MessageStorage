@@ -1,0 +1,10 @@
+image: mcr.microsoft.com/dotnet/core/sdk:3.0
+
+pipelines:
+  branches:
+    '{master, develop, dev}':
+      - step:
+          caches:
+            - dotnetcore
+          script:
+            - chmod +x build.sh && ./build.sh --branchName=$BITBUCKET_BRANCH
