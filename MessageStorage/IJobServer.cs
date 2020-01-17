@@ -10,6 +10,7 @@ namespace MessageStorage
     {
         Task StartAsync();
         Task StopAsync();
+        void Execute();
     }
 
     public class JobServer : IJobServer, IDisposable
@@ -38,7 +39,7 @@ namespace MessageStorage
         {
             _logger.Log(LogLevel.Information, eventId: default, typeof(JobServer), exception: default,
                         (type, exception) => $"{nameof(JobServer)} is starting");
-            _executionTask = new Task(Execute, _cancellationTokenSource.Token);
+            _executionTask = new Task(ExecuteInfinite, _cancellationTokenSource.Token);
             _executionTask.Start();
             return Task.CompletedTask;
         }
@@ -53,43 +54,48 @@ namespace MessageStorage
             return Task.CompletedTask;
         }
 
-        private void Execute()
+        private void ExecuteInfinite()
         {
             while (!_cancellationTokenSource.IsCancellationRequested && !_cancellationToken.IsCancellationRequested)
             {
-                _logger.Log(LogLevel.Debug, eventId: default, typeof(JobServer), exception: default,
-                            (type, exception) => $"{nameof(JobServer)} => Execute {DateTime.UtcNow}");
+                Execute();
+            }
+        }
+
+        public void Execute()
+        {
+            _logger.Log(LogLevel.Debug, eventId: default, typeof(JobServer), exception: default,
+                        (type, exception) => $"{nameof(JobServer)} => Execute {DateTime.UtcNow}");
+
+            try
+            {
+                Job job = _messageStorageClient.SetFirstWaitingJobToInProgress();
+                if (job == null)
+                {
+                    Thread.Sleep(_jobServerConfiguration.WaitWhenMessageNotFound);
+                    return;
+                }
 
                 try
                 {
-                    Job job = _messageStorageClient.SetFirstWaitingJobToInProgress();
-                    if (job == null)
-                    {
-                        Thread.Sleep(_jobServerConfiguration.WaitWhenMessageNotFound);
-                        continue;
-                    }
-
-                    try
-                    {
-                        _messageStorageClient.Handle(job)
-                                             .GetAwaiter().GetResult();
-                        job.SetDone();
-                    }
-                    catch (Exception e)
-                    {
-                        job.SetFailed(e.ToString());
-                    }
-
-                    _messageStorageClient.Update(job);
+                    _messageStorageClient.Handle(job)
+                                         .GetAwaiter().GetResult();
+                    job.SetDone();
                 }
                 catch (Exception e)
                 {
-                    _logger.Log(LogLevel.Error, eventId: default, typeof(JobServer), exception: e,
-                                (type, exception) => $"{nameof(JobServer)} => Unexpected error");
+                    job.SetFailed(e.ToString());
                 }
 
-                Thread.Sleep(_jobServerConfiguration.WaitAfterMessageHandled);
+                _messageStorageClient.Update(job);
             }
+            catch (Exception e)
+            {
+                _logger.Log(LogLevel.Error, eventId: default, typeof(JobServer), exception: e,
+                            (type, exception) => $"{nameof(JobServer)} => Unexpected error");
+            }
+
+            Thread.Sleep(_jobServerConfiguration.WaitAfterMessageHandled);
         }
 
 

@@ -25,23 +25,9 @@ namespace MessageStorageTests.JobServerTests
         }
 
         [Fact]
-        public async Task WhenJobServerExecute_and_CancellationTokenIsCancelled__SetFirstJobToInProgressNotExecute()
+        public void WhenJobServerExecute__LogDebugWillBeExecuted()
         {
-            _cancellationTokenSource.Cancel();
-
-            await _sut.StartAsync();
-
-            await Task.Delay(10);
-
-            _mockMessageStorageClient.Verify(client => client.SetFirstWaitingJobToInProgress(), Times.Never);
-        }
-
-        [Fact]
-        public async Task WhenJobServerExecute__LogDebugWillBeExecuted()
-        {
-            await _sut.StartAsync();
-
-            await Task.Delay(10);
+            _sut.Execute();
 
             _mockLogger.Verify(logger => logger.Log(LogLevel.Debug,
                                                     It.IsAny<EventId>(),
@@ -52,43 +38,54 @@ namespace MessageStorageTests.JobServerTests
         }
 
         [Fact]
-        public async Task WhenJobServerExecute_MessageStorageClientReturnAJob__MessageStorageClientHandleWillBeExecute()
+        public void WhenJobServerExecute_MessageStorageClientReturnNullAsAResult__MessageStorageClientHandleWillNotBeExecute()
         {
             _mockMessageStorageClient.Setup(client => client.SetFirstWaitingJobToInProgress())
-                                     .Returns(new Job(null, "assignedHandler"));
+                                     .Returns(null as Job);
 
-            await _sut.StartAsync();
+            _sut.Execute();
 
-            await Task.Delay(10);
-
-            _mockMessageStorageClient.Verify(client => client.Handle(It.IsAny<Job>()), Times.AtLeastOnce());
+            _mockMessageStorageClient.Verify(client => client.Handle(It.IsAny<Job>()), Times.Never);
         }
 
         [Fact]
-        public async Task WhenJobServerExecute_MessageStorageClientReturnAJob_and_MessageStorageClientUpdateThrowsException__LogErrorWillBeExecuted()
+        public void WhenJobServerExecute_MessageStorageClientReturnAJob__MessageStorageClientHandleWillBeExecute()
         {
             _mockMessageStorageClient.Setup(client => client.SetFirstWaitingJobToInProgress())
                                      .Returns(new Job(null, "assignedHandler"));
+
+            _sut.Execute();
+
+            _mockMessageStorageClient.Verify(client => client.Handle(It.IsAny<Job>()), Times.Once);
+        }
+
+        [Fact]
+        public void WhenJobServerExecute_MessageStorageClientReturnAJob_and_MessageStorageClientUpdateThrowsException__LogErrorWillBeExecuted()
+        {
+            _mockMessageStorageClient.Setup(client => client.SetFirstWaitingJobToInProgress())
+                                     .Returns(new Job(null, "assignedHandler"));
+
+            _mockMessageStorageClient.Setup(client => client.Handle(It.IsAny<Job>()))
+                                     .Returns(() => Task.CompletedTask);
 
             _mockMessageStorageClient.Setup(client => client.Update(It.IsAny<Job>()))
                                      .Throws<OperationCanceledException>();
 
-            await _sut.StartAsync();
+            _sut.Execute();
 
-            await Task.Delay(10);
-
-            _mockMessageStorageClient.Verify(client => client.Handle(It.IsAny<Job>()), Times.AtLeastOnce());
-            _mockMessageStorageClient.Verify(client => client.Update(It.IsAny<Job>()), Times.AtLeastOnce());
+            _mockMessageStorageClient.Verify(client => client.Handle(It.IsAny<Job>()), Times.Once);
+            _mockMessageStorageClient.Verify(client => client.Update(It.IsAny<Job>()), Times.Once);
             _mockLogger.Verify(logger => logger.Log(LogLevel.Error,
                                                     It.IsAny<EventId>(),
                                                     It.IsAny<Type>(),
                                                     It.IsAny<Exception>(),
                                                     It.IsAny<Func<Type, Exception, string>>()
-                                                   ), Times.AtLeastOnce);
+                                                   ), Times.Once);
         }
 
         public void Dispose()
         {
+            _cancellationTokenSource?.Cancel();
             _cancellationTokenSource?.Dispose();
         }
     }
