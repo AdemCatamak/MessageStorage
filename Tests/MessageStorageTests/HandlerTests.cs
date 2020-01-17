@@ -30,10 +30,10 @@ namespace MessageStorageTests
         }
 
         [Fact]
-        public void WhenTypedHandlerGetNotCompatiblePayload__ArgumentNotCompatibleExceptionOccurs()
+        public async Task WhenTypedHandlerGetNotCompatiblePayload__ArgumentNotCompatibleExceptionOccurs()
         {
             var dummyMessageHandler = new DummyMessageHandler();
-            Assert.ThrowsAsync<ArgumentNotCompatibleException>(async () => await dummyMessageHandler.Handle(5));
+            await Assert.ThrowsAsync<ArgumentNotCompatibleException>(async () => await dummyMessageHandler.Handle(5));
         }
 
         [Fact]

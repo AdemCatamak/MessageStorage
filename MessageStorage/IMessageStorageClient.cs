@@ -13,7 +13,7 @@ namespace MessageStorage
         Task Handle(Job job);
         void Update(Job job);
     }
-    
+
     public class MessageStorageClient : IMessageStorageClient
     {
         private readonly IStorageAdaptor _storageAdaptor;
@@ -51,15 +51,18 @@ namespace MessageStorage
             _storageAdaptor.Update(job);
         }
 
-        
+
         protected Tuple<Message, IEnumerable<Job>> PrepareMessageAndJobs<T>(T payload, string traceId, bool autoJobCreator)
         {
-            IEnumerable<string> availableHandlerNames = _handlerManager.GetAvailableHandlerNames(payload);
             var message = new Message(payload, traceId);
             var jobs = new List<Job>();
             if (autoJobCreator)
+            {
+                IEnumerable<string> availableHandlerNames = _handlerManager.GetAvailableHandlerNames(payload);
+
                 jobs = availableHandlerNames.Select(handlerName => new Job(message, handlerName))
                                             .ToList();
+            }
 
             return new Tuple<Message, IEnumerable<Job>>(message, jobs);
         }
