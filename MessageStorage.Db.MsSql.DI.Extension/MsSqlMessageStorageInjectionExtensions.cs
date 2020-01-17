@@ -1,8 +1,7 @@
-﻿using MessageStorage.Db.MsSql;
-using MessageStorage.DI.Extension;
+﻿using MessageStorage.DI.Extension;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace MessageStorage.Db.DI.Extension
+namespace MessageStorage.Db.MsSql.DI.Extension
 {
     public static class MsSqlMessageStorageInjectionExtensions
     {

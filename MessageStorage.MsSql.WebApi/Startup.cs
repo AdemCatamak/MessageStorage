@@ -1,5 +1,5 @@
 using MessageStorage.Db;
-using MessageStorage.Db.DI.Extension;
+using MessageStorage.Db.MsSql.DI.Extension;
 using MessageStorage.DI.Extension;
 using MessageStorage.MsSql.WebApi.DbContextSection;
 using MessageStorage.MsSql.WebApi.HostedServices;
