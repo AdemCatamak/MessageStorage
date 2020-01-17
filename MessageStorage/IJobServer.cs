@@ -81,6 +81,8 @@ namespace MessageStorage
                 {
                     _logger.LogError(e, $"Unexpected error");
                 }
+                
+                Thread.Sleep(_jobServerConfiguration.WaitAfterMessageHandled);
             }
         }
 
@@ -93,7 +95,8 @@ namespace MessageStorage
 
     public class JobServerConfiguration
     {
-        public TimeSpan WaitWhenMessageNotFound { get; set; } = TimeSpan.FromSeconds(5);
+        public TimeSpan WaitWhenMessageNotFound { get; set; } = TimeSpan.FromSeconds(value: 5);
+        public TimeSpan WaitAfterMessageHandled { get; set; } = TimeSpan.Zero;
         public bool AutoStart { get; set; } = false;
     }
 }
