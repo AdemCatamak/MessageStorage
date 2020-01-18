@@ -1,6 +1,9 @@
 string BranchName = Argument("branchName", string.Empty);
 string NugetServer = Argument("nugetServer", string.Empty);
 string NugetApiKey = Argument("nugetApiKey", string.Empty);
+string CIPlatform = Argument("ciPlatform", string.Empty);
+
+string MasterCIPlatform = "travis";
 string SelectedEnvironment = string.Empty;
 
 string SolutionName = "MessageStorage";
@@ -62,7 +65,9 @@ Task(CheckEnvVariableStage)
     Console.WriteLine("There is no predefined env for this branch");
   }
 
-  if(!string.IsNullOrEmpty(SelectedEnvironment))
+  Console.WriteLine($"CI Platform = {CIPlatform}");
+
+  if(!string.IsNullOrEmpty(SelectedEnvironment) && CIPlatform == MasterCIPlatform)
     if(string.IsNullOrEmpty(NugetServer) || string.IsNullOrEmpty(NugetApiKey))
       throw new Exception("When selected environment is not empty, you should supply nuget server and nuget api key");
 });
@@ -109,7 +114,7 @@ Task(UnitTestStage)
 });
 
 Task(DotNetPackStage)
-.WithCriteria(!string.IsNullOrEmpty(SelectedEnvironment))
+.WithCriteria(() => !string.IsNullOrEmpty(SelectedEnvironment) )
 .IsDependentOn(UnitTestStage)
 .DoesForEach(ProjectsToBePacked , (project)=>
 {
@@ -131,7 +136,7 @@ Task(DotNetPackStage)
 
 
 Task(PushNugetStage)
-.WithCriteria(!string.IsNullOrEmpty(SelectedEnvironment))
+.WithCriteria(() => !string.IsNullOrEmpty(SelectedEnvironment) && CIPlatform == MasterCIPlatform)
 .IsDependentOn(DotNetPackStage)
 .DoesForEach(ProjectsToBePacked , (project)=>
 {

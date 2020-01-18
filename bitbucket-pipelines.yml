@@ -7,4 +7,4 @@ pipelines:
           caches:
             - dotnetcore
           script:
-            - chmod +x build.sh && ./build.sh --branchName=$BITBUCKET_BRANCH
+            - chmod +x build.sh && ./build.sh --branchName=$BITBUCKET_BRANCH --ciPlatform='bitbucket'
