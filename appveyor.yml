@@ -2,5 +2,5 @@ image: Visual Studio 2019
 init:
   - cmd: git config --global core.autocrlf true
 build_script:
-  - ps: . ./build.ps1 --branchName=$env:APPVEYOR_REPO_BRANCH
+  - ps: . ./build.ps1 --branchName=$env:APPVEYOR_REPO_BRANCH --ciPlatform='appveyor'
 deploy: off
