@@ -1,6 +1,8 @@
 on: push
 
 jobs:
-  run-cake:
-    steps:
-      - ./build.sh --branchName=$GITHUB_REF --ciPlatform='github'
+  runs-on: [self-hosted]
+  steps:
+    - name: Run Cake
+      run: ./build.sh --branchName=$GITHUB_REF --ciPlatform='github'
+      shell: bash
