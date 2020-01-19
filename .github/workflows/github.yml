@@ -1,5 +1,6 @@
 on: push
+
 jobs:
   run-cake:
     steps:
-        ./build.sh --branchName=$GITHUB_REF --ciPlatform='github'
+      - ./build.sh --branchName=$GITHUB_REF --ciPlatform='github'
