@@ -5,6 +5,7 @@ jobs:
     name: CI
     runs-on: ubuntu-latest
     steps:
+    - uses: actions/checkout@v1
     - name: Run Cake
       run: ./build.sh --branchName=$GITHUB_REF --ciPlatform='github'
       shell: bash
