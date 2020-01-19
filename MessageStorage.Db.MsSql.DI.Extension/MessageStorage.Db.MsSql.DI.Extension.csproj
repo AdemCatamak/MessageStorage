@@ -2,6 +2,11 @@
 
     <PropertyGroup>
         <TargetFramework>netstandard2.0</TargetFramework>
+        <Authors>Adem Catamak</Authors>
+        <IsPackable>true</IsPackable>
+        <VersionPrefix>1.0.0.0</VersionPrefix>
+        <Description>Message and Job Storage</Description>
+        <LangVersion>latest</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>
