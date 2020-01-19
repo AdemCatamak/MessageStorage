@@ -53,7 +53,10 @@ Task(CheckEnvVariableStage)
   if(string.IsNullOrEmpty(BranchName))
     throw new Exception("branchName should not be empty");
 
-  Console.WriteLine($"BranchName = {BranchName}");
+  string originalBranchName = BranchName;
+  BranchName = BranchName.Replace("refs/heads","");
+
+  Console.WriteLine($"BranchName = {BranchName} | OriginalBranchName = {originalBranchName}");
   
   if(BranchEnvironmentPairs.ContainsKey(BranchName))
   {
