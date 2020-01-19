@@ -11,6 +11,7 @@ namespace MessageStorage.Db.MsSql.DI.Extension
 
             var msSqlDbStorageAdaptor = new MsSqlDbStorageAdaptor();
             msSqlDbStorageAdaptor.SetConfiguration(messageStorageDbConfiguration);
+          
             messageStorageServiceCollection.Add<IMessageStorageDbClient>(provider => new MessageStorageDbClient(msSqlDbStorageAdaptor, provider.GetRequiredService<IHandlerManager>()),
                                                                        ServiceLifetime.Singleton);
             messageStorageServiceCollection.Add<IMessageStorageClient>(provider => new MessageStorageDbClient(msSqlDbStorageAdaptor, provider.GetRequiredService<IHandlerManager>()),

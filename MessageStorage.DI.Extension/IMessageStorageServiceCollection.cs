@@ -41,6 +41,7 @@ namespace MessageStorage.DI.Extension
             foreach (Type handlerType in handlerTypes)
             {
                 _serviceCollection.Add(new ServiceDescriptor(typeof(Handler), handlerType, ServiceLifetime.Singleton));
+                _serviceCollection.Add(new ServiceDescriptor(handlerType, handlerType, ServiceLifetime.Singleton));
             }
 
             return this;
