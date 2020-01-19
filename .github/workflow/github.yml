@@ -1,0 +1,5 @@
+on: push
+jobs:
+  run-cake:
+    steps:
+        ./build.sh --branchName=$GITHUB_REF --ciPlatform='github' --nugetServer=$NugetServer --nugetApiKey=$NugetApiKey
