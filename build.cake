@@ -1,3 +1,7 @@
+#tool "nuget:?package=nuget.commandline&version=5.3.0"
+#tool "nuget:?package=Cake.CoreCLR&version=0.36.0"
+
+
 string BranchName = Argument("branchName", string.Empty);
 string NugetServer = Argument("nugetServer", string.Empty);
 string NugetApiKey = Argument("nugetApiKey", string.Empty);
@@ -182,35 +186,20 @@ FilePath GetCsProjFile(string projectName)
 
 private void PublishNugetPackage (string packageId, FilePath packagePath, string nugetSourceUrl, string apiKey)
 {
-    if(IsNuGetPublished(packageId, packagePath, nugetSourceUrl))
-    {
-        Console.WriteLine($"{packageId} is already published. Hence this package will be skipped");
-        return;
-    }
+  Console.WriteLine("DotNetCoreNuGetPushSettings is being created");
 
-    var nugetPushSettings = new NuGetPushSettings
-    {
-        ApiKey = apiKey,
-        Source = nugetSourceUrl
-    };
+  var nugetPushSettings = new DotNetCoreNuGetPushSettings
+  {
+    ApiKey = apiKey,
+    Source = nugetSourceUrl,
+    ArgumentCustomization = args=>args.Append("--skip-duplicate")
+  };
+  
+  Console.WriteLine($"{packageId} is publishing");
     
-    Console.WriteLine($"{packageId} is publishing");
-    NuGetPush(packagePath.FullPath, nugetPushSettings);  
-    Console.WriteLine($"{packageId} is publishing");
-}
-
-private bool IsNuGetPublished(string packageId, FilePath packagePath, string nugetSourceUrl) {
-    string packageNameWithVersion = packagePath.GetFilename().ToString().Replace(".nupkg", "");
-    var latestPublishedVersions = NuGetList(
-        packageId,
-        new NuGetListSettings 
-        {
-            Prerelease = true,
-            Source = new string[]{nugetSourceUrl}
-        }
-    );
-
-    return latestPublishedVersions.Any(p => packageNameWithVersion.EndsWith(p.Version));
+  DotNetCoreNuGetPush(packagePath.FullPath, nugetPushSettings);  
+    
+  Console.WriteLine($"{packageId} is publishing");
 }
 
 class Project

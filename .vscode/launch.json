@@ -1,0 +1,26 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Cake: Debug Script (CoreCLR)",
+            "type": "coreclr",
+            "request": "launch",
+            "program": "${workspaceRoot}/tools/Cake.CoreCLR.0.36.0/Cake.dll",
+            "args": [
+                "${workspaceRoot}/build.cake",
+                "--debug",
+                "--verbosity=diagnostic",
+                "--branchName=master",
+                "--ciPlatform=travis",
+                "--nugetServer=https://api.nuget.org/v3/index.json",
+                "--nugetApiKey=asd"
+            ],
+            "cwd": "${workspaceRoot}",
+            "stopAtEntry": true,
+            "externalConsole": false
+        }
+    ]
+}
