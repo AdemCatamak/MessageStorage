@@ -40,6 +40,9 @@ TestResult.xml
 [Rr]eleasePS/
 dlldata.c
 
+# DotNet
+.dotnet
+
 # Cake
 [Tt]ools/
 
