@@ -10,7 +10,7 @@ InMemory support is provided when _MessageStorage_ nuget package is downloaded. 
  
 You can access Extension methods that help you with Microsoft.DependencyInjection by using _MessageStorage.DI_ nuget package.
  
-You have the required dependencies to register your messages and jobs on MsSql by downloading _MessageStorage.Db.MySql_ nuget package.
+You have the required dependencies to register your messages and jobs on MsSql by downloading _MessageStorage.Db.MsSql_ nuget package.
  
 You can access Extension methods that help you with Microsoft.DependencyInjection by using _MessageStorage.Db.MsSql.DI_ nuget package. By using this nuget package, you can manage MessageStorage.Db.MsSql dependencies.
  
