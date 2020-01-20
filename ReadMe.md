@@ -1,6 +1,6 @@
 **MessageStorage**
 
-MessageStorage registers messages that are created on the system such as 'Event' and 'Command'. If there are any jobs that are wished to be handled after the creation of these messages, it is possible to define those jobs on the system as well.
+MessageStorage registers messages that are created on the system such as _Event_ and _Command_. If there are any jobs that are wished to be handled after the creation of these messages, it is possible to define those jobs on the system as well.
 
 Defined jobs are registered into the system along with a message being registered. Therefore, jobs to be handled are not lost and they are executed at least once.
 
@@ -8,11 +8,11 @@ Defined jobs are registered into the system along with a message being registere
  
 InMemory support is provided when _MessageStorage_ nuget package is downloaded. It is suggested that you use InMemory for testing purposes only.
  
-You can access Extension methods that help you with Microsoft.DependencyInjection by using _MessageStorage.DI_ nuget package.
+You can access extension methods that help you with _Microsoft.DependencyInjection_ by using _MessageStorage.DI_ nuget package.
  
 You have the required dependencies to register your messages and jobs on MsSql by downloading _MessageStorage.Db.MsSql_ nuget package.
  
-You can access Extension methods that help you with Microsoft.DependencyInjection by using _MessageStorage.Db.MsSql.DI_ nuget package. By using this nuget package, you can manage MessageStorage.Db.MsSql dependencies.
+You can access Extension methods that help you with _Microsoft.DependencyInjection_ by using _MessageStorage.Db.MsSql.DI_ nuget package. By using this nuget package, you can manage MessageStorage.Db.MsSql dependencies.
  
  **Sample Startup** 
  
