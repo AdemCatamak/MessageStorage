@@ -11,7 +11,7 @@ namespace MessageStorage.DI.Extension
         IMessageStorageServiceCollection AddHandlerManager<T>(ServiceLifetime serviceLifetime) where T : IHandlerManager;
         IMessageStorageServiceCollection AddHandlers(IEnumerable<Assembly> assemblies);
 
-        IMessageStorageServiceCollection AddMessageProcessServer(ServiceLifetime serviceLifetime = ServiceLifetime.Singleton);
+        IMessageStorageServiceCollection AddJobProcessServer(ServiceLifetime serviceLifetime = ServiceLifetime.Singleton);
         void Add<T>(Func<IServiceProvider, T> messageStorageServiceCollection, ServiceLifetime lifetime) where T : class;
     }
 
@@ -41,15 +41,16 @@ namespace MessageStorage.DI.Extension
             foreach (Type handlerType in handlerTypes)
             {
                 _serviceCollection.Add(new ServiceDescriptor(typeof(Handler), handlerType, ServiceLifetime.Singleton));
+                _serviceCollection.Add(new ServiceDescriptor(handlerType, handlerType, ServiceLifetime.Singleton));
             }
 
             return this;
         }
 
-        public IMessageStorageServiceCollection AddMessageProcessServer(ServiceLifetime serviceLifetime)
+        public IMessageStorageServiceCollection AddJobProcessServer(ServiceLifetime serviceLifetime)
         {
-            _serviceCollection.Add(new ServiceDescriptor(typeof(IJobServer), typeof(JobServer), serviceLifetime));
-            _serviceCollection.Add(new ServiceDescriptor(typeof(JobServer), typeof(JobServer), serviceLifetime));
+            _serviceCollection.Add(new ServiceDescriptor(typeof(IJobProcessServer), typeof(JobProcessServer), serviceLifetime));
+            _serviceCollection.Add(new ServiceDescriptor(typeof(JobProcessServer), typeof(JobProcessServer), serviceLifetime));
             return this;
         }
 
@@ -58,13 +59,13 @@ namespace MessageStorage.DI.Extension
             switch (lifetime)
             {
                 case ServiceLifetime.Singleton:
-                    _serviceCollection.AddSingleton<T>(provider);
+                    _serviceCollection.AddSingleton(provider);
                     break;
                 case ServiceLifetime.Scoped:
-                    _serviceCollection.AddScoped<T>(provider);
+                    _serviceCollection.AddScoped(provider);
                     break;
                 case ServiceLifetime.Transient:
-                    _serviceCollection.AddTransient<T>(provider);
+                    _serviceCollection.AddTransient(provider);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(lifetime), lifetime, null);

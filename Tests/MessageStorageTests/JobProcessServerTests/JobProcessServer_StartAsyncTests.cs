@@ -6,27 +6,27 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 
-namespace MessageStorageTests.JobServerTests
+namespace MessageStorageTests.JobProcessServerTests
 {
-    public class JobServer_StopAsyncTests : IDisposable
+    public class JobProcessServer_StartAsyncTests : IDisposable
     {
-        private readonly JobServer _sut;
-        private readonly Mock<ILogger<JobServer>> _mockLogger;
-        private readonly CancellationTokenSource _cancellationTokenSource;
+        private readonly JobProcessServer _sut;
+        private readonly Mock<ILogger<JobProcessServer>> _mockLogger;
+        private CancellationTokenSource _cancellationTokenSource;
 
-        public JobServer_StopAsyncTests()
+        public JobProcessServer_StartAsyncTests()
         {
             _cancellationTokenSource = new CancellationTokenSource();
-            var jobServerConfiguration = new JobServerConfiguration();
+            var jobServerConfiguration = new JobProcessServerConfiguration();
             var mockMessageStorageClient = new Mock<IMessageStorageClient>();
-            _mockLogger = new Mock<ILogger<JobServer>>();
-            _sut = new JobServer(mockMessageStorageClient.Object, jobServerConfiguration, _mockLogger.Object, _cancellationTokenSource.Token);
+            _mockLogger = new Mock<ILogger<JobProcessServer>>();
+            _sut = new JobProcessServer(mockMessageStorageClient.Object, jobServerConfiguration, _mockLogger.Object, _cancellationTokenSource.Token);
         }
 
         [Fact]
-        public async Task WhenStopAsyncExecuted__LoggerInfoMethodWillBeExecute()
+        public async Task WhenStartAsyncExecuted__LoggerInfoMethodWillBeExecute()
         {
-            await _sut.StopAsync();
+            await _sut.StartAsync();
 
             await Task.Delay(10);
 

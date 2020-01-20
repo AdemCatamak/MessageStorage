@@ -6,21 +6,21 @@ namespace MessageStorage.WebApi.HostedServices
 {
     public class MessageStorageProcessService : IHostedService
     {
-        private readonly IJobServer _jobServer;
+        private readonly IJobProcessServer _jobProcessServer;
 
-        public MessageStorageProcessService(IJobServer jobServer)
+        public MessageStorageProcessService(IJobProcessServer jobProcessServer)
         {
-            _jobServer = jobServer;
+            _jobProcessServer = jobProcessServer;
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            return _jobServer.StartAsync();
+            return _jobProcessServer.StartAsync();
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            return _jobServer.StopAsync();
+            return _jobProcessServer.StopAsync();
         }
     }
 }

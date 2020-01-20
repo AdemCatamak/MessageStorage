@@ -2,11 +2,16 @@
 
     <PropertyGroup>
         <TargetFramework>netstandard2.0</TargetFramework>
+        <Authors>Adem Catamak</Authors>
+        <IsPackable>true</IsPackable>
+        <VersionPrefix>1.0.0.0</VersionPrefix>
+        <Description>Message and Job Storage</Description>
+        <LangVersion>latest</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Newtonsoft.Json" Version="12.0.3"/>
-        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.0"/>
+        <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.0" />
     </ItemGroup>
 
 </Project>

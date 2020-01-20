@@ -1,4 +1,5 @@
-﻿using MessageStorage.WebApi.Handlers;
+﻿using System.Net;
+using MessageStorage.WebApi.Handlers;
 using MessageStorage.WebApi.HttpRequests;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -31,7 +32,7 @@ namespace MessageStorage.WebApi.Controllers
 
             _logger.LogInformation($"Note Created Event is stored into MessageStorage");
 
-            return Ok();
+            return StatusCode((int) HttpStatusCode.Created);
         }
     }
 }

@@ -6,22 +6,22 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 
-namespace MessageStorageTests.JobServerTests
+namespace MessageStorageTests.JobProcessServerTests
 {
-    public class JobServer_ExecuteTests : IDisposable
+    public class JobProcessServer_ExecuteTests : IDisposable
     {
-        private readonly JobServer _sut;
-        private readonly Mock<ILogger<JobServer>> _mockLogger;
+        private readonly JobProcessServer _sut;
+        private readonly Mock<ILogger<JobProcessServer>> _mockLogger;
         private readonly CancellationTokenSource _cancellationTokenSource;
         private readonly Mock<IMessageStorageClient> _mockMessageStorageClient;
 
-        public JobServer_ExecuteTests()
+        public JobProcessServer_ExecuteTests()
         {
             _cancellationTokenSource = new CancellationTokenSource();
-            var jobServerConfiguration = new JobServerConfiguration();
+            var jobServerConfiguration = new JobProcessServerConfiguration();
             _mockMessageStorageClient = new Mock<IMessageStorageClient>();
-            _mockLogger = new Mock<ILogger<JobServer>>();
-            _sut = new JobServer(_mockMessageStorageClient.Object, jobServerConfiguration, _mockLogger.Object, _cancellationTokenSource.Token);
+            _mockLogger = new Mock<ILogger<JobProcessServer>>();
+            _sut = new JobProcessServer(_mockMessageStorageClient.Object, jobServerConfiguration, _mockLogger.Object, _cancellationTokenSource.Token);
         }
 
         [Fact]
