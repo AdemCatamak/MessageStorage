@@ -6,18 +6,18 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 
-namespace MessageStorageTests.JobServerTests
+namespace MessageStorageTests.JobProcessServerTests
 {
-    public class JobServer_StopAsyncTests : IDisposable
+    public class JobProcessServer_StopAsyncTests : IDisposable
     {
         private readonly JobProcessServer _sut;
         private readonly Mock<ILogger<JobProcessServer>> _mockLogger;
         private readonly CancellationTokenSource _cancellationTokenSource;
 
-        public JobServer_StopAsyncTests()
+        public JobProcessServer_StopAsyncTests()
         {
             _cancellationTokenSource = new CancellationTokenSource();
-            var jobServerConfiguration = new JobServerConfiguration();
+            var jobServerConfiguration = new JobProcessServerConfiguration();
             var mockMessageStorageClient = new Mock<IMessageStorageClient>();
             _mockLogger = new Mock<ILogger<JobProcessServer>>();
             _sut = new JobProcessServer(mockMessageStorageClient.Object, jobServerConfiguration, _mockLogger.Object, _cancellationTokenSource.Token);

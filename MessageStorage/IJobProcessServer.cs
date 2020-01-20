@@ -18,20 +18,20 @@ namespace MessageStorage
         private readonly IMessageStorageClient _messageStorageClient;
         private readonly CancellationToken _cancellationToken;
         private readonly ILogger<JobProcessServer> _logger;
-        private readonly JobServerConfiguration _jobServerConfiguration;
+        private readonly JobProcessServerConfiguration _jobProcessServerConfiguration;
         private readonly CancellationTokenSource _cancellationTokenSource;
 
         private Task _executionTask;
 
-        public JobProcessServer(IMessageStorageClient messageStorageClient, JobServerConfiguration jobServerConfiguration = null, ILogger<JobProcessServer> logger = null, CancellationToken cancellationToken = default)
+        public JobProcessServer(IMessageStorageClient messageStorageClient, JobProcessServerConfiguration jobProcessServerConfiguration = null, ILogger<JobProcessServer> logger = null, CancellationToken cancellationToken = default)
         {
-            _jobServerConfiguration = jobServerConfiguration ?? new JobServerConfiguration();
+            _jobProcessServerConfiguration = jobProcessServerConfiguration ?? new JobProcessServerConfiguration();
             _messageStorageClient = messageStorageClient ?? throw new ArgumentNullException(nameof(messageStorageClient));
             _cancellationToken = cancellationToken;
             _logger = logger ?? NullLogger<JobProcessServer>.Instance;
 
             _cancellationTokenSource = new CancellationTokenSource();
-            if (_jobServerConfiguration.AutoStart)
+            if (_jobProcessServerConfiguration.AutoStart)
                 StartAsync();
         }
 
@@ -72,7 +72,7 @@ namespace MessageStorage
                 Job job = _messageStorageClient.SetFirstWaitingJobToInProgress();
                 if (job == null)
                 {
-                    Thread.Sleep(_jobServerConfiguration.WaitWhenMessageNotFound);
+                    Thread.Sleep(_jobProcessServerConfiguration.WaitWhenMessageNotFound);
                     return;
                 }
 
@@ -95,7 +95,7 @@ namespace MessageStorage
                             (type, exception) => $"{nameof(JobProcessServer)} => Unexpected error");
             }
 
-            Thread.Sleep(_jobServerConfiguration.WaitAfterMessageHandled);
+            Thread.Sleep(_jobProcessServerConfiguration.WaitAfterMessageHandled);
         }
 
 
@@ -105,7 +105,7 @@ namespace MessageStorage
         }
     }
 
-    public class JobServerConfiguration
+    public class JobProcessServerConfiguration
     {
         public TimeSpan WaitWhenMessageNotFound { get; set; } = TimeSpan.FromSeconds(value: 5);
         public TimeSpan WaitAfterMessageHandled { get; set; } = TimeSpan.Zero;
