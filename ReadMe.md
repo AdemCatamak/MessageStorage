@@ -1,3 +1,21 @@
+# Alternatives
+
+**Appveyor**
+![AppVeyor](https://img.shields.io/appveyor/ci/ademcatamak/messagestorage.svg) ![AppVeyor tests](https://img.shields.io/appveyor/tests/ademcatamak/messagestorage.svg)
+
+**Travis**
+![Travis (.com)](https://img.shields.io/travis/AdemCatamak/MessageStorage.svg)
+
+**Nuget Versions**
+
+MessageStorage : ![Nuget](https://img.shields.io/nuget/v/MessageStorage.svg)
+
+MessageStorage.DI.Extension : ![Nuget](https://img.shields.io/nuget/v/MessageStorage.DI.Extension.svg)
+
+MessageStorage.Db.MsSql : ![Nuget](https://img.shields.io/nuget/v/MessageStorage.Db.MsSql.svg)
+
+MessageStorage.Db.MsSql.DI.Extension : ![Nuget](https://img.shields.io/nuget/v/MessageStorage.Db.MsSql.DI.Extension.svg)
+
 **MessageStorage**
 
 MessageStorage registers messages that are created on the system such as Event and Command. If there are any jobs that are wished to be handled after the creation of these messages, it is possible to define those jobs on the system as well.
