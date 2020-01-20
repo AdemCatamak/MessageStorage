@@ -1,17 +1,20 @@
 **MessageStorage**
 
-MessageStorage sizin için sisteminizde oluşan 'Event' ve 'Command' gibi mesajları kaydeder. Eğer bu mesajların oluşmasından sonra çalışmasını istediğiniz görevleriniz varsa sistem üzerinde bunları da tanımlayabilirsiniz.
+MessageStorage registers messages that are created on the system such as 'Event' and 'Command'. If there are any jobs that are wished to be handled after the creation of these messages, it is possible to define those jobs on the system as well.
 
-Tanımladığınız işlemler mesajın kaydolması ile birlikte sistemde kayıt altına alınır. Bu sebeple yürütülmesini istediğiniz işlemleri kaybetmez ve en az 1 kere yürütüleceğinden emin olabilirsiniz.
+Defined jobs are registered into the system along with a message being registered. Therefore, jobs to be handled are not lost and they are executed at least once.
+
+ **Usage**
  
- **Kullanımı**
+InMemory support is provided when _MessageStorage_ nuget package is downloaded. It is suggested that you use InMemory for testing purposes only.
  
-_MessageStorage_ nuget paketini indirmeniz halinde sadece InMemory desteğine sahip olursunuz. Bunu sadece test amaçlı kullanmanız önerilir.
-_MessageStorage.DI_ nuget paketi ile Microsoft.DependencyInjection yapısını kullanırken size kolaylıklar sağlayacak Extension metodlara erişebilirsiniz.
-_MessageStorage.Db.MsSql_ nuget paketini indirmeniz halinde mesajlarınızı ve görevlerinizi MsSql üzerinde saklamak için gereken bağımlılıklara sahip olacaksınız.
-_MessageStorage.Db.MsSql.DI_ nuget paketi ile Microsoft.DependencyInjection yapısını kullanırken size kolaylıklar sağlayacak Extension metodlarına erişebilirsiniz.
-  
- **Örnek Başlangıç Sınıfı** 
+You can access Extension methods that help you with Microsoft.DependencyInjection by using _MessageStorage.DI_ nuget package.
+ 
+You have the required dependencies to register your messages and jobs on MsSql by downloading _MessageStorage.Db.MySql_ nuget package.
+ 
+You can access Extension methods that help you with Microsoft.DependencyInjection by using _MessageStorage.Db.MsSql.DI_ nuget package. By using this nuget package, you can manage MessageStorage.Db.MsSql dependencies.
+ 
+ **Sample Startup** 
  
  ```
 services.AddMessageStorage(builder =>
@@ -22,13 +25,13 @@ services.AddMessageStorage(builder =>
 });
 ```
 
-_MessageStorage_ ve _MessageStorage.DI_ paketlerine sahip olduğunuz durumda yukarıda kod bloğunu kullanarak MessageStorage paketinin özelliklerinden yararlanmaya başlayabilirsiniz.
+You can benefit from the MessageStorage package's features by having _MessageStorage_ and _MessageStorage.DI_ packages using the code block above.
 
-`AddInMemoryMessageStorage` metodu ile sistemin veri depolama alanı olarak, çalışılan bilgisayarın belleğini kullanacağını belirtilir.
-`AddJobProcessServer`metodu ile bir arka plan servisi sisteme tanımlanır. Tanımlanan arka plan servisi kayıt altına alınan mesajlar için tanımlanan görevleri çalıştıracaktır.
-`AddHandlers` diyerek de tanımlanan görevlerin yer aldığı Assemblyleri MessageStorage paketinde gerekli sınıflara bildirmek için kullanılır. Bu şekilde bir mesajı sisteme kaydederken bu mesajın dağıtılacağı Handler sınıflarına ait bilgiler de MessageStorage paketi altında kayıt altına alınmış olur.
+`AddInMemoryMessageStorage` method indicates that working computer's memory is used for system's data storage.
+`AddJobProcessServer` method lets you introduce a predefined background service to the system. This service executes defined jobs on the system.
+`AddHandlers` method lets you introduce the jobs you coded to the system. In order to that, Assembly object that the handler is registered is given as a parameter to the method.
 
-Bu adımların ardından `IMessageStorageClient` interface'i üzerinden bir obje elde ederek dilediğiniz yerde kullanabilirsiniz.
+After these steps, you can use the object that is an implementation of `IMessageStorageClient` interface.
 
 ```
 public NoteController(IMessageStorageClient messageStorageClient)
@@ -51,7 +54,7 @@ public IActionResult PostNote([FromBody] PostNoteHttpRequest postNoteHttpRequest
 }
 ```
 
-Eğer mesajlarınızı ve görevlerinizi kayıt altına almak istediğiniz ortam MsSql olacaksa, aşağıdaki kod örneğini kullanabilirsiniz.
+You can use the example code below to register your messages and jobs on MsSql.
 
  ```
 MessageStorageDbConfiguration messageStorageDbConfiguration = MessageStorageDbConfigurationFactory.Create(connectionStr);
@@ -63,9 +66,9 @@ services.AddMessageStorage(messageStorageServiceCollection =>
 });
 ```
 
-Bu örnekte Storage alanını belirlemek için kullandığımız satır değişmiştir. MessageStorageDbConfiguration sınıfına ait bir obje ile gerekli ayarları oluşturmamış gerekmektedir. `Connection String` bu ayarlardan olmazsa olmaz değerimizdir. Ayrıca dilerseniz `Db Schema` bilgisini de belirleyebilirsiniz.
+In this example the line that defines Storage area is changed. Required configurations should be supplied by using an object from MessageStorageDbConfiguration class. 'Connection String' configuration is a must and 'Db Schema' is an optional parameter.
 
-Ayarlamaları tamamladıktan sonra `IMessageStorageClient` veya `IMessageStorageDbClient` interface tiplerinden birine ait objelerden istediğinizi kullanabilirsiniz. Eğer kendineze ait bir Transaction ile kayıt işlemi yürütmek istiyosanız `IMessageStorageDbClient` interface tipinin implementasyonu bir objeyi kullanmalısınız.
+You can use objects of `IMessageStorageClient` or `IMessageStorageDbClient` interface after implementing necessary configurations. You should use an object of 'IMessageStorageDbClient' interface if you wish to save messages and jobs with a Transaction of your own.
 
 ```
 var noteCreatedEvent = new NoteCreatedEvent
