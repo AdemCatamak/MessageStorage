@@ -68,9 +68,9 @@ services.AddMessageStorage(messageStorageServiceCollection =>
 });
 ```
 
-In this example the line that defines Storage area is changed. Required configurations should be supplied by using an object from MessageStorageDbConfiguration class. 'Connection String' configuration is a must and 'Db Schema' is an optional parameter.
+In this example the line that defines storage area is changed. Required configurations should be supplied by using an object from `MessageStorageDbConfiguration` class. `Connection String` configuration is a must and `Db Schema` is an optional parameter.
 
-You can use objects of `IMessageStorageClient` or `IMessageStorageDbClient` interface after implementing necessary configurations. You should use an object of 'IMessageStorageDbClient' interface if you wish to save messages and jobs with a Transaction of your own.
+You can use objects of `IMessageStorageClient` or `IMessageStorageDbClient` interface after implementing necessary configurations. You should use an object of 'IMessageStorageDbClient' interface if you wish to save messages and jobs with a `IDbTransaction` of your own.
 
 ```
 var noteCreatedEvent = new NoteCreatedEvent
