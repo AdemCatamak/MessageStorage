@@ -10,8 +10,8 @@ namespace MessageStorageTests.JobServerTests
 {
     public class JobServer_ExecuteTests : IDisposable
     {
-        private readonly JobServer _sut;
-        private readonly Mock<ILogger<JobServer>> _mockLogger;
+        private readonly JobProcessServer _sut;
+        private readonly Mock<ILogger<JobProcessServer>> _mockLogger;
         private readonly CancellationTokenSource _cancellationTokenSource;
         private readonly Mock<IMessageStorageClient> _mockMessageStorageClient;
 
@@ -20,8 +20,8 @@ namespace MessageStorageTests.JobServerTests
             _cancellationTokenSource = new CancellationTokenSource();
             var jobServerConfiguration = new JobServerConfiguration();
             _mockMessageStorageClient = new Mock<IMessageStorageClient>();
-            _mockLogger = new Mock<ILogger<JobServer>>();
-            _sut = new JobServer(_mockMessageStorageClient.Object, jobServerConfiguration, _mockLogger.Object, _cancellationTokenSource.Token);
+            _mockLogger = new Mock<ILogger<JobProcessServer>>();
+            _sut = new JobProcessServer(_mockMessageStorageClient.Object, jobServerConfiguration, _mockLogger.Object, _cancellationTokenSource.Token);
         }
 
         [Fact]

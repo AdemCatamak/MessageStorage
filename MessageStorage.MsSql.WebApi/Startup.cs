@@ -32,7 +32,7 @@ namespace MessageStorage.MsSql.WebApi
             MessageStorageDbConfiguration messageStorageDbConfiguration = MessageStorageDbConfigurationFactory.Create(connectionStr);
             services.AddMessageStorage(messageStorageServiceCollection =>
                                        {
-                                           messageStorageServiceCollection.AddMessageProcessServer()
+                                           messageStorageServiceCollection.AddJobProcessServer()
                                                                           .AddMsSqlMessageStorage(messageStorageDbConfiguration)
                                                                           .AddHandlers(new[] {typeof(Startup).Assembly});
                                        });

@@ -18,14 +18,14 @@ services.AddMessageStorage(builder =>
 {
     builder.AddInMemoryMessageStorage()
            .AddHandlers(new[] {typeof(NoteCreatedEventHandler).Assembly})
-           .AddMessageProcessServer();
+           .AddJobProcessServer();
 });
 ```
 
 _MessageStorage_ ve _MessageStorage.DI_ paketlerine sahip olduğunuz durumda yukarıda kod bloğunu kullanarak MessageStorage paketinin özelliklerinden yararlanmaya başlayabilirsiniz.
 
 `AddInMemoryMessageStorage` metodu ile sistemin veri depolama alanı olarak, çalışılan bilgisayarın belleğini kullanacağını belirtilir.
-`AddMessageProcessServer`metodu ile bir arka plan servisi sisteme tanımlanır. Tanımlanan arka plan servisi kayıt altına alınan mesajlar için tanımlanan görevleri çalıştıracaktır.
+`AddJobProcessServer`metodu ile bir arka plan servisi sisteme tanımlanır. Tanımlanan arka plan servisi kayıt altına alınan mesajlar için tanımlanan görevleri çalıştıracaktır.
 `AddHandlers` diyerek de tanımlanan görevlerin yer aldığı Assemblyleri MessageStorage paketinde gerekli sınıflara bildirmek için kullanılır. Bu şekilde bir mesajı sisteme kaydederken bu mesajın dağıtılacağı Handler sınıflarına ait bilgiler de MessageStorage paketi altında kayıt altına alınmış olur.
 
 Bu adımların ardından `IMessageStorageClient` interface'i üzerinden bir obje elde ederek dilediğiniz yerde kullanabilirsiniz.
@@ -59,7 +59,7 @@ services.AddMessageStorage(messageStorageServiceCollection =>
 {
     messageStorageServiceCollection.AddMsSqlMessageStorage(messageStorageDbConfiguration)
                                    .AddHandlers(new[] {typeof(Startup).Assembly})
-                                   .AddMessageProcessServer();
+                                   .AddJobProcessServer();
 });
 ```
 

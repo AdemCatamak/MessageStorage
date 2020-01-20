@@ -28,7 +28,7 @@ namespace MessageStorage.WebApi
                                        {
                                            builder.AddInMemoryMessageStorage()
                                                   .AddHandlers(new[] {typeof(NoteCreatedEventHandler).Assembly})
-                                                  .AddMessageProcessServer();
+                                                  .AddJobProcessServer();
                                        });
 
             services.AddSwaggerGen(c =>

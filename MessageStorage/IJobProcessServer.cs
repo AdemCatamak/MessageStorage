@@ -6,29 +6,29 @@ using Microsoft.Extensions.Logging.Abstractions;
 
 namespace MessageStorage
 {
-    public interface IJobServer
+    public interface IJobProcessServer
     {
         Task StartAsync();
         Task StopAsync();
         void Execute();
     }
 
-    public class JobServer : IJobServer, IDisposable
+    public class JobProcessServer : IJobProcessServer, IDisposable
     {
         private readonly IMessageStorageClient _messageStorageClient;
         private readonly CancellationToken _cancellationToken;
-        private readonly ILogger<JobServer> _logger;
+        private readonly ILogger<JobProcessServer> _logger;
         private readonly JobServerConfiguration _jobServerConfiguration;
         private readonly CancellationTokenSource _cancellationTokenSource;
 
         private Task _executionTask;
 
-        public JobServer(IMessageStorageClient messageStorageClient, JobServerConfiguration jobServerConfiguration = null, ILogger<JobServer> logger = null, CancellationToken cancellationToken = default)
+        public JobProcessServer(IMessageStorageClient messageStorageClient, JobServerConfiguration jobServerConfiguration = null, ILogger<JobProcessServer> logger = null, CancellationToken cancellationToken = default)
         {
             _jobServerConfiguration = jobServerConfiguration ?? new JobServerConfiguration();
             _messageStorageClient = messageStorageClient ?? throw new ArgumentNullException(nameof(messageStorageClient));
             _cancellationToken = cancellationToken;
-            _logger = logger ?? NullLogger<JobServer>.Instance;
+            _logger = logger ?? NullLogger<JobProcessServer>.Instance;
 
             _cancellationTokenSource = new CancellationTokenSource();
             if (_jobServerConfiguration.AutoStart)
@@ -37,8 +37,8 @@ namespace MessageStorage
 
         public Task StartAsync()
         {
-            _logger.Log(LogLevel.Information, eventId: default, typeof(JobServer), exception: default,
-                        (type, exception) => $"{nameof(JobServer)} is starting");
+            _logger.Log(LogLevel.Information, eventId: default, typeof(JobProcessServer), exception: default,
+                        (type, exception) => $"{nameof(JobProcessServer)} is starting");
             _executionTask = new Task(ExecuteInfinite, _cancellationTokenSource.Token);
             _executionTask.Start();
             return Task.CompletedTask;
@@ -46,8 +46,8 @@ namespace MessageStorage
 
         public Task StopAsync()
         {
-            _logger.Log(LogLevel.Information, eventId: default, typeof(JobServer), exception: default,
-                        (type, exception) => $"{nameof(JobServer)} is stopping");
+            _logger.Log(LogLevel.Information, eventId: default, typeof(JobProcessServer), exception: default,
+                        (type, exception) => $"{nameof(JobProcessServer)} is stopping");
 
             _cancellationTokenSource.Cancel();
             _executionTask?.Dispose();
@@ -64,8 +64,8 @@ namespace MessageStorage
 
         public void Execute()
         {
-            _logger.Log(LogLevel.Debug, eventId: default, typeof(JobServer), exception: default,
-                        (type, exception) => $"{nameof(JobServer)} => Execute {DateTime.UtcNow}");
+            _logger.Log(LogLevel.Debug, eventId: default, typeof(JobProcessServer), exception: default,
+                        (type, exception) => $"{nameof(JobProcessServer)} => Execute {DateTime.UtcNow}");
 
             try
             {
@@ -91,8 +91,8 @@ namespace MessageStorage
             }
             catch (Exception e)
             {
-                _logger.Log(LogLevel.Error, eventId: default, typeof(JobServer), exception: e,
-                            (type, exception) => $"{nameof(JobServer)} => Unexpected error");
+                _logger.Log(LogLevel.Error, eventId: default, typeof(JobProcessServer), exception: e,
+                            (type, exception) => $"{nameof(JobProcessServer)} => Unexpected error");
             }
 
             Thread.Sleep(_jobServerConfiguration.WaitAfterMessageHandled);
