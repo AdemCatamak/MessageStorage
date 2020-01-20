@@ -10,10 +10,10 @@ string SolutionName = "MessageStorage";
 var ProjectsToBePacked  = new Project[]
 {
   new Project("MessageStorage"),
+  new Project("MessageStorage.DI.Extension"),
   new Project("MessageStorage.Db"),
   new Project("MessageStorage.Db.MsSql"),
   new Project("MessageStorage.Db.MsSql.DI.Extension"),
-  new Project("MessageStorage.DI.Extension"),
 };
 
 var TestProjectPatterns = new string[]{
@@ -22,7 +22,7 @@ var TestProjectPatterns = new string[]{
 };
 
 var BuildConfig = "Release";
-var DotNetPackedPath = "./dotnet-packed";
+var DotNetPackedPath = "./dotnet-packed/";
 
 string MasterEnvironment = "prod";
 var BranchEnvironmentPairs = new Dictionary<string, string>()
