@@ -28,7 +28,9 @@ services.AddMessageStorage(builder =>
 You can benefit from the MessageStorage package's features by having _MessageStorage_ and _MessageStorage.DI_ packages using the code block above.
 
 `AddInMemoryMessageStorage` method indicates that working computer's memory is used for system's data storage.
+
 `AddJobProcessServer` method lets you introduce a predefined background service to the system. This service executes defined jobs on the system.
+
 `AddHandlers` method lets you introduce the jobs you coded to the system. In order to that, Assembly object that the handler is registered is given as a parameter to the method.
 
 After these steps, you can use the object that is an implementation of `IMessageStorageClient` interface.
