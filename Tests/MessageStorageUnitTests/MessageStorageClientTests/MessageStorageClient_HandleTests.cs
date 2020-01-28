@@ -5,7 +5,7 @@ using MessageStorage.Exceptions;
 using Moq;
 using Xunit;
 
-namespace MessageStorageTests.MessageStorageClientTests
+namespace MessageStorageUnitTests.MessageStorageClientTests
 {
     public class MessageStorageClient_HandleTests
     {

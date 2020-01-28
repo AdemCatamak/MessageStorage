@@ -3,7 +3,7 @@ using MessageStorage;
 using Newtonsoft.Json;
 using Xunit;
 
-namespace MessageStorageTests
+namespace MessageStorageUnitTests
 {
     public class MessageTests
     {

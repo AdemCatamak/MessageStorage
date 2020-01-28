@@ -3,7 +3,7 @@ using System.Threading;
 using MessageStorage;
 using Xunit;
 
-namespace MessageStorageTests
+namespace MessageStorageUnitTests
 {
     public class JobTests
     {

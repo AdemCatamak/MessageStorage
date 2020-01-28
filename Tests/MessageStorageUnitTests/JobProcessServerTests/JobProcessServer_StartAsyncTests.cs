@@ -6,15 +6,15 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 
-namespace MessageStorageTests.JobProcessServerTests
+namespace MessageStorageUnitTests.JobProcessServerTests
 {
-    public class JobProcessServer_StopAsyncTests : IDisposable
+    public class JobProcessServer_StartAsyncTests : IDisposable
     {
         private readonly JobProcessServer _sut;
         private readonly Mock<ILogger<JobProcessServer>> _mockLogger;
-        private readonly CancellationTokenSource _cancellationTokenSource;
+        private CancellationTokenSource _cancellationTokenSource;
 
-        public JobProcessServer_StopAsyncTests()
+        public JobProcessServer_StartAsyncTests()
         {
             _cancellationTokenSource = new CancellationTokenSource();
             var jobServerConfiguration = new JobProcessServerConfiguration();
@@ -24,9 +24,9 @@ namespace MessageStorageTests.JobProcessServerTests
         }
 
         [Fact]
-        public async Task WhenStopAsyncExecuted__LoggerInfoMethodWillBeExecute()
+        public async Task WhenStartAsyncExecuted__LoggerInfoMethodWillBeExecute()
         {
-            await _sut.StopAsync();
+            await _sut.StartAsync();
 
             await Task.Delay(10);
 

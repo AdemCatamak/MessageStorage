@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using MessageStorage;
 using Xunit;
 
-namespace MessageStorageTests.InMemoryStorageTests
+namespace MessageStorageUnitTests.InMemoryStorageTests
 {
     public class InMemoryStorageAdaptor_SetFirstWaitingJobInProgressTests
     {

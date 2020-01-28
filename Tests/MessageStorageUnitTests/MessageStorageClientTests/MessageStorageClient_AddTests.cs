@@ -3,7 +3,7 @@ using MessageStorage;
 using Moq;
 using Xunit;
 
-namespace MessageStorageTests.MessageStorageClientTests
+namespace MessageStorageUnitTests.MessageStorageClientTests
 {
     public class MessageStorageClient_AddTests
     {

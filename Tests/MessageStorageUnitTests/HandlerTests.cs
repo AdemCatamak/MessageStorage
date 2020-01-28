@@ -3,7 +3,7 @@ using MessageStorage;
 using MessageStorage.Exceptions;
 using Xunit;
 
-namespace MessageStorageTests
+namespace MessageStorageUnitTests
 {
     public class HandlerTests
     {

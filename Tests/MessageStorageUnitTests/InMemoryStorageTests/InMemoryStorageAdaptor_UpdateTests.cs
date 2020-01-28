@@ -3,7 +3,7 @@ using MessageStorage;
 using MessageStorage.Exceptions;
 using Xunit;
 
-namespace MessageStorageTests.InMemoryStorageTests
+namespace MessageStorageUnitTests.InMemoryStorageTests
 {
     public class InMemoryStorageAdaptor_UpdateTests
     {

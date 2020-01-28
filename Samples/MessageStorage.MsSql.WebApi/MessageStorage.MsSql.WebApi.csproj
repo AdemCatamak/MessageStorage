@@ -13,8 +13,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\MessageStorage.Db.MsSql.DI.Extension\MessageStorage.Db.MsSql.DI.Extension.csproj"/>
-        <ProjectReference Include="..\MessageStorage.DI.Extension\MessageStorage.DI.Extension.csproj"/>
+        <ProjectReference Include="..\..\MessageStorage.Db.MsSql.DI.Extension\MessageStorage.Db.MsSql.DI.Extension.csproj"/>
+        <ProjectReference Include="..\..\MessageStorage.DI.Extension\MessageStorage.DI.Extension.csproj"/>
     </ItemGroup>
 
 </Project>
