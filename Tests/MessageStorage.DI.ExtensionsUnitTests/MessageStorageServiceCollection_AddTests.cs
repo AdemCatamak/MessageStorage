@@ -43,5 +43,11 @@ namespace MessageStorage.DI.ExtensionsUnitTests
             _mockServiceCollection.Verify(collection => collection.Add(It.Is<ServiceDescriptor>(descriptor => descriptor.Lifetime == ServiceLifetime.Transient)), Times.Once);
             _mockServiceCollection.Verify(collection => collection.Add(It.Is<ServiceDescriptor>(descriptor => descriptor.ImplementationFactory.GetType() == typeof(Func<IServiceProvider, string>))), Times.Once);
         }
+
+        [Fact]
+        public void WhenAddMethodExecuted_NotValidLifetime__IArgumentOutOfRangeExceptionOccurs()
+        {
+            Assert.Throws<ArgumentOutOfRangeException>(() => _sut.Add(provider => provider.GetService<string>(), (ServiceLifetime) 1000));
+        }
     }
 }
