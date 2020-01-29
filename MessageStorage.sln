@@ -23,6 +23,7 @@ ProjectSection(SolutionItems) = preProject
 	build.ps1 = build.ps1
 	build.sh = build.sh
 	.travis.yml = .travis.yml
+	.github\workflows\github.yml = .github\workflows\github.yml
 EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionFolder", "SolutionFolder", "{7FFD5E3C-5A2C-4C57-A5BA-C1EB1FDE195A}"
