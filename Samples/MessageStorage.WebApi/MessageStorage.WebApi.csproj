@@ -5,8 +5,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\MessageStorage.DI.Extension\MessageStorage.DI.Extension.csproj" />
-      <ProjectReference Include="..\MessageStorage\MessageStorage.csproj" />
+      <ProjectReference Include="..\..\MessageStorage.DI.Extension\MessageStorage.DI.Extension.csproj" />
+      <ProjectReference Include="..\..\MessageStorage\MessageStorage.csproj" />
     </ItemGroup>
 
     <ItemGroup>

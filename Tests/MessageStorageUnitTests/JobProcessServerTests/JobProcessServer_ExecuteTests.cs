@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 
-namespace MessageStorageTests.JobProcessServerTests
+namespace MessageStorageUnitTests.JobProcessServerTests
 {
     public class JobProcessServer_ExecuteTests : IDisposable
     {

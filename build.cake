@@ -58,7 +58,7 @@ Task(CheckEnvVariableStage)
     throw new Exception("branchName should not be empty");
 
   string originalBranchName = BranchName;
-  BranchName = BranchName.Replace("refs/heads","");
+  BranchName = BranchName.Replace("refs/heads/","");
 
   Console.WriteLine($"BranchName = {BranchName} | OriginalBranchName = {originalBranchName}");
   

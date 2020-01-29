@@ -5,7 +5,7 @@ using MessageStorage.Exceptions;
 using Moq;
 using Xunit;
 
-namespace MessageStorageTests.MessageStorageClientTests
+namespace MessageStorageUnitTests.MessageStorageClientTests
 {
     public class MessageStorageClient_HandleTests
     {
@@ -52,7 +52,7 @@ namespace MessageStorageTests.MessageStorageClientTests
             var job = new Job(new Message(null), "assignedHandlerName");
             await _sut.Handle(job);
 
-            mockHandler.Verify(handler => handler.Handle(It.IsAny<Job>()));
+            mockHandler.Verify(handler => handler.BaseHandleOperation(It.IsAny<Job>()));
         }
     }
 }

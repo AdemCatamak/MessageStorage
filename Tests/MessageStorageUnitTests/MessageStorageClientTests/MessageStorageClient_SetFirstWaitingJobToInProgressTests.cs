@@ -2,15 +2,15 @@ using MessageStorage;
 using Moq;
 using Xunit;
 
-namespace MessageStorageTests.MessageStorageClientTests
+namespace MessageStorageUnitTests.MessageStorageClientTests
 {
-    public class MessageStorageClient_UpdateTests
+    public class MessageStorageClient_SetFirstWaitingJobToInProgressTests
     {
         private readonly Mock<IStorageAdaptor> _mockStorageAdaptor;
 
         private readonly MessageStorageClient _sut;
 
-        public MessageStorageClient_UpdateTests()
+        public MessageStorageClient_SetFirstWaitingJobToInProgressTests()
         {
             _mockStorageAdaptor = new Mock<IStorageAdaptor>();
             var mockHandlerManager = new Mock<IHandlerManager>();
@@ -19,11 +19,11 @@ namespace MessageStorageTests.MessageStorageClientTests
         }
 
         [Fact]
-        public void WhenUpdateExecuted__IStorageAdaptorWillBeExecuted()
+        public void WhenSetFirstWaitingJobToInProgressExecuted__IStorageAdaptorWillBeExecuted()
         {
-            _sut.Update(default);
+            _sut.SetFirstWaitingJobToInProgress();
 
-            _mockStorageAdaptor.Verify(adaptor => adaptor.Update(It.IsAny<Job>()), Times.Once);
+            _mockStorageAdaptor.Verify(adaptor => adaptor.SetFirstWaitingJobToInProgress(), Times.Once);
         }
     }
 }

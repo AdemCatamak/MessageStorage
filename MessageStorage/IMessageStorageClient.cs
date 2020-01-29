@@ -43,7 +43,7 @@ namespace MessageStorage
             if (handler == null)
                 throw new HandlerNotFoundException($"Could not found Handler as {job.AssignedHandlerName}");
 
-            return handler.Handle(job.Message.Payload);
+            return handler.BaseHandleOperation(job.Message.Payload);
         }
 
         public void Update(Job job)
