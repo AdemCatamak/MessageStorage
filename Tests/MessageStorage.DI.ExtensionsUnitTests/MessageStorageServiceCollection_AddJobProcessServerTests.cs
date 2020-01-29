@@ -17,7 +17,7 @@ namespace MessageStorage.DI.ExtensionsUnitTests
         }
 
         [Fact]
-        public void WhenAddHandlerManagerMethodExecuted__IHandlerManager_and_IHandlerManagerConcrete_ShouldBeInjected()
+        public void WhenAddHandlerManagerMethodExecuted__IJobProcessServer_and_JobProcessServer_ShouldBeInjected()
         {
             _sut.AddJobProcessServer();
 

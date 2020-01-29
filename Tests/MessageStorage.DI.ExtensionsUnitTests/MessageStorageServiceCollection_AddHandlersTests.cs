@@ -1,4 +1,4 @@
-using System.Reflection;
+using System;
 using System.Threading.Tasks;
 using MessageStorage.DI.Extension;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,7 +19,7 @@ namespace MessageStorage.DI.ExtensionsUnitTests
         }
 
         [Fact]
-        public void WhenAddHandlerManagerMethodExecuted__IHandlerManager_and_IHandlerManagerConcrete_ShouldBeInjected()
+        public void WhenAddHandlersMethodExecuted__Handler_and_HandlerConcrete_ShouldBeInjected()
         {
             _sut.AddHandlers(new[] {GetType().Assembly});
 
@@ -32,7 +32,7 @@ namespace MessageStorage.DI.ExtensionsUnitTests
         {
             protected override Task Handle(object payload)
             {
-                throw new System.NotImplementedException();
+                throw new Exception("This exception should not be seen. Actually this class is not used");
             }
         }
     }
