@@ -52,7 +52,7 @@ namespace MessageStorageUnitTests.MessageStorageClientTests
             var job = new Job(new Message(null), "assignedHandlerName");
             await _sut.Handle(job);
 
-            mockHandler.Verify(handler => handler.Handle(It.IsAny<Job>()));
+            mockHandler.Verify(handler => handler.BaseHandleOperation(It.IsAny<Job>()));
         }
     }
 }

@@ -21,7 +21,10 @@ namespace MessageStorage.DI.ExtensionsUnitTests
         {
             _sut.AddHandlerManager<HandlerManager>(ServiceLifetime.Singleton);
 
-            _mockServiceCollection.Verify(collection => collection.Add(It.IsAny<ServiceDescriptor>()), Times.Exactly(2));
+            _mockServiceCollection.Verify(collection => collection.Add(It.Is<ServiceDescriptor>(descriptor => descriptor.Lifetime == ServiceLifetime.Singleton)), Times.Exactly(2));
+            _mockServiceCollection.Verify(collection => collection.Add(It.Is<ServiceDescriptor>(descriptor => descriptor.ImplementationType == typeof(HandlerManager))), Times.Exactly(2));
+            _mockServiceCollection.Verify(collection => collection.Add(It.Is<ServiceDescriptor>(descriptor => descriptor.ServiceType == typeof(IHandlerManager))), Times.Once);
+            _mockServiceCollection.Verify(collection => collection.Add(It.Is<ServiceDescriptor>(descriptor => descriptor.ServiceType == typeof(HandlerManager))), Times.Once);
         }
     }
 }

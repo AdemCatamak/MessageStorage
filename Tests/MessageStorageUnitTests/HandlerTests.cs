@@ -33,20 +33,20 @@ namespace MessageStorageUnitTests
         public async Task WhenTypedHandlerGetNotCompatiblePayload__ArgumentNotCompatibleExceptionOccurs()
         {
             var dummyMessageHandler = new DummyMessageHandler();
-            await Assert.ThrowsAsync<ArgumentNotCompatibleException>(async () => await dummyMessageHandler.Handle(5));
+            await Assert.ThrowsAsync<ArgumentNotCompatibleException>(async () => await dummyMessageHandler.BaseHandleOperation(5));
         }
 
         [Fact]
         public async Task WhenTypedHandlerGetValidPayload__TypedPayloadWillBeExecuted()
         {
             var dummyMessageHandler = new DummyMessageHandler();
-            await dummyMessageHandler.Handle(new DummyMessage());
+            await dummyMessageHandler.BaseHandleOperation(new DummyMessage());
             Assert.True(DummyMessageHandlerCouldHandle);
         }
 
         private class DummyHandler : Handler
         {
-            public override Task Handle(object payload) => Task.CompletedTask;
+            public override Task BaseHandleOperation(object payload) => Task.CompletedTask;
         }
 
         public class DummyMessage

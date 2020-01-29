@@ -47,7 +47,7 @@ namespace MessageStorage.DI.Extension
             return this;
         }
 
-        public IMessageStorageServiceCollection AddJobProcessServer(ServiceLifetime serviceLifetime)
+        public IMessageStorageServiceCollection AddJobProcessServer(ServiceLifetime serviceLifetime = ServiceLifetime.Singleton)
         {
             _serviceCollection.Add(new ServiceDescriptor(typeof(IJobProcessServer), typeof(JobProcessServer), serviceLifetime));
             _serviceCollection.Add(new ServiceDescriptor(typeof(JobProcessServer), typeof(JobProcessServer), serviceLifetime));
