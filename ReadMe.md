@@ -4,7 +4,7 @@
 ![AppVeyor](https://img.shields.io/appveyor/ci/ademcatamak/messagestorage.svg) ![AppVeyor tests](https://img.shields.io/appveyor/tests/ademcatamak/messagestorage.svg)
 
 **Travis**
-![Travis (.com)](https://img.shields.io/travis/AdemCatamak/MessageStorage.svg)
+![Travis (.com)](https://travis-ci.com/AdemCatamak/MessageStorage.svg?branch=master)
 
 **Nuget Versions**
 
