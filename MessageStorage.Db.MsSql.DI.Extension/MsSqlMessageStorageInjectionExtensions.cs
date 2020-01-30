@@ -7,18 +7,25 @@ namespace MessageStorage.Db.MsSql.DI.Extension
     {
         public static IMessageStorageServiceCollection AddMsSqlMessageStorage(this IMessageStorageServiceCollection messageStorageServiceCollection, MessageStorageDbConfiguration messageStorageDbConfiguration)
         {
+            IMsSqlDbStorageAdaptor msSqlDbStorageAdaptor = CreateMsSqlDbStorageAdaptor(messageStorageDbConfiguration);
+
             messageStorageServiceCollection.AddHandlerManager<HandlerManager>(ServiceLifetime.Singleton);
 
-            var msSqlDbStorageAdaptor = new MsSqlDbStorageAdaptor();
-            msSqlDbStorageAdaptor.SetConfiguration(messageStorageDbConfiguration);
-          
             messageStorageServiceCollection.Add<IMessageStorageDbClient>(provider => new MessageStorageDbClient(msSqlDbStorageAdaptor, provider.GetRequiredService<IHandlerManager>()),
-                                                                       ServiceLifetime.Singleton);
+                                                                         ServiceLifetime.Singleton);
             messageStorageServiceCollection.Add<IMessageStorageClient>(provider => new MessageStorageDbClient(msSqlDbStorageAdaptor, provider.GetRequiredService<IHandlerManager>()),
-                                                                    ServiceLifetime.Singleton);
+                                                                       ServiceLifetime.Singleton);
 
 
             return messageStorageServiceCollection;
+        }
+
+        private static IMsSqlDbStorageAdaptor CreateMsSqlDbStorageAdaptor(MessageStorageDbConfiguration messageStorageDbConfiguration)
+        {
+            IMsSqlMigrationRunner msSqlMigrationRunner = new MsSqlMigrationRunner();
+            var msSqlDbStorageAdaptor = new MsSqlDbStorageAdaptor(msSqlMigrationRunner);
+            msSqlDbStorageAdaptor.SetConfiguration(messageStorageDbConfiguration);
+            return msSqlDbStorageAdaptor;
         }
     }
 }
