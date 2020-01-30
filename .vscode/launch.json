@@ -16,7 +16,7 @@
                 "--branchName=master",
                 "--ciPlatform=travis",
                 "--nugetServer=https://api.nuget.org/v3/index.json",
-                "--nugetApiKey=asd"
+                "--nugetApiKey=dummy-nuget-api-key"
             ],
             "cwd": "${workspaceRoot}",
             "stopAtEntry": true,
