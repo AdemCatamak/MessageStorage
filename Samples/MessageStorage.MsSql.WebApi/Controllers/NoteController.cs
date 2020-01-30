@@ -1,10 +1,12 @@
-﻿using System.Data.Common;
+﻿using System.Data;
+using System.Data.Common;
 using MessageStorage.Db;
 using MessageStorage.MsSql.WebApi.DbContextSection;
 using MessageStorage.MsSql.WebApi.DbContextSection.Models;
 using MessageStorage.MsSql.WebApi.Handlers;
 using MessageStorage.MsSql.WebApi.HttpRequests;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace MessageStorage.MsSql.WebApi.Controllers
@@ -25,7 +27,7 @@ namespace MessageStorage.MsSql.WebApi.Controllers
         [HttpPost]
         public IActionResult PostNote([FromBody] PostNoteHttpRequest postNoteHttpRequest)
         {
-            using (DbTransaction dbTransaction = _noteDbContext.Database.BeginTransaction().GetDbTransaction())
+            using (DbTransaction dbTransaction = _noteDbContext.Database.BeginTransaction(IsolationLevel.ReadCommitted).GetDbTransaction())
             {
                 var noteModel = new NoteModel(postNoteHttpRequest.Title, postNoteHttpRequest.Content);
                 _noteDbContext.NoteModel.Add(noteModel);
