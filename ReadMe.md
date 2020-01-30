@@ -6,15 +6,14 @@
 **Travis**
 ![Travis (.com)](https://travis-ci.com/AdemCatamak/MessageStorage.svg?branch=master)
 
+**GitHub**
+![.github/workflows/github.yml](https://github.com/AdemCatamak/MessageStorage/workflows/.github/workflows/github.yml/badge.svg?branch=master)
+
 **Nuget Versions**
 
-MessageStorage : ![Nuget](https://img.shields.io/nuget/v/MessageStorage.svg)
+MessageStorage : ![Nuget](https://img.shields.io/nuget/v/MessageStorage.svg)  MessageStorage.DI.Extension : ![Nuget](https://img.shields.io/nuget/v/MessageStorage.DI.Extension.svg)
 
-MessageStorage.DI.Extension : ![Nuget](https://img.shields.io/nuget/v/MessageStorage.DI.Extension.svg)
-
-MessageStorage.Db.MsSql : ![Nuget](https://img.shields.io/nuget/v/MessageStorage.Db.MsSql.svg)
-
-MessageStorage.Db.MsSql.DI.Extension : ![Nuget](https://img.shields.io/nuget/v/MessageStorage.Db.MsSql.DI.Extension.svg)
+MessageStorage.Db.MsSql : ![Nuget](https://img.shields.io/nuget/v/MessageStorage.Db.MsSql.svg) MessageStorage.Db.MsSql.DI.Extension : ![Nuget](https://img.shields.io/nuget/v/MessageStorage.Db.MsSql.DI.Extension.svg)
 
 **MessageStorage**
 
