@@ -6,59 +6,52 @@ namespace MessageStorage.Db
 {
     public interface IMigrationRunner
     {
-        void Run(IEnumerable<IMigration> migrations, MessageStorageDbConfiguration messageStorageDbConfiguration);
+        void Run(IEnumerable<IMigration> migrations, IDbConnectionFactory dbConnectionFactory);
     }
 
     public abstract class MigrationRunner : IMigrationRunner
     {
-        private readonly IDbConnectionFactory _dbConnectionFactory;
-
-        protected MigrationRunner(IDbConnectionFactory dbConnectionFactory)
-        {
-            _dbConnectionFactory = dbConnectionFactory;
-        }
-
-        public void Run(IEnumerable<IMigration> migrations, MessageStorageDbConfiguration messageStorageDbConfiguration)
+        public void Run(IEnumerable<IMigration> migrations, IDbConnectionFactory dbConnectionFactory)
         {
             migrations = migrations.OrderBy(m => m.GetType().Name);
             foreach (IMigration migration in migrations)
             {
                 if (migration is IVersionedMigration versionedMigration)
                 {
-                    Run(versionedMigration, messageStorageDbConfiguration);
+                    Run(versionedMigration, dbConnectionFactory);
                 }
                 else
                 {
-                    Run(migration, messageStorageDbConfiguration);
+                    Run(migration, dbConnectionFactory);
                 }
             }
         }
 
-        private void Run(IVersionedMigration migration, MessageStorageDbConfiguration messageStorageDbConfiguration)
+        private void Run(IVersionedMigration migration, IDbConnectionFactory dbConnectionFactory)
         {
-            using (IDbConnection dbConnection = _dbConnectionFactory.CreateConnection())
+            using (IDbConnection dbConnection = dbConnectionFactory.CreateConnection())
             {
                 dbConnection.Open();
                 using (IDbTransaction dbTransaction = dbConnection.BeginTransaction())
                 {
-                    int lastVersionNumber = GetLastExecutedVersionNumber(messageStorageDbConfiguration);
+                    int lastVersionNumber = GetLastExecutedVersionNumber(dbConnectionFactory);
                     if (migration.VersionNumber <= lastVersionNumber) return;
 
-                    RunMigration(migration, dbTransaction, messageStorageDbConfiguration);
-                    InsertMigrationToHistory(migration, dbTransaction, messageStorageDbConfiguration);
+                    RunMigration(migration, dbTransaction, dbConnectionFactory.MessageStorageDbConfiguration);
+                    InsertMigrationToHistory(migration, dbTransaction, dbConnectionFactory.MessageStorageDbConfiguration);
                     dbTransaction.Commit();
                 }
             }
         }
 
-        private void Run(IMigration migration, MessageStorageDbConfiguration messageStorageDbConfiguration)
+        private void Run(IMigration migration, IDbConnectionFactory dbConnectionFactory)
         {
-            using (IDbConnection dbConnection = _dbConnectionFactory.CreateConnection())
+            using (IDbConnection dbConnection = dbConnectionFactory.CreateConnection())
             {
                 dbConnection.Open();
                 using (IDbTransaction dbTransaction = dbConnection.BeginTransaction())
                 {
-                    RunMigration(migration, dbTransaction, messageStorageDbConfiguration);
+                    RunMigration(migration, dbTransaction, dbConnectionFactory.MessageStorageDbConfiguration);
                     dbTransaction.Commit();
                 }
             }
@@ -77,7 +70,7 @@ namespace MessageStorage.Db
             }
         }
 
-        protected abstract int GetLastExecutedVersionNumber(MessageStorageDbConfiguration messageStorageDbConfiguration);
+        protected abstract int GetLastExecutedVersionNumber(IDbConnectionFactory dbConnectionFactory);
 
         protected abstract void InsertMigrationToHistory(IVersionedMigration migration, IDbTransaction dbTransaction, MessageStorageDbConfiguration messageStorageDbConfiguration);
     }

@@ -8,22 +8,14 @@ namespace MessageStorage.Db.MsSql
 {
     public class MsSqlMigrationRunner : MigrationRunner, IMsSqlMigrationRunner
     {
-        private readonly IMsSqlDbConnectionFactory _msSqlDbConnectionFactory;
-
-        public MsSqlMigrationRunner(IMsSqlDbConnectionFactory dbConnectionFactory) : base(dbConnectionFactory)
+        protected override int GetLastExecutedVersionNumber(IDbConnectionFactory dbConnectionFactory)
         {
-            _msSqlDbConnectionFactory = dbConnectionFactory;
-        }
-
-
-        protected override int GetLastExecutedVersionNumber(MessageStorageDbConfiguration messageStorageDbConfiguration)
-        {
-            using (IDbConnection dbConnection = _msSqlDbConnectionFactory.CreateConnection())
+            using (IDbConnection dbConnection = dbConnectionFactory.CreateConnection())
             {
                 dbConnection.Open();
                 using (IDbCommand dbCommand = dbConnection.CreateCommand())
                 {
-                    string commandText = $"SELECT MAX(VersionNumber) FROM [{messageStorageDbConfiguration.Schema}].[{TableNames.VersionHistoryTable}]";
+                    string commandText = $"SELECT MAX(VersionNumber) FROM [{dbConnectionFactory.MessageStorageDbConfiguration.Schema}].[{TableNames.VersionHistoryTable}]";
                     dbCommand.CommandText = commandText;
                     var result = dbCommand.ExecuteScalar();
                     int maxVersionNumber = int.Parse(result is DBNull ? "0" : result.ToString());

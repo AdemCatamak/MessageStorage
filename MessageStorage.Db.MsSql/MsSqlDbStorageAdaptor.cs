@@ -10,11 +10,17 @@ namespace MessageStorage.Db.MsSql
 {
     public class MsSqlDbStorageAdaptor : DbStorageAdaptor, IMsSqlDbStorageAdaptor, IMsSqlDbConnectionFactory
     {
+        private readonly IMsSqlMigrationRunner _msSqlMigrationRunner;
+
+        public MsSqlDbStorageAdaptor(IMsSqlMigrationRunner msSqlMigrationRunner)
+        {
+            _msSqlMigrationRunner = msSqlMigrationRunner;
+        }
+
         public override void SetConfiguration(MessageStorageDbConfiguration messageStorageDbConfiguration)
         {
             base.SetConfiguration(messageStorageDbConfiguration);
-            var msSqlMigrationRunner = new MsSqlMigrationRunner(this);
-            msSqlMigrationRunner.Run(GetMigrations(), messageStorageDbConfiguration);
+            _msSqlMigrationRunner.Run(GetMigrations(), this);
         }
 
         private IEnumerable<IMigration> GetMigrations()

@@ -1,4 +1,3 @@
-#tool "nuget:?package=nuget.commandline&version=5.3.0"
 #tool "nuget:?package=Cake.CoreCLR&version=0.36.0"
 
 
@@ -201,6 +200,7 @@ private void PublishNugetPackage (FilePath packagePath, string nugetSourceUrl, s
   DotNetCoreNuGetPush(packagePath.FullPath, nugetPushSettings);  
     
   Console.WriteLine($"{packagePath.FullPath} is published");
+  Console.WriteLine();
 }
 
 class Project
