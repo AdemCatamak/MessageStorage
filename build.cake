@@ -145,13 +145,14 @@ Task(DotNetPackStage)
 Task(PushNugetStage)
 .WithCriteria(() => !string.IsNullOrEmpty(SelectedEnvironment) && CIPlatform == MasterCIPlatform)
 .IsDependentOn(DotNetPackStage)
-.DoesForEach(ProjectsToBePacked , (project)=>
+.Does(()=>
 {
-  string filePathPattern = $"{DotNetPackedPath}*{project.Name}*.nupkg";
+
+  string filePathPattern = $"{DotNetPackedPath}*.nupkg";
   var nugetPackages = GetFiles(filePathPattern);
   foreach (var nugetPackage in nugetPackages)
   {
-    PublishNugetPackage(project.Name, nugetPackage, NugetServer, NugetApiKey);  
+    PublishNugetPackage(nugetPackage, NugetServer, NugetApiKey);  
   }
 });
 
@@ -184,9 +185,9 @@ FilePath GetCsProjFile(string projectName)
   return projFiles.First();
 }
 
-private void PublishNugetPackage (string packageId, FilePath packagePath, string nugetSourceUrl, string apiKey)
+private void PublishNugetPackage (FilePath packagePath, string nugetSourceUrl, string apiKey)
 {
-  Console.WriteLine("DotNetCoreNuGetPushSettings is being created");
+  // Console.WriteLine("DotNetCoreNuGetPushSettings is being created");
 
   var nugetPushSettings = new DotNetCoreNuGetPushSettings
   {
@@ -195,11 +196,11 @@ private void PublishNugetPackage (string packageId, FilePath packagePath, string
     ArgumentCustomization = args=>args.Append("--skip-duplicate")
   };
   
-  Console.WriteLine($"{packageId} is publishing");
+  Console.WriteLine($"{packagePath.FullPath} is publishing");
     
   DotNetCoreNuGetPush(packagePath.FullPath, nugetPushSettings);  
     
-  Console.WriteLine($"{packageId} is publishing");
+  Console.WriteLine($"{packagePath.FullPath} is publishing");
 }
 
 class Project
