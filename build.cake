@@ -200,7 +200,7 @@ private void PublishNugetPackage (FilePath packagePath, string nugetSourceUrl, s
     
   DotNetCoreNuGetPush(packagePath.FullPath, nugetPushSettings);  
     
-  Console.WriteLine($"{packagePath.FullPath} is publishing");
+  Console.WriteLine($"{packagePath.FullPath} is published");
 }
 
 class Project
