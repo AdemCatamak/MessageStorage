@@ -5,6 +5,7 @@ using Microsoft.Data.SqlClient;
 using System.Linq;
 using MessageStorage.Db.Exceptions;
 using MessageStorage.Db.MsSql.Migrations;
+using MessageStorage.Exceptions;
 
 namespace MessageStorage.Db.MsSql
 {
@@ -36,6 +37,11 @@ namespace MessageStorage.Db.MsSql
 
         public override IDbConnection CreateConnection()
         {
+            if (MessageStorageDbConfiguration == null)
+            {
+                throw new PreConditionFailedException($"{nameof(SetConfiguration)} method executed once before {nameof(CreateConnection)}");
+            }
+
             string connectionStr = MessageStorageDbConfiguration.ConnectionStr;
             var dbConnection = new SqlConnection(connectionStr);
             return dbConnection;

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -97,7 +98,7 @@ namespace MessageStorage.Db
 
         public virtual void SetConfiguration(MessageStorageDbConfiguration messageStorageDbConfiguration)
         {
-            MessageStorageDbConfiguration = messageStorageDbConfiguration;
+            MessageStorageDbConfiguration = messageStorageDbConfiguration ?? throw new ArgumentNullException(nameof(messageStorageDbConfiguration));
         }
 
         public abstract IDbConnection CreateConnection();
