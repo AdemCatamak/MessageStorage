@@ -1,6 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
         <TargetFramework>netstandard2.0</TargetFramework>
         <Authors>Adem Catamak</Authors>
         <IsPackable>true</IsPackable>
