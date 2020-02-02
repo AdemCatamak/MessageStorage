@@ -96,6 +96,7 @@ namespace MessageStorage.Db
             }
         }
 
+
         public virtual void SetConfiguration(MessageStorageDbConfiguration messageStorageDbConfiguration)
         {
             MessageStorageDbConfiguration = messageStorageDbConfiguration ?? throw new ArgumentNullException(nameof(messageStorageDbConfiguration));
@@ -103,6 +104,28 @@ namespace MessageStorage.Db
 
         public abstract IDbConnection CreateConnection();
 
+        public int GetJobCountByStatus(JobStatuses jobStatus)
+        {
+            (string commandText, IEnumerable<IDbDataParameter> dbDataParameters) = PrepareGetJobCountByStatusCommand(jobStatus,MessageStorageDbConfiguration);
+
+            using (IDbConnection dbConnection = CreateConnection())
+            {
+                dbConnection.Open();
+                using (IDbTransaction dbTransaction = dbConnection.BeginTransaction(IsolationLevel.ReadUncommitted))
+                {
+                    using (IDbCommand getFailedJobCountCommand = dbConnection.CreateCommand())
+                    {
+                        getFailedJobCountCommand.CommandText = commandText;
+                        dbDataParameters.ToList().ForEach(p => getFailedJobCountCommand.Parameters.Add(p));
+                        getFailedJobCountCommand.Transaction = dbTransaction;
+
+                        object countResult = getFailedJobCountCommand.ExecuteScalar();
+                        var result = (int) countResult;
+                        return result;
+                    }
+                }
+            }
+        }
 
         private IDbCommand CreateInsertCommand(Job job, IDbTransaction dbTransaction)
         {
@@ -128,6 +151,7 @@ namespace MessageStorage.Db
             return insertMessageCommand;
         }
 
+        protected abstract (string, IEnumerable<IDbDataParameter>) PrepareGetJobCountByStatusCommand(JobStatuses jobStatus, MessageStorageDbConfiguration messageStorageDbConfiguration);
 
         protected abstract (string, IEnumerable<IDbDataParameter>) PrepareInsertCommand(Message message, MessageStorageDbConfiguration messageStorageDbConfiguration);
         protected abstract (string, IEnumerable<IDbDataParameter>) PrepareInsertCommand(Job job, MessageStorageDbConfiguration messageStorageDbConfiguration);
