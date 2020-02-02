@@ -4,16 +4,16 @@ using MessageStorage.Exceptions;
 using Moq;
 using Xunit;
 
-namespace MessageStorage.Db.MsSqlUnitTests
+namespace MessageStorage.Db.MsSqlUnitTests.MsSqlDbStorageAdaptorTests
 {
     public class MsSqlDbStorageAdaptor_CreateConnectionTests
     {
-        private readonly MsSqlDbStorageAdaptor _sut;
+        private readonly MsSql.MsSqlDbStorageAdaptor _sut;
 
         public MsSqlDbStorageAdaptor_CreateConnectionTests()
         {
             var mockMsSqlMigrationRunner = new Mock<IMsSqlMigrationRunner>();
-            _sut = new MsSqlDbStorageAdaptor(mockMsSqlMigrationRunner.Object);
+            _sut = new MsSql.MsSqlDbStorageAdaptor(mockMsSqlMigrationRunner.Object);
         }
 
         [Fact]

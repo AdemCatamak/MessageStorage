@@ -47,6 +47,19 @@ namespace MessageStorage.Db.MsSql
             return dbConnection;
         }
 
+        protected override (string, IEnumerable<IDbDataParameter>) PrepareGetJobCountByStatusCommand(JobStatuses jobStatus, MessageStorageDbConfiguration messageStorageDbConfiguration)
+        {
+            var jobStatusParameter = new SqlParameter("@JobStatus", (int) jobStatus)
+                                     {
+                                         SourceColumn = "JobStatus"
+                                     };
+            var sqlParameters = new List<SqlParameter> {jobStatusParameter};
+
+            string commandText = $"SELECT COUNT(Id) FROM [{messageStorageDbConfiguration.Schema}].[{TableNames.JobTable}] WHERE {jobStatusParameter.SourceColumn} = {jobStatusParameter.ParameterName}";
+
+            return (commandText, sqlParameters);
+        }
+
         protected override (string, IEnumerable<IDbDataParameter>) PrepareInsertCommand(Message message, MessageStorageDbConfiguration messageStorageDbConfiguration)
         {
             var sqlParameters = new List<SqlParameter>();

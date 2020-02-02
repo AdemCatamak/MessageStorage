@@ -4,7 +4,7 @@ using MessageStorage.Exceptions;
 
 namespace MessageStorage
 {
-    public interface IStorageAdaptor
+    public interface IStorageAdaptor : IJobMonitor
     {
         void Add(Message message, IEnumerable<Job> jobs);
         void Update(Job job);
@@ -59,7 +59,6 @@ namespace MessageStorage
             }
         }
 
-        
 
         private void AddMessage(Message message)
         {
@@ -101,6 +100,14 @@ namespace MessageStorage
 
             _jobStorage.Remove(job.Id);
             _jobStorage.Add(job.Id, job);
+        }
+
+        public int GetJobCountByStatus(JobStatuses jobStatus)
+        {
+            // ReSharper disable once InconsistentlySynchronizedField
+            // dirty read is acceptable at this point
+            int jobCount = _jobStorage?.Values.Count(job => job.JobStatus == jobStatus) ?? 0;
+            return jobCount;
         }
     }
 }

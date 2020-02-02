@@ -18,7 +18,7 @@ namespace MessageStorage
     public class HandlerManager : IHandlerManager
     {
         public IReadOnlyCollection<Handler> Handlers { get; private set; }
-        private List<Handler> _handlers;
+        private readonly List<Handler> _handlers;
         private readonly object _lockObj;
 
         public HandlerManager(IEnumerable<Handler> handlers = null)
@@ -50,7 +50,7 @@ namespace MessageStorage
 
                                                                        return false;
                                                                    }
-                                                                   )
+                                                                  )
                                                             .Select(handler => handler.Name);
 
             return availableHandlers;
