@@ -6,9 +6,11 @@ namespace MessageStorage.DI.Extension
     {
         public static IMessageStorageServiceCollection AddInMemoryMessageStorage(this IMessageStorageServiceCollection serviceCollection)
         {
+            var inMemoryStorageAdaptor = new InMemoryStorageAdaptor();
             serviceCollection
                .AddHandlerManager<HandlerManager>(ServiceLifetime.Singleton)
-               .Add<IMessageStorageClient>(provider => new MessageStorageClient(new InMemoryStorageAdaptor(), provider.GetRequiredService<IHandlerManager>()), ServiceLifetime.Singleton);
+               .Add<IMessageStorageMonitor>(provider => new MessageStorageMonitor(inMemoryStorageAdaptor), ServiceLifetime.Singleton)
+               .Add<IMessageStorageClient>(provider => new MessageStorageClient(inMemoryStorageAdaptor, provider.GetRequiredService<IHandlerManager>()), ServiceLifetime.Singleton);
 
             return serviceCollection;
         }

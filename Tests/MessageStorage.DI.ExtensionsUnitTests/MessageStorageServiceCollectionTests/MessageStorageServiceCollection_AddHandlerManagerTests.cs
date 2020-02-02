@@ -1,19 +1,18 @@
-using MessageStorage.DI.Extension;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Xunit;
 
-namespace MessageStorage.DI.ExtensionsUnitTests
+namespace MessageStorage.DI.ExtensionsUnitTests.MessageStorageServiceCollectionTests
 {
     public class MessageStorageServiceCollection_AddHandlerManagerTests
     {
-        private readonly MessageStorageServiceCollection _sut;
+        private readonly Extension.MessageStorageServiceCollection _sut;
         private readonly Mock<IServiceCollection> _mockServiceCollection;
 
         public MessageStorageServiceCollection_AddHandlerManagerTests()
         {
             _mockServiceCollection = new Mock<IServiceCollection>();
-            _sut = new MessageStorageServiceCollection(_mockServiceCollection.Object);
+            _sut = new Extension.MessageStorageServiceCollection(_mockServiceCollection.Object);
         }
 
         [Fact]

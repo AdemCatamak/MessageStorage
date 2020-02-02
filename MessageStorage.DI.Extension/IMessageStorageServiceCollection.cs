@@ -12,7 +12,7 @@ namespace MessageStorage.DI.Extension
         IMessageStorageServiceCollection AddHandlers(IEnumerable<Assembly> assemblies);
 
         IMessageStorageServiceCollection AddJobProcessServer(ServiceLifetime serviceLifetime = ServiceLifetime.Singleton);
-        void Add<T>(Func<IServiceProvider, T> messageStorageServiceCollection, ServiceLifetime lifetime) where T : class;
+        IMessageStorageServiceCollection Add<T>(Func<IServiceProvider, T> messageStorageServiceCollection, ServiceLifetime lifetime) where T : class;
     }
 
     public class MessageStorageServiceCollection : IMessageStorageServiceCollection
@@ -54,7 +54,7 @@ namespace MessageStorage.DI.Extension
             return this;
         }
 
-        public void Add<T>(Func<IServiceProvider, T> provider, ServiceLifetime lifetime) where T : class
+        public IMessageStorageServiceCollection Add<T>(Func<IServiceProvider, T> provider, ServiceLifetime lifetime) where T : class
         {
             switch (lifetime)
             {
@@ -70,6 +70,8 @@ namespace MessageStorage.DI.Extension
                 default:
                     throw new ArgumentOutOfRangeException(nameof(lifetime), lifetime, null);
             }
+
+            return this;
         }
     }
 }
