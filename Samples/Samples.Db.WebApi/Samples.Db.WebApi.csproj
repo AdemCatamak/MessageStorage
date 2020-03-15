@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\MessageStorage.Db.MsSql.DI.Extension\MessageStorage.Db.MsSql.DI.Extension.csproj" />
+        <ProjectReference Include="..\..\MessageStorage.Db\MessageStorage.Db.csproj" />
+        <ProjectReference Include="..\..\MessageStorage.DI.Extension\MessageStorage.DI.Extension.csproj" />
+    </ItemGroup>
+
+</Project>

@@ -7,5 +7,10 @@ namespace MessageStorage.Exceptions
         public ArgumentNotCompatibleException(string message) : base(message)
         {
         }
+
+        public ArgumentNotCompatibleException(Type expectedType, Type actualType)
+            : base($"Expected Type: {expectedType.Name} - Actual Type:{actualType.Name}")
+        {
+        }
     }
 }

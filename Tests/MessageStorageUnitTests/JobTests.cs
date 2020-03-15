@@ -7,7 +7,7 @@ namespace MessageStorageUnitTests
 {
     public class JobTests
     {
-        [Fact]
+        [Test]
         public void WhenJobObjectCreatedWithMessage__AnyFieldShouldNotBeNull()
         {
             DateTime functionStartTime = DateTime.UtcNow;
@@ -25,7 +25,7 @@ namespace MessageStorageUnitTests
             Assert.NotNull(job.TraceId);
             Assert.Equal(traceId, message.TraceId);
             Assert.Equal(traceId, job.TraceId);
-            Assert.Equal(3, message.Id);
+            Assert.Equal(3, message.MessageId);
             Assert.Equal(3, job.MessageId);
             Assert.Equal(assignedHandler, job.AssignedHandlerName);
             Assert.NotNull(job.LastOperationInfo);
@@ -33,7 +33,7 @@ namespace MessageStorageUnitTests
             Assert.Equal(JobStatuses.Waiting, job.JobStatus);
         }
 
-        [Fact]
+        [Test]
         public void WhenJobObjectCreatedWithPrimitiveFields__AllFieldShouldBeInitialized()
         {
             DateTime functionStartTime = DateTime.UtcNow;
@@ -48,7 +48,7 @@ namespace MessageStorageUnitTests
 
             Assert.NotNull(job);
 
-            Assert.Equal(5, job.Id);
+            Assert.Equal(5, job.JobId);
             Assert.NotNull(message.TraceId);
             Assert.Equal(traceId, job.TraceId);
             Assert.NotNull(job.AssignedHandlerName);
@@ -58,21 +58,21 @@ namespace MessageStorageUnitTests
             Assert.True(functionStartTime <= job.LastOperationTime);
         }
 
-        [Fact]
+        [Test]
         void WhenSetIdMethodIsUsed__IdVariableShouldBeChanged()
         {
             var someEntityCreatedEvent = new SomeEntityCreatedEvent();
             var message = new Message(someEntityCreatedEvent);
             var job = new Job(message, "assigned-handler");
 
-            Assert.Equal(0, job.Id);
+            Assert.Equal(0, job.JobId);
 
             job.SetId(4);
 
-            Assert.Equal(4, job.Id);
+            Assert.Equal(4, job.JobId);
         }
 
-        [Fact]
+        [Test]
         void WhenSetInProgressMethodIsUsed__JobStatusShouldBeChanged()
         {
             var someEntityCreatedEvent = new SomeEntityCreatedEvent();
@@ -86,7 +86,7 @@ namespace MessageStorageUnitTests
             Assert.Equal(JobStatuses.InProgress, job.JobStatus);
         }
 
-        [Fact]
+        [Test]
         void WhenSetInProgressMethodIsUsedWithLastOperationInfo__JobStatusShouldBeChanged_and_LastOperationInfoShouldBeChanged()
         {
             const string lastOperationInfo = "Job status change";
@@ -106,7 +106,7 @@ namespace MessageStorageUnitTests
             Assert.True(lastOperationTime < job.LastOperationTime);
         }
 
-        [Fact]
+        [Test]
         void WhenSetDoneMethodIsUsed__JobStatusShouldBeChanged()
         {
             var someEntityCreatedEvent = new SomeEntityCreatedEvent();
@@ -120,7 +120,7 @@ namespace MessageStorageUnitTests
             Assert.Equal(JobStatuses.Done, job.JobStatus);
         }
 
-        [Fact]
+        [Test]
         void WhenSetDoneMethodIsUsedWithLastOperationInfo__JobStatusShouldBeChanged_and_LastOperationInfoShouldBeChanged()
         {
             const string lastOperationInfo = "Job status change";
@@ -140,7 +140,7 @@ namespace MessageStorageUnitTests
             Assert.True(lastOperationTime < job.LastOperationTime);
         }
 
-        [Fact]
+        [Test]
         void WhenSetFailedMethodIsUsedWithLastOperationInfo__JobStatusShouldBeChanged_and_LastOperationInfoShouldBeChanged()
         {
             const string lastOperationInfo = "Job status change";

@@ -27,7 +27,7 @@ namespace MessageStorageUnitTests.InMemoryStorageTests
             _sut.Add(message, null);
 
             Assert.NotNull(message);
-            Assert.Equal(1, message.Id);
+            Assert.Equal(1, message.MessageId);
         }
 
         [Fact]
@@ -39,10 +39,10 @@ namespace MessageStorageUnitTests.InMemoryStorageTests
             _sut.Add(message, new[] {job});
 
             Assert.NotNull(message);
-            Assert.Equal(1, message.Id);
+            Assert.Equal(1, message.MessageId);
 
             Assert.NotNull(job);
-            Assert.Equal(1, job.Id);
+            Assert.Equal(1, job.JobId);
             Assert.Equal(1, job.MessageId);
         }
 
@@ -59,17 +59,17 @@ namespace MessageStorageUnitTests.InMemoryStorageTests
             _sut.Add(secondMessage, new[] {secondJob});
 
             Assert.NotNull(firstMessage);
-            Assert.Equal(1, firstMessage.Id);
+            Assert.Equal(1, firstMessage.MessageId);
 
             Assert.NotNull(secondMessage);
-            Assert.Equal(2, secondMessage.Id);
+            Assert.Equal(2, secondMessage.MessageId);
 
             Assert.NotNull(firstJob);
-            Assert.Equal(1, firstJob.Id);
+            Assert.Equal(1, firstJob.JobId);
             Assert.Equal(1, firstJob.MessageId);
 
             Assert.NotNull(secondJob);
-            Assert.Equal(2, secondJob.Id);
+            Assert.Equal(2, secondJob.JobId);
             Assert.Equal(2, secondJob.MessageId);
         }
 

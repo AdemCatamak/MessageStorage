@@ -31,8 +31,6 @@ namespace MessageStorage
             _logger = logger ?? NullLogger<JobProcessServer>.Instance;
 
             _cancellationTokenSource = new CancellationTokenSource();
-            if (_jobProcessServerConfiguration.AutoStart)
-                StartAsync();
         }
 
         public Task StartAsync()
@@ -109,6 +107,5 @@ namespace MessageStorage
     {
         public TimeSpan WaitWhenMessageNotFound { get; set; } = TimeSpan.FromSeconds(value: 5);
         public TimeSpan WaitAfterMessageHandled { get; set; } = TimeSpan.Zero;
-        public bool AutoStart { get; set; } = false;
     }
 }

@@ -24,7 +24,7 @@ namespace MessageStorageUnitTests
 
             Assert.NotNull(message.TraceId);
             Assert.Equal(traceId, message.TraceId);
-            Assert.Equal(0, message.Id);
+            Assert.Equal(0, message.MessageId);
             Assert.True(functionStartDate <= message.CreatedOn);
             Assert.NotNull(message.PayloadClassName);
             Assert.Equal(nameof(SomeEntityCreatedEvent), message.PayloadClassName);
@@ -53,7 +53,7 @@ namespace MessageStorageUnitTests
 
             Assert.NotNull(message.TraceId);
             Assert.Equal(traceId, message.TraceId);
-            Assert.Equal(id, message.Id);
+            Assert.Equal(id, message.MessageId);
             Assert.Equal(createOn, message.CreatedOn);
             Assert.NotNull(message.PayloadClassName);
             Assert.Equal(nameof(SomeEntityCreatedEvent), message.PayloadClassName);
@@ -72,11 +72,11 @@ namespace MessageStorageUnitTests
             var someEntityCreatedEvent = new SomeEntityCreatedEvent();
             var message = new Message(someEntityCreatedEvent);
 
-            Assert.Equal(0, message.Id);
+            Assert.Equal(0, message.MessageId);
 
             message.SetId(4);
 
-            Assert.Equal(4, message.Id);
+            Assert.Equal(4, message.MessageId);
         }
 
         [Fact]

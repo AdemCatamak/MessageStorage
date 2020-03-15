@@ -11,7 +11,6 @@ namespace MessageStorage
 
         IEnumerable<string> GetAvailableHandlerNames(object payload);
 
-        void AddHandler(Handler handler, bool suppressException = false);
         Handler GetHandler(string handlerName);
     }
 
@@ -54,22 +53,6 @@ namespace MessageStorage
                                                             .Select(handler => handler.Name);
 
             return availableHandlers;
-        }
-
-        public void AddHandler(Handler handler, bool suppressException = false)
-        {
-            lock (_lockObj)
-            {
-                if (_handlers.Any(h => h.Name == handler.Name))
-                {
-                    if (suppressException) return;
-                    throw new HandlerAlreadyExist(handler.Name);
-                }
-
-                _handlers.Add(handler);
-
-                Handlers = _handlers.AsReadOnly();
-            }
         }
 
 

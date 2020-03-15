@@ -22,7 +22,7 @@ namespace MessageStorageUnitTests.InMemoryStorageTests
 
             var jobNotFoundException = Assert.Throws<JobNotFoundException>(() => _sut.Update(job));
 
-            Assert.Contains(job.Id.ToString(), jobNotFoundException.Message);
+            Assert.Contains(job.JobId.ToString(), jobNotFoundException.Message);
         }
 
         [Fact]
@@ -32,7 +32,7 @@ namespace MessageStorageUnitTests.InMemoryStorageTests
             var job = new Job(message, "assigned-handler");
             _sut.Add(message, new[] {job});
 
-            var newJob = new Job(job.Id, job.Message, "new-assigned-handler", JobStatuses.Done, DateTime.UtcNow, "some-info");
+            var newJob = new Job(job.JobId, job.Message, "new-assigned-handler", JobStatuses.Done, DateTime.UtcNow, "some-info");
 
             _sut.Update(newJob);
         }

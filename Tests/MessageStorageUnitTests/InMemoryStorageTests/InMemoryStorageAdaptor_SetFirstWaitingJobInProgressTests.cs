@@ -34,7 +34,7 @@ namespace MessageStorageUnitTests.InMemoryStorageTests
             Job firstWaitingJobToInProgress = _sut.SetFirstWaitingJobToInProgress();
 
             Assert.NotNull(job);
-            Assert.Equal(job.Id, firstWaitingJobToInProgress.Id);
+            Assert.Equal(job.JobId, firstWaitingJobToInProgress.JobId);
             Assert.Equal(job.MessageId, firstWaitingJobToInProgress.MessageId);
             Assert.Equal(JobStatuses.InProgress, firstWaitingJobToInProgress.JobStatus);
         }

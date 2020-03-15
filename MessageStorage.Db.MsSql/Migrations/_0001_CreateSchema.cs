@@ -17,11 +17,5 @@ IF NOT EXISTS(
 
             return (commandText, new List<IDbDataAdapter>());
         }
-
-        public (string commandText, IEnumerable<IDbDataAdapter>) Down(MessageStorageDbConfiguration messageStorageDbConfiguration)
-        {
-            string commandText = $"DROP SCHEMA IF EXISTS {messageStorageDbConfiguration.Schema};";
-            return (commandText, new List<IDbDataAdapter>());
-        }
     }
 }

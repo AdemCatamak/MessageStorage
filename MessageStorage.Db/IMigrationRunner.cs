@@ -6,52 +6,62 @@ namespace MessageStorage.Db
 {
     public interface IMigrationRunner
     {
-        void Run(IEnumerable<IMigration> migrations, IDbConnectionFactory dbConnectionFactory);
+        void Run<TMessageStorageDbConfiguration>(IEnumerable<IMigration> migrations, TMessageStorageDbConfiguration messageStorageDbConfiguration)
+            where TMessageStorageDbConfiguration : MessageStorageDbConfiguration;
     }
 
     public abstract class MigrationRunner : IMigrationRunner
     {
-        public void Run(IEnumerable<IMigration> migrations, IDbConnectionFactory dbConnectionFactory)
+        private readonly IDbAdaptor _dbAdaptor;
+
+        protected MigrationRunner(IDbAdaptor dbAdaptor)
+        {
+            _dbAdaptor = dbAdaptor;
+        }
+
+        public void Run<TMessageStorageDbConfiguration>(IEnumerable<IMigration> migrations, TMessageStorageDbConfiguration messageStorageDbConfiguration)
+            where TMessageStorageDbConfiguration : MessageStorageDbConfiguration
         {
             migrations = migrations.OrderBy(m => m.GetType().Name);
             foreach (IMigration migration in migrations)
             {
-                if (migration is IVersionedMigration versionedMigration)
+                if (migration is IOneTimeMigration versionedMigration)
                 {
-                    Run(versionedMigration, dbConnectionFactory);
+                    Run(versionedMigration, messageStorageDbConfiguration);
                 }
                 else
                 {
-                    Run(migration, dbConnectionFactory);
+                    Run(migration, messageStorageDbConfiguration);
                 }
             }
         }
 
-        private void Run(IVersionedMigration migration, IDbConnectionFactory dbConnectionFactory)
+
+        private void Run(IOneTimeMigration migration, MessageStorageDbConfiguration messageStorageDbConfiguration)
         {
-            using (IDbConnection dbConnection = dbConnectionFactory.CreateConnection())
+            using (IDbConnection dbConnection = _dbAdaptor.CreateConnection(messageStorageDbConfiguration.ConnectionStr))
             {
                 dbConnection.Open();
                 using (IDbTransaction dbTransaction = dbConnection.BeginTransaction())
                 {
-                    int lastVersionNumber = GetLastExecutedVersionNumber(dbConnectionFactory);
-                    if (migration.VersionNumber <= lastVersionNumber) return;
+                    bool executedBefore = MigrationExecutedBefore(dbTransaction, messageStorageDbConfiguration, migration.GetType().Name);
+                    if (executedBefore) return;
 
-                    RunMigration(migration, dbTransaction, dbConnectionFactory.MessageStorageDbConfiguration);
-                    InsertMigrationToHistory(migration, dbTransaction, dbConnectionFactory.MessageStorageDbConfiguration);
+                    RunMigration(migration, dbTransaction, messageStorageDbConfiguration);
+                    InsertMigrationToHistory(migration, dbTransaction, messageStorageDbConfiguration);
                     dbTransaction.Commit();
                 }
             }
         }
 
-        private void Run(IMigration migration, IDbConnectionFactory dbConnectionFactory)
+        private void Run(IMigration migration, MessageStorageDbConfiguration messageStorageDbConfiguration)
         {
-            using (IDbConnection dbConnection = dbConnectionFactory.CreateConnection())
+            using (IDbConnection dbConnection = _dbAdaptor.CreateConnection(messageStorageDbConfiguration.ConnectionStr))
             {
                 dbConnection.Open();
                 using (IDbTransaction dbTransaction = dbConnection.BeginTransaction())
                 {
-                    RunMigration(migration, dbTransaction, dbConnectionFactory.MessageStorageDbConfiguration);
+                    RunMigration(migration, dbTransaction, messageStorageDbConfiguration);
                     dbTransaction.Commit();
                 }
             }
@@ -70,8 +80,8 @@ namespace MessageStorage.Db
             }
         }
 
-        protected abstract int GetLastExecutedVersionNumber(IDbConnectionFactory dbConnectionFactory);
+        protected abstract bool MigrationExecutedBefore(IDbTransaction dbTransaction, MessageStorageDbConfiguration messageStorageDbConfiguration, string versionName);
 
-        protected abstract void InsertMigrationToHistory(IVersionedMigration migration, IDbTransaction dbTransaction, MessageStorageDbConfiguration messageStorageDbConfiguration);
+        protected abstract void InsertMigrationToHistory(IOneTimeMigration migration, IDbTransaction dbTransaction, MessageStorageDbConfiguration messageStorageDbConfiguration);
     }
 }
