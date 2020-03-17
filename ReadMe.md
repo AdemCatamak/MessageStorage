@@ -1,7 +1,7 @@
 # MessageStorage
 
 **Appveyor**
-![AppVeyor](https://img.shields.io/appveyor/ci/ademcatamak/messagestorage.svg) ![AppVeyor tests](https://img.shields.io/appveyor/tests/ademcatamak/messagestorage.svg)
+![AppVeyor](https://img.shields.io/appveyor/ci/ademcatamak/messagestorage/master.svg) ![AppVeyor tests](https://img.shields.io/appveyor/tests/ademcatamak/messagestorage/master.svg)
 
 **Travis**
 ![Travis (.com)](https://travis-ci.com/AdemCatamak/MessageStorage.svg?branch=master)
