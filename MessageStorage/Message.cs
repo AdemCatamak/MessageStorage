@@ -1,12 +1,11 @@
 ﻿using System;
-using MassTransit;
 using Newtonsoft.Json;
 
 namespace MessageStorage
 {
     public class Message
     {
-        public string MessageId { get; private set; }
+        public long Id { get; private set; }
         public string TraceId { get; set; }
         public DateTime CreatedOn { get; private set; }
 
@@ -42,9 +41,9 @@ namespace MessageStorage
             }
         }
 
-        public Message(string messageId, DateTime createdOn, string traceId, string payloadClassName, string payloadClassNamespace, string serializedPayload)
+        public Message(long id, DateTime createdOn, string traceId, string payloadClassName, string payloadClassNamespace, string serializedPayload)
         {
-            MessageId = messageId;
+            Id = id;
             TraceId = traceId;
             PayloadClassName = payloadClassName;
             PayloadClassNamespace = payloadClassNamespace;
@@ -54,10 +53,15 @@ namespace MessageStorage
 
         public Message(object payload, string traceId = null)
         {
-            MessageId = NewId.Next().ToString();
+            Id = default;
             TraceId = traceId;
             CreatedOn = DateTime.UtcNow;
             Payload = payload;
+        }
+        
+        public void SetId(long id)
+        {
+            Id = id;
         }
     }
 }

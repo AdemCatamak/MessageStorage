@@ -38,7 +38,7 @@ namespace UnitTest.MessageStorage.Db.DbMessageRepositoryTests
         public void WhenDbCommandExecutionThrowsException__TransactionCouldNotCompleted()
         {
             var dbCommandMock = new Mock<IDbCommand>();
-            dbCommandMock.Setup(command => command.ExecuteNonQuery())
+            dbCommandMock.Setup(command => command.ExecuteScalar())
                          .Throws<ApplicationException>();
 
             var dbConnectionMock = new Mock<IDbConnection>();
@@ -50,7 +50,7 @@ namespace UnitTest.MessageStorage.Db.DbMessageRepositoryTests
 
             Assert.Throws<ApplicationException>(() => _sut.Add(It.IsAny<Message>(), _dbTransactionMock.Object));
 
-            dbCommandMock.Verify(command => command.ExecuteNonQuery(), Times.Once);
+            dbCommandMock.Verify(command => command.ExecuteScalar(), Times.Once);
             _dbAdaptorMock.Verify(adaptor => adaptor.CreateConnection(It.IsAny<string>()), Times.Never);
             dbConnectionMock.Verify(connection => connection.BeginTransaction(It.IsAny<IsolationLevel>()), Times.Never);
             _dbTransactionMock.Verify(transaction => transaction.Commit(), Times.Never);
@@ -60,7 +60,7 @@ namespace UnitTest.MessageStorage.Db.DbMessageRepositoryTests
         public void WhenDbCommandExecuted__OperationCompletedSuccessfully_TransactionWillNotBeCommitted()
         {
             var dbCommandMock = new Mock<IDbCommand>();
-            dbCommandMock.Setup(command => command.ExecuteNonQuery())
+            dbCommandMock.Setup(command => command.ExecuteScalar())
                          .Returns(1);
             dbCommandMock.Setup(command => command.Parameters)
                          .Returns(new Mock<IDataParameterCollection>().Object);
@@ -74,9 +74,10 @@ namespace UnitTest.MessageStorage.Db.DbMessageRepositoryTests
             _dbAdaptorMock.Setup(adaptor => adaptor.CreateConnection(It.IsAny<string>()))
                           .Returns(dbConnectionMock.Object);
 
-            _sut.Add(It.IsAny<Message>(), _dbTransactionMock.Object);
+            var message = new Message(null);
+            _sut.Add(message, _dbTransactionMock.Object);
 
-            dbCommandMock.Verify(command => command.ExecuteNonQuery(), Times.Once);
+            dbCommandMock.Verify(command => command.ExecuteScalar(), Times.Once);
             dbConnectionMock.Verify(connection => connection.BeginTransaction(It.IsAny<IsolationLevel>()), Times.Never);
             _dbTransactionMock.Verify(transaction => transaction.Commit(), Times.Never);
         }
@@ -92,7 +93,7 @@ namespace UnitTest.MessageStorage.Db.DbMessageRepositoryTests
                                                                   }));
 
             var dbCommandMock = new Mock<IDbCommand>();
-            dbCommandMock.Setup(command => command.ExecuteNonQuery())
+            dbCommandMock.Setup(command => command.ExecuteScalar())
                          .Returns(1);
             dbCommandMock.Setup(command => command.Parameters)
                          .Returns(new Mock<IDataParameterCollection>().Object);
@@ -106,9 +107,10 @@ namespace UnitTest.MessageStorage.Db.DbMessageRepositoryTests
             _dbAdaptorMock.Setup(adaptor => adaptor.CreateConnection(It.IsAny<string>()))
                           .Returns(dbConnectionMock.Object);
 
-            _sut.Add(It.IsAny<Message>(), _dbTransactionMock.Object);
+            var message = new Message(null);
+            _sut.Add(message, _dbTransactionMock.Object);
 
-            dbCommandMock.Verify(command => command.ExecuteNonQuery(), Times.Once);
+            dbCommandMock.Verify(command => command.ExecuteScalar(), Times.Once);
             dbConnectionMock.Verify(connection => connection.BeginTransaction(It.IsAny<IsolationLevel>()), Times.Never);
             _dbTransactionMock.Verify(transaction => transaction.Commit(), Times.Never);
             dbCommandMock.Verify(command => command.Parameters.Add(It.IsAny<IDbDataParameter>()), Times.Exactly(2));

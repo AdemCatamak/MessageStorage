@@ -1,23 +1,22 @@
 using System;
-using MassTransit;
 
 namespace MessageStorage
 {
     public class Job
     {
-        public string JobId { get; private set; }
+        public long Id { get; private set; }
         public string AssignedHandlerName { get; private set; }
         public JobStatuses JobStatus { get; private set; }
         public DateTime LastOperationTime { get; private set; }
         public string LastOperationInfo { get; private set; }
         public Message Message { get; private set; }
-        public string MessageId => Message.MessageId;
+        public long MessageId => Message.Id;
 
         public string TraceId => Message.TraceId;
 
-        public Job(string jobId, Message message, string assignedHandlerName, JobStatuses jobStatus, DateTime lastOperationTime, string lastOperationInfo)
+        public Job(long id, Message message, string assignedHandlerName, JobStatuses jobStatus, DateTime lastOperationTime, string lastOperationInfo)
         {
-            JobId = jobId;
+            Id = id;
             Message = message;
             AssignedHandlerName = assignedHandlerName;
             JobStatus = jobStatus;
@@ -27,7 +26,7 @@ namespace MessageStorage
 
         public Job(Message message, string assignedHandlerName)
         {
-            JobId = NewId.Next().ToString();
+            Id = default;
             Message = message;
             AssignedHandlerName = assignedHandlerName;
             JobStatus = JobStatuses.Waiting;
@@ -54,6 +53,11 @@ namespace MessageStorage
             JobStatus = JobStatuses.Failed;
             LastOperationTime = DateTime.UtcNow;
             LastOperationInfo = failInfo;
+        }
+
+        public void SetId(long id)
+        {
+            Id = id;
         }
     }
 

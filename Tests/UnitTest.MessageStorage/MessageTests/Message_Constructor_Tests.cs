@@ -24,8 +24,7 @@ namespace UnitTest.MessageStorage.MessageTests
 
             Assert.NotNull(message.TraceId);
             Assert.AreEqual(traceId, message.TraceId);
-            Assert.NotNull(message.MessageId);
-            Assert.IsNotEmpty(message.MessageId);
+            Assert.AreEqual(0,message.Id);
             Assert.True(functionStartDate <= message.CreatedOn);
             Assert.NotNull(message.PayloadClassName);
             Assert.AreEqual(nameof(SomeEntityCreatedEvent), message.PayloadClassName);
@@ -42,7 +41,7 @@ namespace UnitTest.MessageStorage.MessageTests
         public void WhenMessageObjectCreatedWithPrimitiveFields__PayloadObjectShouldNotBeNull()
         {
             var someEntityCreatedEvent = new SomeEntityCreatedEvent {Id = 4};
-            const string id = "3";
+            const long id = 3;
             var createOn = new DateTime(2020, 1, 15, 20, 56, 00);
             const string traceId = "trace-id";
             string payloadClassNamespace = typeof(SomeEntityCreatedEvent).Namespace;
@@ -55,7 +54,7 @@ namespace UnitTest.MessageStorage.MessageTests
 
             Assert.NotNull(message.TraceId);
             Assert.AreEqual(traceId, message.TraceId);
-            Assert.AreEqual(id, message.MessageId);
+            Assert.AreEqual(id, message.Id);
             Assert.AreEqual(createOn, message.CreatedOn);
             Assert.NotNull(message.PayloadClassName);
             Assert.AreEqual(nameof(SomeEntityCreatedEvent), message.PayloadClassName);
@@ -71,10 +70,11 @@ namespace UnitTest.MessageStorage.MessageTests
         [Test]
         public void WhenMessageObjectSerializedPayloadIsNull__PayloadObjectShouldBeNull()
         {
-            var message = new Message("3", default, null, null, null, null);
+            const long id = 3;
+            var message = new Message(id, default, null, null, null, null);
 
             Assert.NotNull(message);
-            Assert.AreEqual("3", message.MessageId);
+            Assert.AreEqual(id, message.Id);
             Assert.Null(message.SerializedPayload);
             Assert.Null(message.Payload);
         }

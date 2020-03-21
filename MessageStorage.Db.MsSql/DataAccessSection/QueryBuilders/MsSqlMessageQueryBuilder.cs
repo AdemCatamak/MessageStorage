@@ -20,7 +20,6 @@ namespace MessageStorage.Db.MsSql.DataAccessSection.QueryBuilders
         {
             var sqlParameters = new List<SqlParameter>
                                 {
-                                    new SqlParameter("@MessageId", (object) message.MessageId) {SourceColumn = "MessageId"},
                                     new SqlParameter("@TraceId", (object) message.TraceId ?? DBNull.Value) {SourceColumn = "TraceId"},
                                     new SqlParameter("@CreatedOn", message.CreatedOn) {SourceColumn = "CreatedOn"},
                                     new SqlParameter("@SerializedPayload", message.SerializedPayload) {SourceColumn = "SerializedPayload"},
@@ -31,7 +30,6 @@ namespace MessageStorage.Db.MsSql.DataAccessSection.QueryBuilders
             string columns = string.Join(",", sqlParameters.Select(p => $"[{p.SourceColumn}]"));
             string parameterNames = string.Join(",", sqlParameters.Select(p => $"{p.ParameterName}"));
             string commandText = $"INSERT INTO [{_messageStorageDbConfiguration.Schema}].[{TableNames.MessageTable}] ({columns}) VALUES ({parameterNames}) SELECT SCOPE_IDENTITY()";
-
             return (commandText, sqlParameters);
         }
     }

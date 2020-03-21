@@ -35,9 +35,11 @@ namespace UnitTest.MessageStorage.Db.DbJobRepositoryTests
 
                                                                 foreach (DataRow dataRow in dataRowCollection)
                                                                 {
-                                                                    string id = dataRow[nameof(Job.JobId)] as string ?? string.Empty;
-                                                                    var job = new Job(id, It.IsAny<Message>(), It.IsAny<string>(), It.IsAny<JobStatuses>(), It.IsAny<DateTime>(), It.IsAny<string>());
-                                                                    jobs.Add(job);
+                                                                    if (dataRow[nameof(Job.Id)] is long id)
+                                                                    {
+                                                                        var job = new Job(id, It.IsAny<Message>(), It.IsAny<string>(), It.IsAny<JobStatuses>(), It.IsAny<DateTime>(), It.IsAny<string>());
+                                                                        jobs.Add(job);
+                                                                    }
                                                                 }
 
                                                                 return jobs;
@@ -128,6 +130,7 @@ namespace UnitTest.MessageStorage.Db.DbJobRepositoryTests
         [Test]
         public void WhenDbAdaptorFillSuccessfully_ThereIsDataInSet__TransactionCompleted_And_ResultShouldNotBeNull()
         {
+            const long id = 3;
             var dbConnectionMock = new Mock<IDbConnection>();
             var dbTransactionMock = new Mock<IDbTransaction>();
             var dbCommandMock = new Mock<IDbCommand>();
@@ -150,9 +153,9 @@ namespace UnitTest.MessageStorage.Db.DbJobRepositoryTests
                                              {
                                                  var dataTable = new DataTable();
                                                  dataTable.Clear();
-                                                 dataTable.Columns.Add(nameof(Job.JobId));
+                                                 dataTable.Columns.Add(nameof(Job.Id), id.GetType());
                                                  DataRow dataRow = dataTable.NewRow();
-                                                 dataRow[nameof(Job.JobId)] = "1";
+                                                 dataRow[nameof(Job.Id)] = id;
                                                  dataTable.Rows.Add(dataRow);
 
                                                  dataSet.Tables.Add(dataTable);
@@ -162,7 +165,7 @@ namespace UnitTest.MessageStorage.Db.DbJobRepositoryTests
             Job job = _sut.SetFirstWaitingJobToInProgress();
 
             Assert.NotNull(job);
-            Assert.AreEqual("1", job.JobId);
+            Assert.AreEqual(id, job.Id);
             dbTransactionMock.Verify(transaction => transaction.Commit(), Times.Once);
             dbTransactionMock.Verify(transaction => transaction.Dispose(), Times.Once);
             dbConnectionMock.Verify(connection => connection.Dispose(), Times.Once);

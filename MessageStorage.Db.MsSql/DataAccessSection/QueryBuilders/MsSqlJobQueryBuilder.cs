@@ -21,7 +21,6 @@ namespace MessageStorage.Db.MsSql.DataAccessSection.QueryBuilders
         {
             var sqlParameters = new List<SqlParameter>
                                 {
-                                    new SqlParameter("@JobId", job.JobId) {SourceColumn = "JobId"},
                                     new SqlParameter("@JobStatus", job.JobStatus) {SourceColumn = "JobStatus"},
                                     new SqlParameter("@AssignedHandlerName", job.AssignedHandlerName) {SourceColumn = "AssignedHandlerName"},
                                     new SqlParameter("@LastOperationInfo", (object) job.LastOperationInfo ?? DBNull.Value) {SourceColumn = "LastOperationInfo"},
@@ -32,7 +31,6 @@ namespace MessageStorage.Db.MsSql.DataAccessSection.QueryBuilders
             string columns = string.Join(",", sqlParameters.Select(p => $"[{p.SourceColumn}]"));
             string parameterNames = string.Join(",", sqlParameters.Select(p => $"{p.ParameterName}"));
             string commandText = $"INSERT INTO [{_messageStorageDbConfiguration.Schema}].[{TableNames.JobTable}] ({columns}) VALUES ({parameterNames}) SELECT SCOPE_IDENTITY()";
-
             return (commandText, sqlParameters);
         }
 
@@ -52,20 +50,20 @@ namespace MessageStorage.Db.MsSql.DataAccessSection.QueryBuilders
 DECLARE @Updated table( [JobId] nvarchar(255))
 
 UPDATE [{_messageStorageDbConfiguration.Schema}].[{TableNames.JobTable}] SET [{inProgressJobParameter.SourceColumn}] = {inProgressJobParameter.ParameterName}
-OUTPUT INSERTED.JobId
+OUTPUT INSERTED.Id
 INTO @Updated
-WHERE  JobId = 
+WHERE  Id = 
 (
-    SELECT TOP 1 JobId 
+    SELECT TOP 1 Id 
     FROM [{_messageStorageDbConfiguration.Schema}].[{TableNames.JobTable}] WITH (UPDLOCK)
     WHERE {waitingJobParameter.SourceColumn} = {waitingJobParameter.ParameterName}
-    ORDER  BY JobId
+    ORDER  BY Id
 )
-SELECT j.JobId, j.JobStatus, j.AssignedHandlerName, j.LastOperationInfo, j.LastOperationTime, j.MessageId,
+SELECT j.Id, j.JobStatus, j.AssignedHandlerName, j.LastOperationInfo, j.LastOperationTime, j.MessageId,
 m.CreatedOn, m.SerializedPayload, m.TraceId, m.PayloadClassNamespace ,m.PayloadClassName
     FROM  @Updated u
-    INNER JOIN [{_messageStorageDbConfiguration.Schema}].[{TableNames.JobTable}] j on j.JobId = u.JobId
-    INNER JOIN [{_messageStorageDbConfiguration.Schema}].[{TableNames.MessageTable}] m on j.MessageId = m.MessageId
+    INNER JOIN [{_messageStorageDbConfiguration.Schema}].[{TableNames.JobTable}] j on j.Id = u.JobId
+    INNER JOIN [{_messageStorageDbConfiguration.Schema}].[{TableNames.MessageTable}] m on j.MessageId = m.Id
 ";
 
             return (commandText, new List<IDbDataParameter> {waitingJobParameter, inProgressJobParameter});
@@ -82,9 +80,9 @@ m.CreatedOn, m.SerializedPayload, m.TraceId, m.PayloadClassNamespace ,m.PayloadC
                                     new SqlParameter("@MessageId", job.MessageId) {SourceColumn = "MessageId"}
                                 };
 
-            var idParameter = new SqlParameter("@JobId", job.JobId)
+            var idParameter = new SqlParameter("@Id", job.Id)
                               {
-                                  SourceColumn = "JobId"
+                                  SourceColumn = "Id"
                               };
 
             string setScript = string.Join(", ", sqlParameters.Select(p => $"[{p.SourceColumn}] = {p.ParameterName}"));
@@ -104,7 +102,7 @@ m.CreatedOn, m.SerializedPayload, m.TraceId, m.PayloadClassNamespace ,m.PayloadC
                                      };
             var sqlParameters = new List<SqlParameter> {jobStatusParameter};
 
-            string commandText = $"SELECT COUNT(JobId) FROM [{_messageStorageDbConfiguration.Schema}].[{TableNames.JobTable}] WHERE {jobStatusParameter.SourceColumn} = {jobStatusParameter.ParameterName}";
+            string commandText = $"SELECT COUNT(*) FROM [{_messageStorageDbConfiguration.Schema}].[{TableNames.JobTable}] WHERE {jobStatusParameter.SourceColumn} = {jobStatusParameter.ParameterName}";
 
             return (commandText, sqlParameters);
         }
@@ -124,13 +122,13 @@ m.CreatedOn, m.SerializedPayload, m.TraceId, m.PayloadClassNamespace ,m.PayloadC
 
         private static Job MapDataToJob(DataRow dataRow, Message message)
         {
-            const string idColumnName = "JobId";
+            const string idColumnName = "Id";
             const string assignedHandlerNameColumnName = "AssignedHandlerName";
             const string jobStatusColumnName = "JobStatus";
             const string lastOperationTimeColumnName = "LastOperationTime";
             const string lastOperationInfoColumnName = "LastOperationInfo";
 
-            if (!(dataRow[idColumnName] is string jobId))
+            if (!(dataRow[idColumnName] is long jobId))
                 throw new DbGetOperationException($"{dataRow[idColumnName]} could not map");
 
             if (!(dataRow[assignedHandlerNameColumnName] is string assignedHandlerName))
@@ -168,7 +166,7 @@ m.CreatedOn, m.SerializedPayload, m.TraceId, m.PayloadClassNamespace ,m.PayloadC
             const string payloadClassNamespaceColumnName = "PayloadClassNamespace";
             const string payloadClassNameColumnName = "PayloadClassName";
 
-            if (!(dataRow[messageIdColumnName] is string messageId))
+            if (!(dataRow[messageIdColumnName] is long messageId))
                 throw new DbGetOperationException($"{dataRow[messageIdColumnName]} could not map");
 
             string traceId = null;

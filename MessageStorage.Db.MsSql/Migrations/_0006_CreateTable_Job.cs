@@ -9,7 +9,7 @@ namespace MessageStorage.Db.MsSql.Migrations
         {
             string commandText = $@"
 CREATE TABLE [{messageStorageDbConfiguration.Schema}].[{TableNames.JobTable}] (
-    JobId nvarchar(255) NOT NULL PRIMARY KEY,
+    Id bigint NOT NULL PRIMARY KEY identity(1,1),
     MessageId nvarchar(255) not null,
     AssignedHandlerName nvarchar(MAX) not null,
     JobStatus int not null,

@@ -28,13 +28,11 @@ namespace UnitTest.MessageStorage.JobTests
             var job = new Job(message, assignedHandler);
 
             Assert.NotNull(job);
-            Assert.NotNull(job.JobId);
-            Assert.IsNotEmpty(job.JobId);
+            Assert.AreEqual(0, job.Id);
             Assert.NotNull(job.TraceId);
             Assert.AreEqual(traceId, message.TraceId);
             Assert.AreEqual(traceId, job.TraceId);
-            Assert.NotNull(message.MessageId);
-            Assert.IsNotEmpty(message.MessageId);
+            Assert.AreEqual(0, message.Id);
             Assert.AreEqual(assignedHandler, job.AssignedHandlerName);
             Assert.NotNull(job.LastOperationInfo);
             Assert.True(functionStartTime <= job.LastOperationTime);
@@ -50,13 +48,13 @@ namespace UnitTest.MessageStorage.JobTests
             const string traceId = "trace-id";
             var message = new Message(someEntity, traceId);
 
-            const string jobId = "4";
+            const long jobId = 4;
             const string assignedHandler = "assigned-handler";
             var job = new Job(jobId, message, assignedHandler, JobStatuses.InProgress, DateTime.UtcNow, "last-operation");
 
             Assert.NotNull(job);
 
-            Assert.AreEqual(jobId, job.JobId);
+            Assert.AreEqual(jobId, job.Id);
             Assert.NotNull(message.TraceId);
             Assert.AreEqual(traceId, job.TraceId);
             Assert.NotNull(job.AssignedHandlerName);

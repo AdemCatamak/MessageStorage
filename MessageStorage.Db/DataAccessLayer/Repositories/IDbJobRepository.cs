@@ -3,6 +3,7 @@ using System.Data;
 using System.Linq;
 using MessageStorage.DataAccessSection.Repositories;
 using MessageStorage.Db.DataAccessLayer.QueryBuilders;
+using MessageStorage.Exceptions;
 
 namespace MessageStorage.Db.DataAccessLayer.Repositories
 {
@@ -48,7 +49,20 @@ namespace MessageStorage.Db.DataAccessLayer.Repositories
                     dbCommand.Parameters.Add(dbDataParameter);
                 }
 
-                dbCommand.ExecuteNonQuery();
+                object idObj = dbCommand.ExecuteScalar();
+                if (long.TryParse(idObj.ToString(), out long id))
+                {
+                    if (id <= 0)
+                    {
+                        throw new UnexpectedResponseException($"Insert {nameof(Job)} operation should return Id value which has value is greater than 0");
+                    }
+
+                    entity.SetId(id);
+                }
+                else
+                {
+                    throw new ArgumentNotCompatibleException(typeof(long), idObj.GetType());
+                }
             }
         }
 
