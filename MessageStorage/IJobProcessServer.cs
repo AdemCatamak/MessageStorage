@@ -82,6 +82,8 @@ namespace MessageStorage
                 }
                 catch (Exception e)
                 {
+                    _logger.Log(LogLevel.Warning, eventId: default, typeof(JobProcessServer), exception: e,
+                                (type, exception) => $"{nameof(JobProcessServer)} => Task will be set into failed state JobId: #{job.Id}");
                     job.SetFailed(e.ToString());
                 }
 
