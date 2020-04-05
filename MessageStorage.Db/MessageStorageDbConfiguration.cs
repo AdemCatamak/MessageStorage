@@ -10,7 +10,8 @@ namespace MessageStorage.Db
             public DefaultMessageStorageDbConfiguration(string connectionStr, string schema = null)
             {
                 ConnectionStr = connectionStr;
-                Schema = schema;
+                if (schema != null)
+                    Schema = schema;
             }
 
             public override string ConnectionStr { get; protected set; }

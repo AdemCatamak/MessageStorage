@@ -5,7 +5,7 @@ namespace MessageStorage.Db.MsSql.Migrations
 {
     public class _0006_CreateTable_Job : IOneTimeMigration
     {
-        public (string commandText, IEnumerable<IDbDataAdapter>) Up(MessageStorageDbConfiguration messageStorageDbConfiguration)
+        public (string commandText, IEnumerable<IDbDataParameter>) Up(MessageStorageDbConfiguration messageStorageDbConfiguration)
         {
             string commandText = $@"
 CREATE TABLE [{messageStorageDbConfiguration.Schema}].[{TableNames.JobTable}] (
@@ -17,9 +17,7 @@ CREATE TABLE [{messageStorageDbConfiguration.Schema}].[{TableNames.JobTable}] (
     LastOperationTime DATETIME2(3) not null,
     
 );";
-            return (commandText, new List<IDbDataAdapter>());
+            return (commandText, new List<IDbDataParameter>());
         }
-
-        public int VersionNumber => 6;
     }
 }

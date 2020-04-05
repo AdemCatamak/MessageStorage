@@ -69,7 +69,7 @@ namespace MessageStorage.Db
 
         private void RunMigration(IMigration migration, IDbTransaction dbTransaction, MessageStorageDbConfiguration messageStorageDbConfiguration)
         {
-            (string commandText, IEnumerable<IDbDataAdapter> dbDataAdapters) = migration.Up(messageStorageDbConfiguration);
+            (string commandText, IEnumerable<IDbDataParameter> dbDataAdapters) = migration.Up(messageStorageDbConfiguration);
             using (IDbCommand dbCommand = dbTransaction.Connection.CreateCommand())
             {
                 dbCommand.CommandText = commandText;

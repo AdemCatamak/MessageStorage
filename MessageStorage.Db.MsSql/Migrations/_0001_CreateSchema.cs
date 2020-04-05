@@ -5,7 +5,7 @@ namespace MessageStorage.Db.MsSql.Migrations
 {
     public class _0001_CreateSchema : IMigration
     {
-        public (string commandText, IEnumerable<IDbDataAdapter>) Up(MessageStorageDbConfiguration messageStorageDbConfiguration)
+        public (string commandText, IEnumerable<IDbDataParameter>) Up(MessageStorageDbConfiguration messageStorageDbConfiguration)
         {
             string commandText = $@"
 IF NOT EXISTS(
@@ -15,7 +15,7 @@ IF NOT EXISTS(
     EXEC('CREATE SCHEMA [{messageStorageDbConfiguration.Schema}]');
 ";
 
-            return (commandText, new List<IDbDataAdapter>());
+            return (commandText, new List<IDbDataParameter>());
         }
     }
 }

@@ -5,7 +5,7 @@ namespace MessageStorage.Db.MsSql.Migrations
 {
     public class _0004_InsertInto_JobStatus : IOneTimeMigration
     {
-        public (string commandText, IEnumerable<IDbDataAdapter>) Up(MessageStorageDbConfiguration messageStorageDbConfiguration)
+        public (string commandText, IEnumerable<IDbDataParameter>) Up(MessageStorageDbConfiguration messageStorageDbConfiguration)
         {
             string commandText = $@"
 INSERT INTO [{messageStorageDbConfiguration.Schema}].[{TableNames.JobStatusTable}] (Id, Description) VALUES ({(int) JobStatuses.Waiting},'{JobStatuses.Waiting.ToString()}' )
@@ -13,9 +13,7 @@ INSERT INTO [{messageStorageDbConfiguration.Schema}].[{TableNames.JobStatusTable
 INSERT INTO [{messageStorageDbConfiguration.Schema}].[{TableNames.JobStatusTable}] (Id, Description) VALUES ({(int) JobStatuses.Done},'{JobStatuses.Done.ToString()}' )
 INSERT INTO [{messageStorageDbConfiguration.Schema}].[{TableNames.JobStatusTable}] (Id, Description) VALUES ({(int) JobStatuses.Failed},'{JobStatuses.Failed.ToString()}' )
    ";
-            return (commandText, new List<IDbDataAdapter>());
+            return (commandText, new List<IDbDataParameter>());
         }
-
-        public int VersionNumber => 4;
     }
 }
