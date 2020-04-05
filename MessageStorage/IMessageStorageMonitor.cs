@@ -1,5 +1,13 @@
+using MessageStorage.DataAccessSection;
+using MessageStorage.DataAccessSection.Repositories;
+
 namespace MessageStorage
 {
+    public interface IJobMonitor
+    {
+        int GetJobCountByStatus(JobStatuses jobStatus);
+    }
+
     public interface IMessageStorageMonitor : IJobMonitor
     {
         int GetWaitingJobCount();
@@ -8,11 +16,18 @@ namespace MessageStorage
 
     public class MessageStorageMonitor : IMessageStorageMonitor
     {
-        private readonly IStorageAdaptor _storageAdaptor;
+        private readonly IRepositoryResolver _repositoryResolver;
 
-        public MessageStorageMonitor(IStorageAdaptor storageAdaptor)
+        public MessageStorageMonitor(IRepositoryResolver repositoryResolver)
         {
-            _storageAdaptor = storageAdaptor;
+            _repositoryResolver = repositoryResolver;
+        }
+
+        public int GetJobCountByStatus(JobStatuses jobStatus)
+        {
+            var jobRepository = _repositoryResolver.Resolve<IJobRepository>();
+            int result = jobRepository.GetJobCountByStatus(jobStatus);
+            return result;
         }
 
         public int GetWaitingJobCount()
@@ -24,12 +39,6 @@ namespace MessageStorage
         public int GetFailedJobCount()
         {
             int result = GetJobCountByStatus(JobStatuses.Failed);
-            return result;
-        }
-
-        public int GetJobCountByStatus(JobStatuses jobStatus)
-        {
-            int result = _storageAdaptor.GetJobCountByStatus(jobStatus);
             return result;
         }
     }

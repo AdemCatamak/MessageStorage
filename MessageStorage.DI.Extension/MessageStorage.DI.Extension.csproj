@@ -1,14 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+
+        <IsPackable>true</IsPackable>
         <IncludeSymbols>true</IncludeSymbols>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-        <TargetFramework>netstandard2.0</TargetFramework>
+
         <Authors>Adem Catamak</Authors>
-        <IsPackable>true</IsPackable>
-        <VersionPrefix>1.0.1</VersionPrefix>
         <Description>Message and Job Storage</Description>
         <LangVersion>latest</LangVersion>
+
+        <VersionPrefix>1.1.0</VersionPrefix>
     </PropertyGroup>
 
     <ItemGroup>
@@ -16,6 +19,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\MessageStorage.Db\MessageStorage.Db.csproj" />
       <ProjectReference Include="..\MessageStorage\MessageStorage.csproj" />
     </ItemGroup>
 

@@ -3,9 +3,9 @@ using System.Data;
 
 namespace MessageStorage.Db.MsSql.Migrations
 {
-    public class _0005_CreateTable_Message : IVersionedMigration
+    public class _0005_CreateTable_Message : IOneTimeMigration
     {
-        public (string commandText, IEnumerable<IDbDataAdapter>) Up(MessageStorageDbConfiguration messageStorageDbConfiguration)
+        public (string commandText, IEnumerable<IDbDataParameter>) Up(MessageStorageDbConfiguration messageStorageDbConfiguration)
         {
             string commandText = $@"
 CREATE TABLE [{messageStorageDbConfiguration.Schema}].[{TableNames.MessageTable}] (
@@ -17,15 +17,7 @@ CREATE TABLE [{messageStorageDbConfiguration.Schema}].[{TableNames.MessageTable}
     CreatedOn DATETIME2(3) not null,
     
 );";
-            return (commandText, new List<IDbDataAdapter>());
+            return (commandText, new List<IDbDataParameter>());
         }
-
-        public (string commandText, IEnumerable<IDbDataAdapter>) Down(MessageStorageDbConfiguration messageStorageDbConfiguration)
-        {
-            string commandText = $"IF OBJECT_ID('{messageStorageDbConfiguration.Schema}.{TableNames.MessageTable}', 'U') IS NOT NULL DROP TABLE {messageStorageDbConfiguration.Schema}.{TableNames.MessageTable}; ";
-            return (commandText, new List<IDbDataAdapter>());
-        }
-
-        public int VersionNumber => 5;
     }
 }

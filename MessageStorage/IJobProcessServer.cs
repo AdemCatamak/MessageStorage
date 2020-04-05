@@ -31,8 +31,6 @@ namespace MessageStorage
             _logger = logger ?? NullLogger<JobProcessServer>.Instance;
 
             _cancellationTokenSource = new CancellationTokenSource();
-            if (_jobProcessServerConfiguration.AutoStart)
-                StartAsync();
         }
 
         public Task StartAsync()
@@ -84,6 +82,8 @@ namespace MessageStorage
                 }
                 catch (Exception e)
                 {
+                    _logger.Log(LogLevel.Warning, eventId: default, typeof(JobProcessServer), exception: e,
+                                (type, exception) => $"{nameof(JobProcessServer)} => Task will be set into failed state JobId: #{job.Id}");
                     job.SetFailed(e.ToString());
                 }
 
@@ -109,6 +109,5 @@ namespace MessageStorage
     {
         public TimeSpan WaitWhenMessageNotFound { get; set; } = TimeSpan.FromSeconds(value: 5);
         public TimeSpan WaitAfterMessageHandled { get; set; } = TimeSpan.Zero;
-        public bool AutoStart { get; set; } = false;
     }
 }

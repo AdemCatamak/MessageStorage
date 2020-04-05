@@ -2,25 +2,31 @@ using System;
 
 namespace MessageStorage.Db
 {
+    [Obsolete("This class will be deleted at package's version 2.0. You can create your own class based on MessageStorageDbConfiguration")]
     public class MessageStorageDbConfigurationFactory
     {
+        private sealed class DefaultMessageStorageDbConfiguration : MessageStorageDbConfiguration
+        {
+            public DefaultMessageStorageDbConfiguration(string connectionStr, string schema = null)
+            {
+                ConnectionStr = connectionStr;
+                if (schema != null)
+                    Schema = schema;
+            }
+
+            public override string ConnectionStr { get; protected set; }
+        }
+
         public static MessageStorageDbConfiguration Create(string connectionStr, string schema = null)
         {
-            var messageStorageDbConfiguration = new MessageStorageDbConfiguration(connectionStr, schema);
+            var messageStorageDbConfiguration = new DefaultMessageStorageDbConfiguration(connectionStr, schema);
             return messageStorageDbConfiguration;
         }
     }
 
-    public class MessageStorageDbConfiguration
+    public abstract class MessageStorageDbConfiguration
     {
-        public string Schema { get; private set; } = "MessageStorage";
-        public string ConnectionStr { get; private set; }
-
-        internal MessageStorageDbConfiguration(string connectionStr, string schema = null)
-        {
-            ConnectionStr = connectionStr ?? throw new ArgumentNullException(nameof(connectionStr));
-            schema = schema?.Trim();
-            Schema = string.IsNullOrEmpty(schema) ? Schema : schema;
-        }
+        public string Schema { get; protected set; } = "MessageStorage";
+        public abstract string ConnectionStr { get; protected set; }
     }
 }

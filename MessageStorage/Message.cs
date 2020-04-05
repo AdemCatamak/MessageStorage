@@ -58,7 +58,7 @@ namespace MessageStorage
             CreatedOn = DateTime.UtcNow;
             Payload = payload;
         }
-
+        
         public void SetId(long id)
         {
             Id = id;

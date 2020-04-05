@@ -8,27 +8,42 @@ namespace MessageStorage.DI.Extension
 {
     public interface IMessageStorageServiceCollection
     {
-        IMessageStorageServiceCollection AddHandlerManager<T>(ServiceLifetime serviceLifetime) where T : IHandlerManager;
+        IMessageStorageServiceCollection AddHandlerManager();
+
+        IMessageStorageServiceCollection AddHandlerManager<THandlerManager>()
+            where THandlerManager : class, IHandlerManager;
+
         IMessageStorageServiceCollection AddHandlers(IEnumerable<Assembly> assemblies);
 
-        IMessageStorageServiceCollection AddJobProcessServer(ServiceLifetime serviceLifetime = ServiceLifetime.Singleton);
-        IMessageStorageServiceCollection Add<T>(Func<IServiceProvider, T> messageStorageServiceCollection, ServiceLifetime lifetime) where T : class;
+        IMessageStorageServiceCollection AddJobProcessServer();
+
+        IMessageStorageServiceCollection AddJobProcessServer<TJobProcessServer>()
+            where TJobProcessServer : class, IJobProcessServer;
+
+        IMessageStorageServiceCollection Add<T>(ServiceLifetime serviceLifetime, Func<IServiceProvider, T> factory)
+            where T : class;
     }
 
     public class MessageStorageServiceCollection : IMessageStorageServiceCollection
     {
-        private readonly IServiceCollection _serviceCollection;
+        protected readonly IServiceCollection ServiceCollection;
 
         public MessageStorageServiceCollection(IServiceCollection serviceCollection)
         {
-            _serviceCollection = serviceCollection;
+            ServiceCollection = serviceCollection;
         }
 
-
-        public IMessageStorageServiceCollection AddHandlerManager<T>(ServiceLifetime serviceLifetime) where T : IHandlerManager
+        public IMessageStorageServiceCollection AddHandlerManager()
         {
-            _serviceCollection.Add(new ServiceDescriptor(typeof(IHandlerManager), typeof(T), serviceLifetime));
-            _serviceCollection.Add(new ServiceDescriptor(typeof(T), typeof(T), serviceLifetime));
+            return AddHandlerManager<HandlerManager>();
+        }
+
+        public IMessageStorageServiceCollection AddHandlerManager<THandlerManager>()
+            where THandlerManager : class, IHandlerManager
+        {
+            ServiceCollection.AddSingleton<IHandlerManager, THandlerManager>();
+            ServiceCollection.AddSingleton<THandlerManager, THandlerManager>();
+
             return this;
         }
 
@@ -40,35 +55,43 @@ namespace MessageStorage.DI.Extension
 
             foreach (Type handlerType in handlerTypes)
             {
-                _serviceCollection.Add(new ServiceDescriptor(typeof(Handler), handlerType, ServiceLifetime.Singleton));
-                _serviceCollection.Add(new ServiceDescriptor(handlerType, handlerType, ServiceLifetime.Singleton));
+                ServiceCollection.Add(new ServiceDescriptor(typeof(Handler), handlerType, ServiceLifetime.Singleton));
+                ServiceCollection.Add(new ServiceDescriptor(handlerType, handlerType, ServiceLifetime.Singleton));
             }
 
             return this;
         }
 
-        public IMessageStorageServiceCollection AddJobProcessServer(ServiceLifetime serviceLifetime = ServiceLifetime.Singleton)
+        public IMessageStorageServiceCollection AddJobProcessServer()
         {
-            _serviceCollection.Add(new ServiceDescriptor(typeof(IJobProcessServer), typeof(JobProcessServer), serviceLifetime));
-            _serviceCollection.Add(new ServiceDescriptor(typeof(JobProcessServer), typeof(JobProcessServer), serviceLifetime));
+            return AddJobProcessServer<JobProcessServer>();
+        }
+
+        public IMessageStorageServiceCollection AddJobProcessServer<TJobProcessServer>()
+            where TJobProcessServer : class, IJobProcessServer
+        {
+            ServiceCollection.AddSingleton<IJobProcessServer, TJobProcessServer>();
+            ServiceCollection.AddSingleton<TJobProcessServer, TJobProcessServer>();
+
             return this;
         }
 
-        public IMessageStorageServiceCollection Add<T>(Func<IServiceProvider, T> provider, ServiceLifetime lifetime) where T : class
+        public IMessageStorageServiceCollection Add<T>(ServiceLifetime serviceLifetime, Func<IServiceProvider, T> factory)
+            where T : class
         {
-            switch (lifetime)
+            switch (serviceLifetime)
             {
                 case ServiceLifetime.Singleton:
-                    _serviceCollection.AddSingleton(provider);
+                    ServiceCollection.AddSingleton<T>(factory);
                     break;
                 case ServiceLifetime.Scoped:
-                    _serviceCollection.AddScoped(provider);
+                    ServiceCollection.AddScoped<T>(factory);
                     break;
                 case ServiceLifetime.Transient:
-                    _serviceCollection.AddTransient(provider);
+                    ServiceCollection.AddTransient(factory);
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(lifetime), lifetime, null);
+                    throw new ArgumentOutOfRangeException(nameof(serviceLifetime), serviceLifetime, null);
             }
 
             return this;
