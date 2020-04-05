@@ -12,6 +12,13 @@ namespace MessageStorage.Db.MsSql.DI.Extension
 {
     public static class MessageStorageDbDIExtension
     {
+        [Obsolete("This class will be deleted at package's version 2.0. You can use AddMessageStorageDbClient method")]
+        public static IMessageStorageServiceCollection AddMsSqlMessageStorage(this IMessageStorageServiceCollection messageStorageServiceCollection, MessageStorageDbConfiguration messageStorageDbConfiguration)
+        {
+            return AddMessageStorageDbClient(messageStorageServiceCollection, messageStorageDbConfiguration);
+        }
+
+
         public static IMessageStorageServiceCollection AddMessageStorageDbClient<TMessageStorageDbConfiguration>
             (this IMessageStorageServiceCollection messageStorageServiceCollection, TMessageStorageDbConfiguration messageStorageDbConfiguration)
             where TMessageStorageDbConfiguration : MessageStorageDbConfiguration

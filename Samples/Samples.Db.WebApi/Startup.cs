@@ -1,3 +1,4 @@
+using MessageStorage.Db;
 using MessageStorage.Db.MsSql.DI.Extension;
 using MessageStorage.DI.Extension;
 using Microsoft.AspNetCore.Builder;
@@ -7,7 +8,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Samples.Db.WebApi.HostedServices;
-using Samples.Db.WebApi.MessageStorageSection;
 
 namespace Samples.Db.WebApi
 {
@@ -24,13 +24,23 @@ namespace Samples.Db.WebApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            MessageStorageDbConfiguration messageStorageDbConfiguration = MessageStorageDbConfigurationFactory.Create(AppConst.DbConnectionStr);
             services.AddMessageStorage(messageStorageServiceCollection =>
                                        {
-                                           messageStorageServiceCollection.AddHandlers(new[] {GetType().Assembly})
-                                                                          .AddJobProcessServer()
-                                                                          .AddMessageStorageDbClient(new MyMessageStorageDbConfiguration());
+                                           messageStorageServiceCollection.AddJobProcessServer()
+                                                                          .AddMessageStorageDbClient(messageStorageDbConfiguration)
+                                                                          .AddHandlers(new[] {typeof(Startup).Assembly});
                                        });
+            
             services.AddHostedService<JobProcessHostedService>();
+            
+            // VERSION 2.0
+            // services.AddMessageStorage(messageStorageServiceCollection =>
+            //                            {
+            //                                messageStorageServiceCollection.AddHandlers(new[] {GetType().Assembly})
+            //                                                               .AddJobProcessServer()
+            //                                                               .AddMessageStorageDbClient(new MyMessageStorageDbConfiguration());
+            //                            });
 
             services.AddSwaggerGen(c =>
                                    {
