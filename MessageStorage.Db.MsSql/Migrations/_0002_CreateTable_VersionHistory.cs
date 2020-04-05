@@ -18,7 +18,7 @@ BEGIN
         VersionName nvarchar(max),
         ExecutionTime datetime default GETDATE()
     );
-    INSERT INTO [{messageStorageDbConfiguration.Schema}].[{TableNames.VersionHistoryTable}] (VersionName) VALUES ('{nameof(_0002_CreateTable_VersionHistory)}')
+    INSERT INTO [{messageStorageDbConfiguration.Schema}].[{TableNames.VersionHistoryTable}] (VersionNumber, VersionName) VALUES (2, '{nameof(_0002_CreateTable_VersionHistory)}')
 END
 ";
             return (commandText, new List<IDbDataParameter>());
