@@ -4,7 +4,7 @@ using System.Data.SqlClient;
 
 namespace MessageStorage.Db.MsSql.Migrations
 {
-    public class _0007_AlterTable_VersionHistory : IMigration
+    public class _0007_AlterTable_VersionHistory : IOneTimeMigration
     {
         public (string commandText, IEnumerable<IDbDataParameter>) Up(MessageStorageDbConfiguration messageStorageDbConfiguration)
         {
