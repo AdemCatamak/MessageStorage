@@ -17,15 +17,14 @@ namespace MessageStorage
     public class HandlerManager : IHandlerManager
     {
         public IReadOnlyCollection<Handler> Handlers { get; private set; }
-        private readonly List<Handler> _handlers;
-        private readonly object _lockObj;
 
         public HandlerManager(IEnumerable<Handler> handlers = null)
         {
-            _lockObj = new object();
-            _handlers = handlers?.ToList().GroupBy(h => h.Name).Select(g => g.First()).ToList()
-                     ?? new List<Handler>();
-            Handlers = _handlers.AsReadOnly();
+            List<Handler> handlerList = handlers?.GroupBy(h => h.Name)
+                                                  .Select(g => g.First())
+                                                  .ToList()
+                                      ?? new List<Handler>();
+            Handlers = handlerList.AsReadOnly();
         }
 
         public IEnumerable<string> GetAvailableHandlerNames(object payload)
