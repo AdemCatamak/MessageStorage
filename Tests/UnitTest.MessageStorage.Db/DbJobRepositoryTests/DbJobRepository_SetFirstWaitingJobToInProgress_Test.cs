@@ -84,7 +84,7 @@ namespace UnitTest.MessageStorage.Db.DbJobRepositoryTests
         public void WhenDbAdaptorFillSuccessfully_ThereIsNoData_WithParameter__TransactionCompleted_And_ResultIsNull()
         {
             _jobQueryBuilderMock.Setup(builder => builder.SetFirstWaitingJobToInProgress())
-                                .Returns(() => ("query-text", new List<IDbDataParameter>()
+                                .Returns(() => ("query-text", new List<IDbDataParameter>
                                                               {
                                                                   new Mock<IDbDataParameter>().Object
                                                               }));

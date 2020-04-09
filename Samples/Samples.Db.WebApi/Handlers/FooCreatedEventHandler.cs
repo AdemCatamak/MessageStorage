@@ -5,11 +5,11 @@ using Samples.Db.WebApi.Events;
 
 namespace Samples.Db.WebApi.Handlers
 {
-    public class SomethingCreatedEventHandler : Handler<SomethingCreatedEvent>
+    public class FooCreatedEventHandler : Handler<FooCreatedEvent>
     {
-        protected override Task Handle(SomethingCreatedEvent payload)
+        protected override Task Handle(FooCreatedEvent payload)
         {
-            Console.WriteLine(payload.Id);
+            Console.WriteLine(payload.ToString());
             return Task.CompletedTask;
         }
     }

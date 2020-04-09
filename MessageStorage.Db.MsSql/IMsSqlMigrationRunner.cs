@@ -37,6 +37,7 @@ namespace MessageStorage.Db.MsSql
         protected override void InsertMigrationToHistory(IOneTimeMigration migration, IDbTransaction dbTransaction, MessageStorageDbConfiguration messageStorageDbConfiguration)
         {
             string migrationName = migration.GetType().Name;
+            long migrationNumber = migration.VersionNumber;
             DateTime executionTime = DateTime.UtcNow;
 
             using (IDbCommand dbCommand = dbTransaction.Connection.CreateCommand())
@@ -46,6 +47,10 @@ namespace MessageStorage.Db.MsSql
                 sqlParameters.Add(new SqlParameter("@VersionName", migrationName)
                                   {
                                       SourceColumn = "VersionName"
+                                  });
+                sqlParameters.Add(new SqlParameter("@VersionNumber", migrationNumber)
+                                  {
+                                      SourceColumn = "VersionNumber"
                                   });
                 sqlParameters.Add(new SqlParameter("@ExecutionTime", executionTime)
                                   {

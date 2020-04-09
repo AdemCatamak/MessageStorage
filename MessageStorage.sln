@@ -38,6 +38,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Samples.Db.WebApi", "Sample
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTest.MessageStorage.Db", "Tests\UnitTest.MessageStorage.Db\UnitTest.MessageStorage.Db.csproj", "{9B16391C-3316-4071-9150-D901E06A5AD0}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DockerFiles", "DockerFiles", "{235A8E87-10B1-478C-B4A8-F13EC9EFAB8D}"
+ProjectSection(SolutionItems) = preProject
+	docker-compose.samples-db-webapi.yml = docker-compose.samples-db-webapi.yml
+	Samples.Db.WebApi.Dockerfile = Samples.Db.WebApi.Dockerfile
+EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

@@ -37,7 +37,7 @@ namespace UnitTest.MessageStorage.HandlerManagerTests
             mockHandler2.SetupGet(handler => handler.Name)
                         .Returns("HandlerName");
 
-            var sut = new HandlerManager(new List<Handler>() {mockHandler1.Object, mockHandler2.Object});
+            var sut = new HandlerManager(new List<Handler> {mockHandler1.Object, mockHandler2.Object});
 
             Assert.NotNull(sut.Handlers);
             Assert.IsNotEmpty(sut.Handlers);

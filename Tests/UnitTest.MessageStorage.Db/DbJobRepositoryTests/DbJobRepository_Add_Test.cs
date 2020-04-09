@@ -157,7 +157,7 @@ namespace UnitTest.MessageStorage.Db.DbJobRepositoryTests
         public void WhenDbCommandExecuted_WithParameter__TransactionWillBeCommitted()
         {
             _jobQueryBuilderMock.Setup(builder => builder.Add(It.IsAny<Job>()))
-                                .Returns(() => ("query-text", new List<IDbDataParameter>()
+                                .Returns(() => ("query-text", new List<IDbDataParameter>
                                                               {
                                                                   new Mock<IDbDataParameter>().Object
                                                               }));

@@ -19,5 +19,7 @@ CREATE TABLE [{messageStorageDbConfiguration.Schema}].[{TableNames.MessageTable}
 );";
             return (commandText, new List<IDbDataParameter>());
         }
+
+        public int VersionNumber => 5;
     }
 }
