@@ -15,5 +15,7 @@ CREATE TABLE [{messageStorageDbConfiguration.Schema}].[{TableNames.JobStatusTabl
 
             return (commandText, new List<IDbDataParameter>());
         }
+
+        public int VersionNumber => 3;
     }
 }

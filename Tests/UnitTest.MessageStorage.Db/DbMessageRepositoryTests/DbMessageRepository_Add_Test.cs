@@ -156,7 +156,7 @@ namespace UnitTest.MessageStorage.Db.DbMessageRepositoryTests
         public void WhenDbCommandExecuted_WithParameter__TransactionWillBeCommitted()
         {
             _messageQueryBuilderMock.Setup(builder => builder.Add(It.IsAny<Message>()))
-                                    .Returns(() => ("query-text", new List<IDbDataParameter>()
+                                    .Returns(() => ("query-text", new List<IDbDataParameter>
                                                                   {
                                                                       new Mock<IDbDataParameter>().Object
                                                                   }));

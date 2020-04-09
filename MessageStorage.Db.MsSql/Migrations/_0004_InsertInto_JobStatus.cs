@@ -15,5 +15,7 @@ INSERT INTO [{messageStorageDbConfiguration.Schema}].[{TableNames.JobStatusTable
    ";
             return (commandText, new List<IDbDataParameter>());
         }
+
+        public int VersionNumber => 4;
     }
 }

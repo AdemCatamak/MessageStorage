@@ -74,7 +74,7 @@ namespace UnitTest.MessageStorage.Db.MessageStorageDbClientTests
         [Test]
         public void WhenCompatibleHandlerExist__XNumberOfJobCreated()
         {
-            var handlerNames = new List<string>()
+            var handlerNames = new List<string>
                                {
                                    "handler-1",
                                    "handler-2",

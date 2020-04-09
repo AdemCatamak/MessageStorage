@@ -31,7 +31,7 @@ namespace UnitTest.MessageStorage.Db.DbRepositoryResolverTests
         [Test]
         public void WhenListDoesNotContainsDemandedRepository__RepositoryNotFoundExceptionOccurs()
         {
-            _dbRepositories.AddRange(new List<IDbRepository>()
+            _dbRepositories.AddRange(new List<IDbRepository>
                                      {
                                          new Mock<IDbMessageRepository>().Object
                                      });
@@ -43,7 +43,7 @@ namespace UnitTest.MessageStorage.Db.DbRepositoryResolverTests
         [Test]
         public void WhenListContainsConcreteRepository__ResponseShouldNotBeNull()
         {
-            _dbRepositories.AddRange(new List<IDbRepository>()
+            _dbRepositories.AddRange(new List<IDbRepository>
                                      {
                                          new Mock<IDbMessageRepository>().Object
                                      });
@@ -56,7 +56,7 @@ namespace UnitTest.MessageStorage.Db.DbRepositoryResolverTests
         [Test]
         public void WhenListContainsConcreteRepository_And_BaseTypeIsDemanded__ResponseShouldNotBeNull()
         {
-            _dbRepositories.AddRange(new List<IDbRepository>()
+            _dbRepositories.AddRange(new List<IDbRepository>
                                      {
                                          new Mock<IDbMessageRepository>().Object
                                      });

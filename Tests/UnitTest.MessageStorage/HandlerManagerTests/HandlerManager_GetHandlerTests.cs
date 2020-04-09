@@ -35,7 +35,7 @@ namespace UnitTest.MessageStorage.HandlerManagerTests
             mockHandler.SetupGet(h => h.Name)
                        .Returns("handler-name");
 
-            _sut = new HandlerManager(new List<Handler>() {mockHandler.Object});
+            _sut = new HandlerManager(new List<Handler> {mockHandler.Object});
 
             Assert.Throws<HandlerNotFoundException>(() => _sut.GetHandler("some-handler"));
         }
@@ -50,7 +50,7 @@ namespace UnitTest.MessageStorage.HandlerManagerTests
             mockHandler2.SetupGet(h => h.Name)
                         .Returns("handler-name-2");
 
-            _sut = new HandlerManager(new List<Handler>() {mockHandler1.Object, mockHandler2.Object});
+            _sut = new HandlerManager(new List<Handler> {mockHandler1.Object, mockHandler2.Object});
 
             Handler handler = _sut.GetHandler("handler-name-2");
 

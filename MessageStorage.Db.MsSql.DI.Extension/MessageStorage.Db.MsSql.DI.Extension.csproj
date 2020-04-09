@@ -11,7 +11,7 @@
         <Description>Message and Job Storage</Description>
         <LangVersion>latest</LangVersion>
 
-        <VersionPrefix>1.1.0</VersionPrefix>
+        <VersionPrefix>1.1.1</VersionPrefix>
     </PropertyGroup>
 
     <ItemGroup>
