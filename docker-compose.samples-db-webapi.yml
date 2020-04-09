@@ -1,0 +1,11 @@
+version : "3"
+
+services:
+
+    ms-sql-db :
+        image : mcr.microsoft.com/mssql/server
+        environment :
+            ACCEPT_EULA: "Y"
+            SA_PASSWORD: "kHyjGp7JH5"
+        ports:
+            - 1414:1433
