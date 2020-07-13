@@ -1,10 +1,10 @@
-using System;
+using MessageStorage.Exceptions.BaseExceptions;
 
 namespace MessageStorage.Exceptions
 {
-    public class HandlerNotFoundException : Exception
+    public class HandlerNotFoundException : MessageStorageNotFoundException
     {
-        public HandlerNotFoundException(string message = null, Exception innerEx = null) : base(message, innerEx)
+        public HandlerNotFoundException(string handlerName) : base($"Handler could not found #{handlerName}")
         {
         }
     }

@@ -1,15 +1,15 @@
-using System;
+using MessageStorage.Exceptions.BaseExceptions;
 
 namespace MessageStorage.Exceptions
 {
-    public class ArgumentNotCompatibleException : Exception
+    public class ArgumentNotCompatibleException : MessageStorageCustomException
     {
-        public ArgumentNotCompatibleException(string message) : base(message)
+        public ArgumentNotCompatibleException(string argumentType, string targetType)
+            : this($"{argumentType} is not compatible with {targetType}")
         {
         }
 
-        public ArgumentNotCompatibleException(Type expectedType, Type actualType)
-            : base($"Expected Type: {expectedType.Name} - Actual Type:{actualType.Name}")
+        public ArgumentNotCompatibleException(string friendlyMessage) : base(friendlyMessage)
         {
         }
     }

@@ -1,0 +1,25 @@
+version: "3.4"
+
+services:
+
+  sample-web-api:
+    image: sample-web-api:latest
+    build:
+      context: ./
+      dockerfile: sample-web-api.Dockerfile
+    depends_on:
+      - sample-web-api-sql-server
+    links:
+      - sample-web-api-sql-server
+    ports:
+      - 7780:80
+
+  sample-web-api-sql-server:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "Passw0rd"
+    expose:
+      - 1433
+    ports:
+      - 7784:1433

@@ -1,6 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
+        <PackageId>MessageStorage.Db</PackageId>
+
         <TargetFramework>netstandard2.0</TargetFramework>
 
         <IsPackable>true</IsPackable>
@@ -11,7 +13,7 @@
         <Description>Message and Job Storage</Description>
         <LangVersion>latest</LangVersion>
 
-        <VersionPrefix>1.1.1</VersionPrefix>
+        <VersionPrefix>2.0.0</VersionPrefix>
     </PropertyGroup>
 
     <ItemGroup>
