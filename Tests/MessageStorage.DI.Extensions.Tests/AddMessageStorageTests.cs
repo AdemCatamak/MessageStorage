@@ -1,3 +1,4 @@
+using MessageStorage.DI.Extension;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using NUnit.Framework;

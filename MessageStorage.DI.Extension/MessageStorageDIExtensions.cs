@@ -1,7 +1,8 @@
-﻿﻿using System;
+﻿using System;
+using MessageStorage.DI.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace MessageStorage.DI.Extensions
+namespace MessageStorage.DI.Extension
 {
     public static class MessageStorageDIExtensions
     {

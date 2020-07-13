@@ -6,12 +6,13 @@ using MessageStorage.AspNetCore;
 using MessageStorage.Clients;
 using MessageStorage.Clients.Imp;
 using MessageStorage.Db.Clients;
+using MessageStorage.Db.Configurations;
 using MessageStorage.Db.DataAccessSection;
 using MessageStorage.Db.DbMigrationRunners;
 using MessageStorage.Db.SqlServer;
 using MessageStorage.Db.SqlServer.DataAccessSection;
-using MessageStorage.Db.SqlServer.DI.Extensions;
-using MessageStorage.DI.Extensions;
+using MessageStorage.Db.SqlServer.DI.Extension;
+using MessageStorage.DI.Extension;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -111,7 +112,7 @@ namespace SampleWebApi
                 services.AddJobProcessorHostedService()
                         .AddMessageStorage(collection =>
                                            {
-                                               collection.AddJobProcessor<IJobProcessor>(provider => new JobProcessor<WebapiSqlServerDbRepositoryConfiguration>(provider.GetRequiredService<IDbRepositoryContext<WebapiSqlServerDbRepositoryConfiguration>>(), handlerManager, provider.GetRequiredService<ILogger<IJobProcessor>>()));
+                                               collection.AddJobProcessor<IJobProcessor>(provider => new JobProcessor<DbRepositoryConfiguration>(provider.GetRequiredService<IDbRepositoryContext<DbRepositoryConfiguration>>(), handlerManager, provider.GetRequiredService<ILogger<IJobProcessor>>()));
 
                                                collection.AddMessageStorageDbClient(webapiSqlServerDbRepositoryConfiguration, handlers);
                                                // collection.AddMessageStorageDbClient(webapiSqlServerDbRepositoryConfiguration, handlerManager);
