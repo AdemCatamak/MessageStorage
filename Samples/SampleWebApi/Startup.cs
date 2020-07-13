@@ -112,7 +112,7 @@ namespace SampleWebApi
                         .AddMessageStorage(collection =>
                                            {
                                                collection.AddJobProcessor<IJobProcessor>(provider => new JobProcessor<WebapiSqlServerDbRepositoryConfiguration>(provider.GetRequiredService<IDbRepositoryContext<WebapiSqlServerDbRepositoryConfiguration>>(), handlerManager, provider.GetRequiredService<ILogger<IJobProcessor>>()));
-                                               
+
                                                collection.AddMessageStorageDbClient(webapiSqlServerDbRepositoryConfiguration, handlers);
                                                // collection.AddMessageStorageDbClient(webapiSqlServerDbRepositoryConfiguration, handlerManager);
                                            });
