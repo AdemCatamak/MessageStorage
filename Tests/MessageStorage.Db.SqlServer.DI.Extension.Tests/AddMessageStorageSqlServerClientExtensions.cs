@@ -39,10 +39,10 @@ namespace MessageStorage.Db.SqlServer.DI.Extension.Tests
                 Assert.IsNotNull(messageStorageDbClient);
 
                 var messageStorageSqlServerClientWithBaseConfig = serviceProvider.GetService<SqlServerDbMessageRepository<DbRepositoryConfiguration>>();
-                Assert.IsNotNull(messageStorageSqlServerClientWithBaseConfig);
+                Assert.IsNull(messageStorageSqlServerClientWithBaseConfig);
 
                 var messageStorageSqlServerClientWithDerivedConfig = serviceProvider.GetService<SqlServerDbMessageRepository<DummyDbRepositoryConfiguration>>();
-                Assert.IsNotNull(messageStorageSqlServerClientWithDerivedConfig);
+                Assert.IsNull(messageStorageSqlServerClientWithDerivedConfig);
             }
         }
 
@@ -60,10 +60,10 @@ namespace MessageStorage.Db.SqlServer.DI.Extension.Tests
                 Assert.IsNotNull(messageStorageDbClient);
 
                 var messageStorageSqlServerClientWithBaseConfig = serviceProvider.GetService<SqlServerDbMessageRepository<DbRepositoryConfiguration>>();
-                Assert.IsNotNull(messageStorageSqlServerClientWithBaseConfig);
+                Assert.IsNull(messageStorageSqlServerClientWithBaseConfig);
 
                 var messageStorageSqlServerClientWithDerivedConfig = serviceProvider.GetService<SqlServerDbMessageRepository<DummyDbRepositoryConfiguration>>();
-                Assert.IsNotNull(messageStorageSqlServerClientWithDerivedConfig);
+                Assert.IsNull(messageStorageSqlServerClientWithDerivedConfig);
             }
         }
     }
