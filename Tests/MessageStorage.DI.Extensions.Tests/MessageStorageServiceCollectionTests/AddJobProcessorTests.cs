@@ -2,6 +2,7 @@ using MessageStorage.Clients;
 using MessageStorage.Clients.Imp;
 using MessageStorage.Configurations;
 using MessageStorage.DataAccessSection;
+using MessageStorage.DI.Extension;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -9,7 +10,7 @@ using NUnit.Framework;
 
 namespace MessageStorage.DI.Extensions.Tests.MessageStorageServiceCollectionTests
 {
-    public class MessageStorageServiceCollection_AddJobProcessor
+    public class AddJobProcessorTests
     {
         private MessageStorageServiceCollection _sut;
         private ServiceCollection _serviceCollection;

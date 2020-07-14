@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using NUnit.Framework;
 
-namespace MessageStorage.DI.Extensions.Tests
+namespace MessageStorage.DI.Extensions.Tests.MessageStorageDIExtensionTests
 {
     public class Tests
     {

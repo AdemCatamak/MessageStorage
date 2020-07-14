@@ -6,7 +6,6 @@ using MessageStorage.AspNetCore;
 using MessageStorage.Clients;
 using MessageStorage.Clients.Imp;
 using MessageStorage.Db.Clients;
-using MessageStorage.Db.Configurations;
 using MessageStorage.Db.DataAccessSection;
 using MessageStorage.Db.DbMigrationRunners;
 using MessageStorage.Db.SqlServer;
@@ -113,9 +112,8 @@ namespace SampleWebApi
                         .AddMessageStorage(collection =>
                                            {
                                                // collection.AddMessageStorageDbClient(webapiSqlServerDbRepositoryConfiguration, handlerManager);
-                                               collection.AddMessageStorageDbClient(webapiSqlServerDbRepositoryConfiguration, handlers);
-
-                                               collection.AddJobProcessor<IJobProcessor>(provider => new JobProcessor<DbRepositoryConfiguration>(provider.GetRequiredService<IDbRepositoryContext<DbRepositoryConfiguration>>(), handlerManager, provider.GetRequiredService<ILogger<IJobProcessor>>()));
+                                               collection.AddMessageStorageSqlServerClient(webapiSqlServerDbRepositoryConfiguration, handlers);
+                                               collection.AddSqlServerJobProcessor(webapiSqlServerDbRepositoryConfiguration, handlers);
                                            });
             }
 

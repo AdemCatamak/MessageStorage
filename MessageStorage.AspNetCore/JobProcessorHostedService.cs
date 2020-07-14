@@ -6,11 +6,19 @@ using Microsoft.Extensions.Hosting;
 
 namespace MessageStorage.AspNetCore
 {
-    public class JobProcessorHostedService : IHostedService
+    public class JobProcessorHostedService : JobProcessorHostedService<IJobProcessor>
     {
-        private readonly IJobProcessor _jobProcessor;
+        public JobProcessorHostedService(IJobProcessor jobProcessor) : base(jobProcessor)
+        {
+        }
+    }
 
-        public JobProcessorHostedService(IJobProcessor jobProcessor)
+    public class JobProcessorHostedService<TJobProcessor> : IHostedService
+        where TJobProcessor : IJobProcessor
+    {
+        private readonly TJobProcessor _jobProcessor;
+
+        public JobProcessorHostedService(TJobProcessor jobProcessor)
         {
             _jobProcessor = jobProcessor;
         }
@@ -30,7 +38,13 @@ namespace MessageStorage.AspNetCore
     {
         public static IServiceCollection AddJobProcessorHostedService(this IServiceCollection serviceCollection)
         {
-            serviceCollection.AddHostedService<JobProcessorHostedService>();
+            return AddJobProcessorHostedService<IJobProcessor>(serviceCollection);
+        }
+
+        public static IServiceCollection AddJobProcessorHostedService<TJobProcessor>(this IServiceCollection serviceCollection)
+            where TJobProcessor : IJobProcessor
+        {
+            serviceCollection.AddHostedService<JobProcessorHostedService<TJobProcessor>>();
             return serviceCollection;
         }
     }

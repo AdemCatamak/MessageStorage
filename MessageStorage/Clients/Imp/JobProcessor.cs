@@ -6,6 +6,7 @@ using MessageStorage.DataAccessSection;
 using MessageStorage.DataAccessSection.Repositories;
 using MessageStorage.Models;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace MessageStorage.Clients.Imp
 {
@@ -23,10 +24,10 @@ namespace MessageStorage.Clients.Imp
 
         public JobProcessor(IRepositoryContext<TRepositoryConfiguration> repositoryContext, IHandlerManager handlerManager, ILogger<IJobProcessor> logger, JobProcessorConfiguration jobProcessorConfiguration = null)
         {
-            _repositoryContext = repositoryContext;
-            _handlerManager = handlerManager;
+            _repositoryContext = repositoryContext ?? throw new ArgumentNullException(nameof(repositoryContext));
+            _handlerManager = handlerManager ?? throw new ArgumentNullException(nameof(handlerManager));
             _jobProcessorConfiguration = jobProcessorConfiguration ?? new JobProcessorConfiguration();
-            _logger = logger;
+            _logger = logger ?? NullLogger<IJobProcessor>.Instance;
             _cancellationTokenSource = new CancellationTokenSource();
         }
 

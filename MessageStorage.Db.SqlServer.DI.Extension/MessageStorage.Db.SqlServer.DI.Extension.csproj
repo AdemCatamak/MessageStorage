@@ -17,9 +17,10 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\MessageStorage.Db.SqlServer\MessageStorage.Db.SqlServer.csproj"/>
-        <ProjectReference Include="..\MessageStorage.Db\MessageStorage.Db.csproj"/>
-        <ProjectReference Include="..\MessageStorage.DI.Extension\MessageStorage.DI.Extension.csproj"/>
+        <ProjectReference Include="..\MessageStorage.Db.DI.Extension\MessageStorage.Db.DI.Extension.csproj" />
+        <ProjectReference Include="..\MessageStorage.Db.SqlServer\MessageStorage.Db.SqlServer.csproj" />
+        <ProjectReference Include="..\MessageStorage.Db\MessageStorage.Db.csproj" />
+        <ProjectReference Include="..\MessageStorage.DI.Extension\MessageStorage.DI.Extension.csproj" />
     </ItemGroup>
 
 </Project>

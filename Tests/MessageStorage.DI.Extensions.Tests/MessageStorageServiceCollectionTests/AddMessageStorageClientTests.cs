@@ -1,13 +1,14 @@
 using System;
 using System.Collections.Generic;
 using MessageStorage.Clients;
+using MessageStorage.DI.Extension;
 using MessageStorage.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
 namespace MessageStorage.DI.Extensions.Tests.MessageStorageServiceCollectionTests
 {
-    public class MessageStorageServiceCollection_AddMessageStorageClient
+    public class AddMessageStorageClientTests
     {
         private MessageStorageServiceCollection _sut;
         private ServiceCollection _serviceCollection;

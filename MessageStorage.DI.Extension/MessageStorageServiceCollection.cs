@@ -1,17 +1,11 @@
 using System;
 using MessageStorage.Clients;
-using MessageStorage.Configurations;
-using MessageStorage.DataAccessSection;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace MessageStorage.DI.Extensions
+namespace MessageStorage.DI.Extension
 {
     public interface IMessageStorageServiceCollection
     {
-        MessageStorageServiceCollection AddRepositoryContext<TBRepositoryContext, TRepositoryConfiguration>(Func<IServiceProvider, TBRepositoryContext> contextFactory)
-            where TBRepositoryContext : class, IRepositoryContext<TRepositoryConfiguration>
-            where TRepositoryConfiguration : RepositoryConfiguration;
-
         MessageStorageServiceCollection AddMessageStorageClient<TMessageStorageClient>(Func<IServiceProvider, TMessageStorageClient> messageStorageClientFactory)
             where TMessageStorageClient : class, IMessageStorageClient;
 
@@ -26,14 +20,6 @@ namespace MessageStorage.DI.Extensions
         public MessageStorageServiceCollection(IServiceCollection serviceCollection)
         {
             _serviceCollection = serviceCollection;
-        }
-
-        public MessageStorageServiceCollection AddRepositoryContext<TBRepositoryContext, TRepositoryConfiguration>(Func<IServiceProvider, TBRepositoryContext> contextFactory)
-            where TBRepositoryContext : class, IRepositoryContext<TRepositoryConfiguration>
-            where TRepositoryConfiguration : RepositoryConfiguration
-        {
-            _serviceCollection.AddScoped(contextFactory.Invoke);
-            return this;
         }
 
         public MessageStorageServiceCollection AddMessageStorageClient<TMessageStorageClient>(Func<IServiceProvider, TMessageStorageClient> messageStorageClientFactory)

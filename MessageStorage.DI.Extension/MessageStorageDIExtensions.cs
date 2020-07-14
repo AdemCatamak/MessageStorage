@@ -1,5 +1,4 @@
 ﻿using System;
-using MessageStorage.DI.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace MessageStorage.DI.Extension

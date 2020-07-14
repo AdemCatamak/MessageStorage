@@ -14,8 +14,8 @@ namespace MessageStorage.Clients.Imp
 
         protected MessageStorageClient(IHandlerManager handlerManager, MessageStorageConfiguration messageStorageConfiguration)
         {
-            _handlerManager = handlerManager;
-            _messageStorageConfiguration = messageStorageConfiguration;
+            _handlerManager = handlerManager ?? throw new ArgumentNullException(nameof(handlerManager));
+            _messageStorageConfiguration = messageStorageConfiguration ?? new MessageStorageConfiguration();
         }
 
         protected Tuple<Message, IEnumerable<Job>> PrepareMessageAndJobs(object payload, bool autoJobCreator)

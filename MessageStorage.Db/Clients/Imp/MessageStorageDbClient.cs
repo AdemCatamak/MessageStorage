@@ -17,10 +17,10 @@ namespace MessageStorage.Db.Clients.Imp
     {
         private readonly IDbRepositoryContext<TDbRepositoryConfiguration> _dbRepositoryContext;
 
-        public MessageStorageDbClient(IHandlerManager handlerManager, IDbRepositoryContext<TDbRepositoryConfiguration> dbRepositoryContext, MessageStorageDbConfiguration messageStorageConfiguration)
-            : base(handlerManager, messageStorageConfiguration)
+        public MessageStorageDbClient(IHandlerManager handlerManager, IDbRepositoryContext<TDbRepositoryConfiguration> dbRepositoryContext, MessageStorageDbConfiguration messageStorageConfiguration = null)
+            : base(handlerManager, messageStorageConfiguration ?? new MessageStorageDbConfiguration())
         {
-            _dbRepositoryContext = dbRepositoryContext;
+            _dbRepositoryContext = dbRepositoryContext ?? throw new ArgumentNullException(nameof(dbRepositoryContext));
         }
 
         private readonly object _addLock = new object();

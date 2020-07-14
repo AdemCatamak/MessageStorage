@@ -1,0 +1,34 @@
+﻿using System.Collections.Generic;
+using MessageStorage.Clients;
+using MessageStorage.Clients.Imp;
+using MessageStorage.Configurations;
+using MessageStorage.Db.Configurations;
+using MessageStorage.Db.SqlServer.DataAccessSection;
+using MessageStorage.DI.Extension;
+using Microsoft.Extensions.Logging;
+
+namespace MessageStorage.Db.SqlServer.DI.Extension
+{
+    public static class SqlServerJobProcessorDIExtensions
+    {
+        public static IMessageStorageServiceCollection AddSqlServerJobProcessor
+            (this IMessageStorageServiceCollection messageStorageServiceCollection, DbRepositoryConfiguration dbRepositoryConfiguration, IEnumerable<Handler> handlers, ILogger<IJobProcessor> logger = null, JobProcessorConfiguration jobProcessorConfiguration = null)
+        {
+            return AddSqlServerJobProcessor(messageStorageServiceCollection, dbRepositoryConfiguration, new HandlerManager(handlers), logger, jobProcessorConfiguration);
+        }
+
+        public static IMessageStorageServiceCollection AddSqlServerJobProcessor
+            (this IMessageStorageServiceCollection messageStorageServiceCollection, DbRepositoryConfiguration dbRepositoryConfiguration, IHandlerManager handlerManager, ILogger<IJobProcessor> logger = null, JobProcessorConfiguration jobProcessorConfiguration = null)
+        {
+            return messageStorageServiceCollection.AddJobProcessor<IJobProcessor>(provider =>
+                                                                                  {
+                                                                                      var messageStorageDbClient
+                                                                                          = new JobProcessor<DbRepositoryConfiguration>(new SqlServerDbRepositoryContext<DbRepositoryConfiguration>(dbRepositoryConfiguration, new SqlServerDbConnectionFactory()),
+                                                                                                                                        handlerManager,
+                                                                                                                                        logger,
+                                                                                                                                        jobProcessorConfiguration);
+                                                                                      return messageStorageDbClient;
+                                                                                  });
+        }
+    }
+}
