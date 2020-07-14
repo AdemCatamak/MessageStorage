@@ -13,7 +13,7 @@ namespace SampleWebApi.WebApiMessageStorageSection.SampleHandlers
     {
         protected override Task Handle(SampleMessage payload)
         {
-            Console.WriteLine(payload.Text);
+            Console.WriteLine($"{nameof(SampleMessageHandler)} handle message => {payload.Text}");
             return Task.CompletedTask;
         }
     }

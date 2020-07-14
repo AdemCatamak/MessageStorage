@@ -3,7 +3,7 @@ WORKDIR /app
 
 # Copy everything else and build
 COPY . ./
-RUN dotnet publish ./SampleWebApi/SampleWebApi.csproj -c Release -o out
+RUN dotnet publish ./Samples/SampleWebApi/SampleWebApi.csproj -c Release -o out
 
 # Build runtime image
 FROM mcr.microsoft.com/dotnet/core/aspnet:3.1
