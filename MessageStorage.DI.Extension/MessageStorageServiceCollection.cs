@@ -32,7 +32,7 @@ namespace MessageStorage.DI.Extension
         public MessageStorageServiceCollection AddJobProcessor<TJobProcessor>(Func<IServiceProvider, TJobProcessor> jobProcessorFactory)
             where TJobProcessor : class, IJobProcessor
         {
-            _serviceCollection.AddScoped(jobProcessorFactory.Invoke);
+            _serviceCollection.AddSingleton(jobProcessorFactory.Invoke);
             return this;
         }
     }

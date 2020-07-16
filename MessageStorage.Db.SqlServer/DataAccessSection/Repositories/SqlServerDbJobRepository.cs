@@ -1,10 +1,10 @@
 using System;
 using System.Data;
-using System.Data.SqlClient;
 using MessageStorage.Db.Configurations;
 using MessageStorage.Db.DataAccessSection.Repositories.Imp;
 using MessageStorage.Db.Exceptions;
 using MessageStorage.Models;
+using Microsoft.Data.SqlClient;
 
 namespace MessageStorage.Db.SqlServer.DataAccessSection.Repositories
 {
@@ -16,10 +16,10 @@ namespace MessageStorage.Db.SqlServer.DataAccessSection.Repositories
         {
         }
 
-        protected override (string, IDataParameter[]) PrepareAddCommand(Job entity)
+        protected override (string, IDbDataParameter[]) PrepareAddCommand(Job entity)
         {
             string commandText = $"Insert Into [{DbRepositoryConfiguration.Schema}].[{TableNames.JobTable}] (JobId, CreatedOn, MessageId, AssignedHandlerName, JobStatus, LastOperationTime, LastOperationInfo) Values (@JobId, @CreatedOn, @MessageId, @AssignedHandlerName, @JobStatus, @LastOperationTime, @LastOperationInfo)";
-            IDataParameter[] dataParameters =
+            IDbDataParameter[] dataParameters =
             {
                 new SqlParameter("@JobId", entity.Id),
                 new SqlParameter("@CreatedOn", entity.CreatedOn),

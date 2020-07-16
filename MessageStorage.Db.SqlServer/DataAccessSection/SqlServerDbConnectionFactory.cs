@@ -1,6 +1,6 @@
 using System.Data;
-using System.Data.SqlClient;
 using MessageStorage.Db.DataAccessSection;
+using Microsoft.Data.SqlClient;
 
 namespace MessageStorage.Db.SqlServer.DataAccessSection
 {

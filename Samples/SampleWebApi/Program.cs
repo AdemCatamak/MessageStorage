@@ -1,6 +1,9 @@
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using SampleWebApi.EntityFrameworkSection;
 
 namespace SampleWebApi
 {
@@ -8,7 +11,16 @@ namespace SampleWebApi
     {
         public static void Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Run();
+            using (var host = CreateHostBuilder(args).Build())
+            {
+                using (IServiceScope scope = host.Services.CreateScope())
+                {
+                    var sampleDbContext=scope.ServiceProvider.GetService<SampleDbContext>();
+                    sampleDbContext.Database.Migrate();
+                }
+                
+                host.Run();
+            }
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>

@@ -13,12 +13,13 @@ using MessageStorage.Db.SqlServer.DataAccessSection;
 using MessageStorage.Db.SqlServer.DI.Extension;
 using MessageStorage.DI.Extension;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using SampleWebApi.Controllers;
+using SampleWebApi.EntityFrameworkSection;
 using SampleWebApi.WebApiMessageStorageSection;
 using SampleWebApi.WebApiMessageStorageSection.SampleHandlers;
 using JobProcessorHostedService = SampleWebApi.WebApiMessageStorageSection.JobProcessorHostedService;
@@ -84,7 +85,8 @@ namespace SampleWebApi
             // Step 3 (Handlers & HandlerManager)
             var handlers = new List<Handler>
                            {
-                               new SampleMessageHandler()
+                               new SampleMessageHandler(),
+                               new SampleCreatedMessageHandler()
                            };
             IHandlerManager handlerManager = new HandlerManager(handlers);
 
@@ -118,9 +120,12 @@ namespace SampleWebApi
             }
 
             #endregion
+
+            services.AddDbContext<SampleDbContext>(builder => builder.UseSqlServer(connectionStr,
+                                                                                   optionsBuilder => optionsBuilder.MigrationsAssembly(typeof(SampleDbContext).Assembly.FullName)));
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app)
         {
             app.UseStaticFiles();
             app.UseSwagger();

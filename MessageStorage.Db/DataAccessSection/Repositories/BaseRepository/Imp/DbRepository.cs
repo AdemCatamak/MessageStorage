@@ -64,6 +64,6 @@ namespace MessageStorage.Db.DataAccessSection.Repositories.BaseRepository.Imp
             }
         }
 
-        protected abstract (string, IDataParameter[]) PrepareAddCommand(TEntity entity);
+        protected abstract (string, IDbDataParameter[]) PrepareAddCommand(TEntity entity);
     }
 }
