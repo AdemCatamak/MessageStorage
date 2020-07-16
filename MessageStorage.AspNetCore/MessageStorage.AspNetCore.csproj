@@ -17,11 +17,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\MessageStorage\MessageStorage.csproj"/>
+        <ProjectReference Include="..\MessageStorage\MessageStorage.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="2.2.0"/>
+        <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="2.2.0" />
     </ItemGroup>
 
 </Project>
