@@ -98,8 +98,7 @@ namespace MessageStorage.Db.DataAccessSection.Imp
         [MethodImpl(MethodImplOptions.Synchronized)]
         private IDbConnection GetDbConnection()
         {
-            return _dbConnection ??
-                   (_dbConnection = _dbConnectionFactory.CreateConnection(DbRepositoryConfiguration.ConnectionString));
+            return _dbConnection ??= _dbConnectionFactory.CreateConnection(DbRepositoryConfiguration.ConnectionString);
         }
 
         protected abstract IDbMessageRepository<TDbRepositoryConfiguration> CreateMessageRepository(IDbConnection dbConnection);

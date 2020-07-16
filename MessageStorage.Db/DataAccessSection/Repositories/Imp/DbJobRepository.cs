@@ -21,7 +21,9 @@ namespace MessageStorage.Db.DataAccessSection.Repositories.Imp
         public Job SetFirstWaitingJobToInProgress()
         {
             Job job;
-            using (IDbCommand dbCommand = DbConnection.CreateCommand())
+            IDbConnection connectionThatUsed = DbTransaction?.Connection ?? DbConnection;
+
+            using (IDbCommand dbCommand = connectionThatUsed.CreateCommand())
             {
                 dbCommand.Transaction = DbTransaction;
 
@@ -58,7 +60,9 @@ namespace MessageStorage.Db.DataAccessSection.Repositories.Imp
 
         public void Update(Job job)
         {
-            using (IDbCommand dbCommand = DbConnection.CreateCommand())
+            IDbConnection connectionThatUsed = DbTransaction?.Connection ?? DbConnection;
+
+            using (IDbCommand dbCommand = connectionThatUsed.CreateCommand())
             {
                 dbCommand.Transaction = DbTransaction;
 
@@ -80,7 +84,9 @@ namespace MessageStorage.Db.DataAccessSection.Repositories.Imp
 
         public int GetJobCountByStatus(JobStatuses jobStatus)
         {
-            using (IDbCommand dbCommand = DbConnection.CreateCommand())
+            IDbConnection connectionThatUsed = DbTransaction?.Connection ?? DbConnection;
+
+            using (IDbCommand dbCommand = connectionThatUsed.CreateCommand())
             {
                 dbCommand.Transaction = DbTransaction;
 

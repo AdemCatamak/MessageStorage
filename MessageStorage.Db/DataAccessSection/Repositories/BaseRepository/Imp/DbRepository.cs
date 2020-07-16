@@ -42,7 +42,9 @@ namespace MessageStorage.Db.DataAccessSection.Repositories.BaseRepository.Imp
 
         public void Add(TEntity entity)
         {
-            using (IDbCommand dbCommand = DbConnection.CreateCommand())
+            IDbConnection connectionThatUsed = DbTransaction?.Connection ?? DbConnection;
+
+            using (IDbCommand dbCommand = connectionThatUsed.CreateCommand())
             {
                 dbCommand.Transaction = DbTransaction;
                 (string commandText, IDataParameter[] dataParameters) = PrepareAddCommand(entity);
