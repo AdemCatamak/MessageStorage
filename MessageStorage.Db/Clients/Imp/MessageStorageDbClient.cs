@@ -70,6 +70,11 @@ namespace MessageStorage.Db.Clients.Imp
             _dbRepositoryContext.UseTransaction(dbTransaction);
         }
 
+        public IDbTransaction BeginTransaction()
+        {
+            return _dbRepositoryContext.BeginTransaction();
+        }
+
         public void ClearTransaction()
         {
             _dbRepositoryContext.ClearTransaction();

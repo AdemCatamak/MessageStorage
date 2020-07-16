@@ -7,6 +7,7 @@ namespace MessageStorage.Db.Clients
         : IMessageStorageClient
     {
         void UseTransaction(IDbTransaction dbTransaction);
+        IDbTransaction BeginTransaction();
         void ClearTransaction();
     }
 }

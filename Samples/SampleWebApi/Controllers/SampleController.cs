@@ -1,8 +1,6 @@
-using System;
 using System.Collections.Generic;
 using System.Net;
 using MessageStorage.Db.Clients;
-using MessageStorage.Models;
 using Microsoft.AspNetCore.Mvc;
 using SampleWebApi.WebApiMessageStorageSection.SampleHandlers;
 
@@ -17,17 +15,25 @@ namespace SampleWebApi.Controllers
             _messageStorageDbClient = messageStorageDbClient;
         }
 
-        [HttpPost("sample")]
-        public IActionResult Post([FromBody] string sampleText)
+        [HttpPost("samples")]
+        public IActionResult Post([FromBody] List<string> sampleTexts)
         {
-            var sampleMessage = new SampleMessage()
-                                {
-                                    Text = sampleText
-                                };
+            using (var dbTransaction = _messageStorageDbClient.BeginTransaction())
+            {
+                foreach (string sampleText in sampleTexts)
+                {
+                    var sampleMessage = new SampleMessage
+                                        {
+                                            Text = sampleText
+                                        };
 
-            Tuple<Message, IEnumerable<Job>> tuple = _messageStorageDbClient.Add(sampleMessage);
+                    _messageStorageDbClient.Add(sampleMessage);
+                }
 
-            return StatusCode((int) HttpStatusCode.Created, tuple);
+                dbTransaction.Commit();
+            }
+
+            return StatusCode((int) HttpStatusCode.Created);
         }
     }
 }
