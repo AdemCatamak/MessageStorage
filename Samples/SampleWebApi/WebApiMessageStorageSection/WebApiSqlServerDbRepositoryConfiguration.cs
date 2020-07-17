@@ -2,9 +2,9 @@ using MessageStorage.Db.Configurations;
 
 namespace SampleWebApi.WebApiMessageStorageSection
 {
-    public class WebapiSqlServerDbRepositoryConfiguration : DbRepositoryConfiguration
+    public class WebApiSqlServerDbRepositoryConfiguration : DbRepositoryConfiguration
     {
-        public WebapiSqlServerDbRepositoryConfiguration(string connectionStr)
+        public WebApiSqlServerDbRepositoryConfiguration(string connectionStr)
         {
             ConnectionString = connectionStr;
         }

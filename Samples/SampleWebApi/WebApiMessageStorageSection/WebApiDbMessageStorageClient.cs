@@ -5,9 +5,9 @@ using MessageStorage.Db.DataAccessSection;
 
 namespace SampleWebApi.WebApiMessageStorageSection
 {
-    public class WebApiDbMessageStorageClient : MessageStorageDbClient<WebapiSqlServerDbRepositoryConfiguration>
+    public class WebApiDbMessageStorageClient : MessageStorageDbClient<WebApiSqlServerDbRepositoryConfiguration>
     {
-        public WebApiDbMessageStorageClient(IHandlerManager handlerManager, IDbRepositoryContext<WebapiSqlServerDbRepositoryConfiguration> dbRepositoryContext, MessageStorageDbConfiguration messageStorageConfiguration = null)
+        public WebApiDbMessageStorageClient(IHandlerManager handlerManager, IDbRepositoryContext<WebApiSqlServerDbRepositoryConfiguration> dbRepositoryContext, MessageStorageDbConfiguration messageStorageConfiguration = null)
             : base(handlerManager, dbRepositoryContext, messageStorageConfiguration ?? new MessageStorageDbConfiguration())
         {
         }
