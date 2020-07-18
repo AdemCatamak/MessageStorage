@@ -30,7 +30,7 @@ namespace MessageStorage.UnitTests.JobTests
             Assert.IsNotEmpty(message.Id);
             Assert.AreEqual(assignedHandler, job.AssignedHandlerName);
             Assert.True(functionStartTime <= job.LastOperationTime);
-            Assert.AreEqual(JobStatuses.Waiting, job.JobStatus);
+            Assert.AreEqual(JobStatus.Waiting, job.JobStatus);
         }
 
         [Test]
@@ -43,14 +43,14 @@ namespace MessageStorage.UnitTests.JobTests
 
             const string jobId = "4";
             const string assignedHandler = "assigned-handler";
-            var job = new Job(jobId, DateTime.UtcNow, assignedHandler, JobStatuses.InProgress, DateTime.UtcNow, "last-operation", message);
+            var job = new Job(jobId, DateTime.UtcNow, assignedHandler, JobStatus.InProgress, DateTime.UtcNow, "last-operation", message);
 
             Assert.NotNull(job);
 
             Assert.AreEqual(jobId, job.Id);
             Assert.NotNull(job.AssignedHandlerName);
             Assert.AreEqual(assignedHandler, job.AssignedHandlerName);
-            Assert.AreEqual(JobStatuses.InProgress, job.JobStatus);
+            Assert.AreEqual(JobStatus.InProgress, job.JobStatus);
             Assert.AreEqual("last-operation", job.LastOperationInfo);
             Assert.True(functionStartTime <= job.LastOperationTime);
         }

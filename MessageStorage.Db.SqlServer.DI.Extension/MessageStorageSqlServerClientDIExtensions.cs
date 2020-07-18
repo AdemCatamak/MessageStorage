@@ -11,7 +11,7 @@ namespace MessageStorage.Db.SqlServer.DI.Extension
     public static class MessageStorageSqlServerClientDIExtensions
     {
         public static IMessageStorageServiceCollection AddMessageStorageSqlServerClient
-            (this IMessageStorageServiceCollection messageStorageServiceCollection, DbRepositoryConfiguration dbRepositoryConfiguration, IEnumerable<Handler> handlers, MessageStorageDbConfiguration messageStorageDbConfiguration = null)
+            (this IMessageStorageServiceCollection messageStorageServiceCollection, DbRepositoryConfiguration dbRepositoryConfiguration, IEnumerable<Handler> handlers = null, MessageStorageDbConfiguration messageStorageDbConfiguration = null)
         {
             return AddMessageStorageSqlServerClient(messageStorageServiceCollection, dbRepositoryConfiguration, new HandlerManager(handlers), messageStorageDbConfiguration);
         }

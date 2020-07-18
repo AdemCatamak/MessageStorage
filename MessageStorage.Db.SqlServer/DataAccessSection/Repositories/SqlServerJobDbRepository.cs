@@ -49,7 +49,7 @@ namespace MessageStorage.Db.SqlServer.DataAccessSection.Repositories
             return (commandText, dataParameters);
         }
 
-        protected override (string, IDataParameter[]) PrepareGetJobCountByStatusCommand(JobStatuses jobStatus)
+        protected override (string, IDataParameter[]) PrepareGetJobCountByStatusCommand(JobStatus jobStatus)
         {
             string commandText = $"Select Count(JobId) From [{DbRepositoryConfiguration.Schema}].[{TableNames.JobTable}] Where JobStatus = @JobStatus";
             IDataParameter[] dataParameters =
@@ -65,14 +65,14 @@ namespace MessageStorage.Db.SqlServer.DataAccessSection.Repositories
             string commandText = $@"
 DECLARE @Updated table( [JobId] nvarchar(255))
 
-UPDATE [{DbRepositoryConfiguration.Schema}].[{TableNames.JobTable}] SET JobStatus = {(int) JobStatuses.InProgress}
+UPDATE [{DbRepositoryConfiguration.Schema}].[{TableNames.JobTable}] SET JobStatus = {(int) JobStatus.InProgress}
 OUTPUT INSERTED.JobId
 INTO @Updated
 WHERE  JobId = 
 (
     SELECT TOP 1 JobId 
     FROM [{DbRepositoryConfiguration.Schema}].[{TableNames.JobTable}] WITH (UPDLOCK)
-    WHERE JobStatus = {(int) JobStatuses.Waiting}
+    WHERE JobStatus = {(int) JobStatus.Waiting}
     ORDER  BY JobId
 )
 
@@ -123,8 +123,8 @@ SELECT j.JobId, j.JobStatus, j.AssignedHandlerName, j.LastOperationInfo, j.LastO
                     if (!(dataRow[assignedHandlerNameColumnName] is string assignedHandlerName))
                         throw new DbColumnMapException(assignedHandlerNameColumnName, nameof(String));
 
-                    if (!(dataRow[jobStatusColumnName] is int jobStatus) || !Enum.IsDefined(typeof(JobStatuses), jobStatus))
-                        throw new DbColumnMapException(jobStatusColumnName, nameof(JobStatuses));
+                    if (!(dataRow[jobStatusColumnName] is int jobStatus) || !Enum.IsDefined(typeof(JobStatus), jobStatus))
+                        throw new DbColumnMapException(jobStatusColumnName, nameof(JobStatus));
 
 
                     if (!(dataRow[lastOperationTimeColumnName] is DateTime lastOperationTime))
@@ -143,7 +143,7 @@ SELECT j.JobId, j.JobStatus, j.AssignedHandlerName, j.LastOperationInfo, j.LastO
                     }
 
 
-                    var j = new Job(jobId, createdOn, assignedHandlerName, (JobStatuses) jobStatus, lastOperationTime, lastOperationInfo, m);
+                    var j = new Job(jobId, createdOn, assignedHandlerName, (JobStatus) jobStatus, lastOperationTime, lastOperationInfo, m);
 
                     return j;
                 }

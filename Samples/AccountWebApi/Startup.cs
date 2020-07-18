@@ -6,23 +6,17 @@ using AccountWebApi.Controllers;
 using AccountWebApi.EntityFrameworkSection;
 using MessageStorage;
 using MessageStorage.AspNetCore;
-using MessageStorage.Clients;
-using MessageStorage.Clients.Imp;
-using MessageStorage.Db.Clients;
-using MessageStorage.Db.Clients.Imp;
 using MessageStorage.Db.Configurations;
-using MessageStorage.Db.DataAccessSection;
 using MessageStorage.Db.DbMigrationRunners;
 using MessageStorage.Db.SqlServer;
-using MessageStorage.Db.SqlServer.DataAccessSection;
 using MessageStorage.Db.SqlServer.DI.Extension;
 using MessageStorage.DI.Extension;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using Newtonsoft.Json.Converters;
 
 namespace AccountWebApi
 {
@@ -51,6 +45,8 @@ namespace AccountWebApi
                              });
 
             services.AddControllers()
+                    .AddNewtonsoftJson(options =>
+                                           options.SerializerSettings.Converters.Add(new StringEnumConverter()))
                     .AddApplicationPart(typeof(AccountController).Assembly);
 
             services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo()); });
@@ -80,46 +76,22 @@ namespace AccountWebApi
             }
 
 
-            #region Injection
-
             // Step 3 (Handlers & HandlerManager)
             var handlers = new List<Handler>
                            {
                                new AccountEventHandler(),
                                new AccountCreatedEventHandler()
                            };
-            IHandlerManager handlerManager = new HandlerManager(handlers);
 
-            bool withoutExtensions = false;
-            if (withoutExtensions)
-            {
-                // Step 4 (DbConnectionFactory)
-                ISqlServerDbConnectionFactory sqlServerDbConnectionFactory = new SqlServerDbConnectionFactory();
+            // Step 4 (Injection)
+            services.AddJobProcessorHostedService()
+                    .AddMessageStorage(collection =>
+                                       {
+                                           collection.AddMessageStorageSqlServerClient(dbRepositoryConfiguration, handlers);
+                                           collection.AddSqlServerJobProcessor(dbRepositoryConfiguration, handlers);
+                                           collection.AddMessageStorageSqlServerMonitor(dbRepositoryConfiguration);
+                                       });
 
-                // Step 5 (DbRepositoryContext)
-                services.AddScoped<IDbRepositoryContext>(provider => new SqlServerDbRepositoryContext(dbRepositoryConfiguration, sqlServerDbConnectionFactory));
-
-                // Step 6 (MessageStorageDbClient)
-                services.AddScoped<IMessageStorageDbClient>(provider => new MessageStorageDbClient(handlerManager, provider.GetRequiredService<IDbRepositoryContext>()));
-
-                // Step 7 (JobProcessor)
-                services.AddSingleton<IJobProcessor>(provider => new JobProcessor(provider.GetRequiredService<IDbRepositoryContext>, handlerManager, provider.GetRequiredService<ILogger<IJobProcessor>>()));
-
-                // Step 8 (JobProcessorHostedService)
-                services.AddHostedService<JobProcessorHostedService<IJobProcessor>>();
-            }
-            else
-            {
-                services.AddJobProcessorHostedService()
-                        .AddMessageStorage(collection =>
-                                           {
-                                               // collection.AddMessageStorageDbClient(webapiSqlServerDbRepositoryConfiguration, handlerManager);
-                                               collection.AddMessageStorageSqlServerClient(dbRepositoryConfiguration, handlers);
-                                               collection.AddSqlServerJobProcessor(dbRepositoryConfiguration, handlers);
-                                           });
-            }
-
-            #endregion
 
             services.AddDbContext<AccountDbContext>(builder => builder.UseSqlServer(connectionStr,
                                                                                     optionsBuilder => optionsBuilder.MigrationsAssembly(typeof(AccountDbContext).Assembly.FullName)));

@@ -22,7 +22,7 @@ namespace MessageStorage.UnitTests.MessageStorageMonitorTests
         [Test, Sequential]
         public void WhenStorageAdaptorReturnAsXForWaitingJobCount__ResponseShouldBeThoseValues([Values(arg1: 0, arg2: 1, arg3: -5)] int storageAdaptorResponse)
         {
-            _mockRepositoryContext.Setup(adaptor => adaptor.JobRepository.GetJobCountByStatus(JobStatuses.Waiting))
+            _mockRepositoryContext.Setup(adaptor => adaptor.JobRepository.GetJobCountByStatus(JobStatus.Waiting))
                                   .Returns(storageAdaptorResponse);
 
             int result =  _sut.GetWaitingJobCount();
@@ -33,10 +33,10 @@ namespace MessageStorage.UnitTests.MessageStorageMonitorTests
         [Test, Sequential]
         public void WhenStorageAdaptorReturnAsZero_ResponseShouldBeThoseValues([Values(arg1: 0, arg2: 1, arg3: -5)] int storageAdaptorResponse)
         {
-            _mockRepositoryContext.Setup(adaptor => adaptor.JobRepository.GetJobCountByStatus(It.IsAny<JobStatuses>()))
+            _mockRepositoryContext.Setup(adaptor => adaptor.JobRepository.GetJobCountByStatus(It.IsAny<JobStatus>()))
                                   .Returns(storageAdaptorResponse);
 
-            _mockRepositoryContext.Setup(adaptor => adaptor.JobRepository.GetJobCountByStatus(JobStatuses.Waiting))
+            _mockRepositoryContext.Setup(adaptor => adaptor.JobRepository.GetJobCountByStatus(JobStatus.Waiting))
                                   .Returns(value: 0);
 
             int result =  _sut.GetWaitingJobCount();

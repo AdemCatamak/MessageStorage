@@ -7,6 +7,6 @@ namespace MessageStorage.DataAccessSection.Repositories
     {
         Job SetFirstWaitingJobToInProgress();
         void Update(Job job);
-        int GetJobCountByStatus(JobStatuses jobStatus);
+        int GetJobCountByStatus(JobStatus jobStatus);
     }
 }

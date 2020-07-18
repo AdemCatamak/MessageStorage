@@ -13,7 +13,7 @@ namespace MessageStorage.Clients.Imp
             _repositoryContext = repositoryContext;
         }
 
-        private int GetJobCountByStatus(JobStatuses jobStatus)
+        public int GetJobCountByStatus(JobStatus jobStatus)
         {
             IJobRepository jobRepository = _repositoryContext.JobRepository;
             int result = jobRepository.GetJobCountByStatus(jobStatus);
@@ -22,13 +22,13 @@ namespace MessageStorage.Clients.Imp
 
         public int GetWaitingJobCount()
         {
-            int result = GetJobCountByStatus(JobStatuses.Waiting);
+            int result = GetJobCountByStatus(JobStatus.Waiting);
             return result;
         }
 
         public int GetFailedJobCount()
         {
-            int result = GetJobCountByStatus(JobStatuses.Failed);
+            int result = GetJobCountByStatus(JobStatus.Failed);
             return result;
         }
 

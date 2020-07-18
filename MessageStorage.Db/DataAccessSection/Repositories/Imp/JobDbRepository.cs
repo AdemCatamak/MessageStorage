@@ -81,7 +81,7 @@ namespace MessageStorage.Db.DataAccessSection.Repositories.Imp
             }
         }
 
-        public int GetJobCountByStatus(JobStatuses jobStatus)
+        public int GetJobCountByStatus(JobStatus jobStatus)
         {
             IDbConnection connectionThatUsed = DbTransaction?.Connection ?? DbConnection;
 
@@ -104,7 +104,7 @@ namespace MessageStorage.Db.DataAccessSection.Repositories.Imp
         }
 
         protected abstract (string, IDataParameter[]) PrepareUpdateCommand(Job job);
-        protected abstract (string, IDataParameter[]) PrepareGetJobCountByStatusCommand(JobStatuses jobStatus);
+        protected abstract (string, IDataParameter[]) PrepareGetJobCountByStatusCommand(JobStatus jobStatus);
         protected abstract (string, IDataParameter[], Func<IDataReader, Job>) PrepareSetFirstWaitingJobToInProgressCommand();
     }
 }

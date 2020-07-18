@@ -25,13 +25,13 @@ namespace MessageStorage.UnitTests.JobTests
             var job = new Job("assigned-handler", message);
 
             DateTime lastOperationTime = job.LastOperationTime;
-            Assert.AreEqual(JobStatuses.Waiting, job.JobStatus);
+            Assert.AreEqual(JobStatus.Waiting, job.JobStatus);
             Assert.AreNotEqual(lastOperationInfo, job.LastOperationInfo);
 
             Thread.Sleep(millisecondsTimeout: 1);
             job.SetDone();
 
-            Assert.AreEqual(JobStatuses.Done, job.JobStatus);
+            Assert.AreEqual(JobStatus.Done, job.JobStatus);
             Assert.True(lastOperationTime < job.LastOperationTime);
         }
     }

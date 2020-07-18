@@ -83,7 +83,7 @@ namespace MessageStorage.UnitTests.JobProcessServerTests
 
             await _sut.ExecuteAsync();
 
-            _mockRepositoryContext.Verify(client => client.JobRepository.Update(It.Is<Job>(job => job.JobStatus == JobStatuses.Failed)), Times.Once);
+            _mockRepositoryContext.Verify(client => client.JobRepository.Update(It.Is<Job>(job => job.JobStatus == JobStatus.Failed)), Times.Once);
         }
 
         [Test]

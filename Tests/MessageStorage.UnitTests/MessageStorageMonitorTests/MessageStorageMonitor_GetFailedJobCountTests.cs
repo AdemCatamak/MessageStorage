@@ -22,7 +22,7 @@ namespace MessageStorage.UnitTests.MessageStorageMonitorTests
         [Test, Sequential]
         public void WhenStorageAdaptorReturnAsXForFailedJobCount__ResponseShouldBeThoseValues([Values(arg1: 0, arg2: 1, arg3: -5)] int storageAdaptorResponse)
         {
-            _mockRepositoryContext.Setup(context => context.JobRepository.GetJobCountByStatus(JobStatuses.Failed))
+            _mockRepositoryContext.Setup(context => context.JobRepository.GetJobCountByStatus(JobStatus.Failed))
                                   .Returns(storageAdaptorResponse);
 
             int result = _sut.GetFailedJobCount();
@@ -33,10 +33,10 @@ namespace MessageStorage.UnitTests.MessageStorageMonitorTests
         [Test, Sequential]
         public void WhenStorageAdaptorReturnAsZeroForFailedJob_ResponseShouldBeThoseValues([Values(arg1: 0, arg2: 1, arg3: -5)] int storageAdaptorResponse)
         {
-            _mockRepositoryContext.Setup(context => context.JobRepository.GetJobCountByStatus(It.IsAny<JobStatuses>()))
+            _mockRepositoryContext.Setup(context => context.JobRepository.GetJobCountByStatus(It.IsAny<JobStatus>()))
                                   .Returns(storageAdaptorResponse);
 
-            _mockRepositoryContext.Setup(adaptor => adaptor.JobRepository.GetJobCountByStatus(JobStatuses.Failed))
+            _mockRepositoryContext.Setup(adaptor => adaptor.JobRepository.GetJobCountByStatus(JobStatus.Failed))
                                   .Returns(value: 0);
 
             int result = _sut.GetFailedJobCount();

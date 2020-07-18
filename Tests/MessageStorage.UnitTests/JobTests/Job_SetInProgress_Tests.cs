@@ -25,13 +25,13 @@ namespace MessageStorage.UnitTests.JobTests
 
 
             DateTime lastOperationTime = job.LastOperationTime;
-            Assert.AreEqual(JobStatuses.Waiting, job.JobStatus);
+            Assert.AreEqual(JobStatus.Waiting, job.JobStatus);
             Assert.AreNotEqual(lastOperationInfo, job.LastOperationInfo);
 
             Thread.Sleep(millisecondsTimeout: 1);
             job.SetInProgress();
 
-            Assert.AreEqual(JobStatuses.InProgress, job.JobStatus);
+            Assert.AreEqual(JobStatus.InProgress, job.JobStatus);
             Assert.True(lastOperationTime < job.LastOperationTime);
         }
     }
