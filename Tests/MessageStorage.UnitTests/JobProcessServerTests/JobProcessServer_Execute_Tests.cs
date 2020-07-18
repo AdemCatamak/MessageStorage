@@ -27,7 +27,7 @@ namespace MessageStorage.UnitTests.JobProcessServerTests
             _cancellationTokenSource = new CancellationTokenSource();
             _mockRepositoryContext = new Mock<IRepositoryContext<RepositoryConfiguration>>();
             _mockLogger = new Mock<ILogger<IJobProcessor>>();
-            _sut = new JobProcessor<RepositoryConfiguration>(_mockRepositoryContext.Object, _mockHandlerManager.Object, _mockLogger.Object);
+            _sut = new JobProcessor<RepositoryConfiguration>(() => _mockRepositoryContext.Object, _mockHandlerManager.Object, _mockLogger.Object);
         }
 
         [TearDown]

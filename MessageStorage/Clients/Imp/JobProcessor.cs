@@ -13,7 +13,7 @@ namespace MessageStorage.Clients.Imp
     public class JobProcessor<TRepositoryConfiguration> : IJobProcessor, IDisposable
         where TRepositoryConfiguration : RepositoryConfiguration
     {
-        private readonly IRepositoryContext<TRepositoryConfiguration> _repositoryContext;
+        private readonly Func<IRepositoryContext<TRepositoryConfiguration>> _repositoryContextFactory;
         private readonly IHandlerManager _handlerManager;
         private readonly JobProcessorConfiguration _jobProcessorConfiguration;
         private readonly ILogger<IJobProcessor> _logger;
@@ -22,9 +22,9 @@ namespace MessageStorage.Clients.Imp
 
         private Task _executionTask;
 
-        public JobProcessor(IRepositoryContext<TRepositoryConfiguration> repositoryContext, IHandlerManager handlerManager, ILogger<IJobProcessor> logger, JobProcessorConfiguration jobProcessorConfiguration = null)
+        public JobProcessor(Func<IRepositoryContext<TRepositoryConfiguration>> repositoryContextFactory, IHandlerManager handlerManager, ILogger<IJobProcessor> logger, JobProcessorConfiguration jobProcessorConfiguration = null)
         {
-            _repositoryContext = repositoryContext ?? throw new ArgumentNullException(nameof(repositoryContext));
+            _repositoryContextFactory = repositoryContextFactory ?? throw new ArgumentNullException(nameof(repositoryContextFactory));
             _handlerManager = handlerManager ?? throw new ArgumentNullException(nameof(handlerManager));
             _jobProcessorConfiguration = jobProcessorConfiguration ?? new JobProcessorConfiguration();
             _logger = logger ?? NullLogger<IJobProcessor>.Instance;
@@ -61,26 +61,29 @@ namespace MessageStorage.Clients.Imp
         {
             LogDebug($"{DateTime.UtcNow} - {nameof(IJobProcessor)}.{nameof(ExecuteAsync)} is called");
 
-            IJobRepository<TRepositoryConfiguration> jobRepository = _repositoryContext.JobRepository;
-            try
+            using (IRepositoryContext<TRepositoryConfiguration> repositoryContext = _repositoryContextFactory.Invoke())
             {
-                Job job = jobRepository.SetFirstWaitingJobToInProgress();
-                if (job == null)
+                IJobRepository<TRepositoryConfiguration> jobRepository = repositoryContext.JobRepository;
+                try
                 {
-                    _logger.LogDebug($"{DateTime.UtcNow} - {nameof(IJobProcessor)}.{nameof(ExecuteAsync)} is finished [Job not found]");
-                    Thread.Sleep(_jobProcessorConfiguration.WaitWhenMessageNotFound);
-                    return;
+                    Job job = jobRepository.SetFirstWaitingJobToInProgress();
+                    if (job == null)
+                    {
+                        _logger.LogDebug($"{DateTime.UtcNow} - {nameof(IJobProcessor)}.{nameof(ExecuteAsync)} is finished [Job not found]");
+                        Thread.Sleep(_jobProcessorConfiguration.WaitWhenMessageNotFound);
+                        return;
+                    }
+
+                    await HandleJob(job, jobRepository);
+                }
+                catch (Exception e)
+                {
+                    LogError(e);
                 }
 
-                await HandleJob(job, jobRepository);
+                LogDebug($"{DateTime.UtcNow} - {nameof(IJobProcessor)}.{nameof(ExecuteAsync)} is finished");
+                Thread.Sleep(_jobProcessorConfiguration.WaitAfterMessageHandled);
             }
-            catch (Exception e)
-            {
-                LogError(e);
-            }
-
-            LogDebug($"{DateTime.UtcNow} - {nameof(IJobProcessor)}.{nameof(ExecuteAsync)} is finished");
-            Thread.Sleep(_jobProcessorConfiguration.WaitAfterMessageHandled);
         }
 
 

@@ -37,7 +37,7 @@ namespace MessageStorage.DI.Extensions.Tests.MessageStorageServiceCollectionTest
         [Test]
         public void WhenAddRepositoryContext_WithoutType__DerivedTypeShouldBeInjected()
         {
-            _sut.AddJobProcessor(provider => new JobProcessor<RepositoryConfiguration>(_mockRepositoryContext.Object, _mockHandlerManager.Object, _mockLogger.Object));
+            _sut.AddJobProcessor(provider => new JobProcessor<RepositoryConfiguration>(()=>_mockRepositoryContext.Object, _mockHandlerManager.Object, _mockLogger.Object));
 
             using (ServiceProvider serviceProvider = _serviceCollection.BuildServiceProvider())
             {
@@ -52,7 +52,7 @@ namespace MessageStorage.DI.Extensions.Tests.MessageStorageServiceCollectionTest
         [Test]
         public void WhenAddMessageStorageClient_WithType__DefinedTypeShouldBeInjected()
         {
-            _sut.AddJobProcessor<IJobProcessor>(provider => new JobProcessor<RepositoryConfiguration>(_mockRepositoryContext.Object, _mockHandlerManager.Object, _mockLogger.Object));
+            _sut.AddJobProcessor<IJobProcessor>(provider => new JobProcessor<RepositoryConfiguration>(()=>_mockRepositoryContext.Object, _mockHandlerManager.Object, _mockLogger.Object));
 
             using (ServiceProvider serviceProvider = _serviceCollection.BuildServiceProvider())
             {

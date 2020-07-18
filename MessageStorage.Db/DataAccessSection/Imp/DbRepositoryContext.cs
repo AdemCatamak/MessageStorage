@@ -1,4 +1,3 @@
-using System;
 using System.Data;
 using System.Runtime.CompilerServices;
 using MessageStorage.DataAccessSection.Repositories;
@@ -9,8 +8,7 @@ using MessageStorage.Db.Exceptions;
 namespace MessageStorage.Db.DataAccessSection.Imp
 {
     public abstract class DbRepositoryContext<TDbRepositoryConfiguration> :
-        IDbRepositoryContext<TDbRepositoryConfiguration>,
-        IDisposable
+        IDbRepositoryContext<TDbRepositoryConfiguration>
         where TDbRepositoryConfiguration : DbRepositoryConfiguration
     {
         private readonly IDbConnectionFactory _dbConnectionFactory;

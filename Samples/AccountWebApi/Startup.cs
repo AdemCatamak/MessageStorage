@@ -102,7 +102,7 @@ namespace AccountWebApi
                 services.AddScoped<IMessageStorageDbClient>(provider => new AccountApiDbMessageStorageClient(handlerManager, provider.GetRequiredService<IDbRepositoryContext<AccountApiSqlServerDbRepositoryConfiguration>>()));
 
                 // Step 7 (JobProcessor)
-                services.AddSingleton<IJobProcessor>(provider => new JobProcessor<AccountApiSqlServerDbRepositoryConfiguration>(provider.GetRequiredService<IDbRepositoryContext<AccountApiSqlServerDbRepositoryConfiguration>>(), handlerManager, provider.GetRequiredService<ILogger<IJobProcessor>>()));
+                services.AddSingleton<IJobProcessor>(provider => new JobProcessor<AccountApiSqlServerDbRepositoryConfiguration>(provider.GetRequiredService<IDbRepositoryContext<AccountApiSqlServerDbRepositoryConfiguration>>, handlerManager, provider.GetRequiredService<ILogger<IJobProcessor>>()));
 
                 // Step 8 (JobProcessorHostedService)
                 services.AddHostedService<AccountApiJobProcessorHostedService>();
@@ -121,7 +121,7 @@ namespace AccountWebApi
             #endregion
 
             services.AddDbContext<AccountDbContext>(builder => builder.UseSqlServer(connectionStr,
-                                                                                   optionsBuilder => optionsBuilder.MigrationsAssembly(typeof(AccountDbContext).Assembly.FullName)));
+                                                                                    optionsBuilder => optionsBuilder.MigrationsAssembly(typeof(AccountDbContext).Assembly.FullName)));
         }
 
         public void Configure(IApplicationBuilder app)
