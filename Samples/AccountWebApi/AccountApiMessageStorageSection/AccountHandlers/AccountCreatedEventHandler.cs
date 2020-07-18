@@ -7,13 +7,18 @@ namespace AccountWebApi.AccountApiMessageStorageSection.AccountHandlers
     public class AccountCreatedEvent : AccountEvent
     {
         public long SampleModelId { get; set; }
+        
+        public override string ToString()
+        {
+            return $"EventType: {this.GetType().Name} | Email: {Email}";
+        }
     }
 
     public class AccountCreatedEventHandler : Handler<AccountCreatedEvent>
     {
         protected override Task Handle(AccountCreatedEvent payload)
         {
-            Console.WriteLine($"{nameof(AccountCreatedEventHandler)} || Account: {payload.Email} | Event: {payload.GetType().Name}");
+            Console.WriteLine($"{payload} handled by {nameof(AccountCreatedEventHandler)}");
             return Task.CompletedTask;
         }
     }
