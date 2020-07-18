@@ -11,6 +11,9 @@ namespace MessageStorage.DI.Extension
 
         MessageStorageServiceCollection AddJobProcessor<TJobProcessor>(Func<IServiceProvider, TJobProcessor> jobProcessorFactory)
             where TJobProcessor : class, IJobProcessor;
+
+        MessageStorageServiceCollection AddMessageStorageMonitor<TMessageStorageMonitor>(Func<IServiceProvider, TMessageStorageMonitor> messageStorageMonitorFactory)
+            where TMessageStorageMonitor : class, IMessageStorageMonitor;
     }
 
     public class MessageStorageServiceCollection : IMessageStorageServiceCollection
@@ -33,6 +36,13 @@ namespace MessageStorage.DI.Extension
             where TJobProcessor : class, IJobProcessor
         {
             _serviceCollection.AddSingleton(jobProcessorFactory.Invoke);
+            return this;
+        }
+
+        public MessageStorageServiceCollection AddMessageStorageMonitor<TMessageStorageMonitor>(Func<IServiceProvider, TMessageStorageMonitor> messageStorageMonitorFactory)
+            where TMessageStorageMonitor : class, IMessageStorageMonitor
+        {
+            _serviceCollection.AddScoped(messageStorageMonitorFactory.Invoke);
             return this;
         }
     }

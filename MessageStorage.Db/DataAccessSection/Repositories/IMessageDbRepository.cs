@@ -4,7 +4,7 @@ using MessageStorage.Models;
 
 namespace MessageStorage.Db.DataAccessSection.Repositories
 {
-    public interface IDbMessageRepository : IMessageRepository, IDbRepository<Message>
+    public interface IMessageDbRepository : IMessageRepository, IDbRepository<Message>
     {
     }
 }

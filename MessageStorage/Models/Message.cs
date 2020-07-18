@@ -8,17 +8,7 @@ namespace MessageStorage.Models
     {
         public DateTime CreatedOn { get; }
         public string SerializedPayload { get; }
-
-        private object _payload;
-
-        public object GetPayload()
-        {
-            return _payload ??= SerializedPayload == null
-                                    ? null
-                                    : MessageStorageSerializer.Deserialize<object>(SerializedPayload);
-        }
-
-
+        
         public Message(object payload, string id = null)
             : this(id, DateTime.UtcNow, MessageStorageSerializer.Serialize(payload))
         {
@@ -29,6 +19,14 @@ namespace MessageStorage.Models
             Id = id ?? NewId.Next().ToString();
             SerializedPayload = serializedPayload;
             CreatedOn = createdOn;
+        }
+        
+        private object _payload;
+        public object GetPayload()
+        {
+            return _payload ??= SerializedPayload == null
+                                    ? null
+                                    : MessageStorageSerializer.Deserialize<object>(SerializedPayload);
         }
     }
 }

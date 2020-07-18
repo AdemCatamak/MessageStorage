@@ -53,8 +53,7 @@ namespace MessageStorage
 
             return availableHandlers;
         }
-
-
+        
         public Handler GetHandler(string handlerName)
         {
             if (string.IsNullOrEmpty(handlerName))

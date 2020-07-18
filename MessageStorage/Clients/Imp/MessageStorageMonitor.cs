@@ -31,5 +31,10 @@ namespace MessageStorage.Clients.Imp
             int result = GetJobCountByStatus(JobStatuses.Failed);
             return result;
         }
+
+        public void Dispose()
+        {
+            _repositoryContext?.Dispose();
+        }
     }
 }

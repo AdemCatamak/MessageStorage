@@ -6,13 +6,12 @@ using MessageStorage.Models;
 
 namespace MessageStorage.Clients.Imp
 {
-    public abstract class MessageStorageClient
-        : IMessageStorageClient
+    public abstract class MessageStorageClient : IMessageStorageClient
     {
         private readonly IHandlerManager _handlerManager;
         private readonly MessageStorageConfiguration _messageStorageConfiguration;
 
-        protected MessageStorageClient(IHandlerManager handlerManager, MessageStorageConfiguration messageStorageConfiguration)
+        protected MessageStorageClient(IHandlerManager handlerManager, MessageStorageConfiguration messageStorageConfiguration = null)
         {
             _handlerManager = handlerManager ?? throw new ArgumentNullException(nameof(handlerManager));
             _messageStorageConfiguration = messageStorageConfiguration ?? new MessageStorageConfiguration();

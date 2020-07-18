@@ -57,7 +57,7 @@ namespace MessageStorage.Db.DataAccessSection.Repositories.BaseRepository.Imp
 
                 if (affectedRowCount != 1)
                 {
-                    throw new InsertFailedException($"[EntityId: {entity.Id}, EntityType: {typeof(TEntity).Name}] update script return affected row count as {affectedRowCount}");
+                    throw new InsertFailedException($"[EntityId: {entity.Id}, EntityType: {typeof(TEntity).Name}] insert script return affected row count as {affectedRowCount}");
                 }
             }
         }

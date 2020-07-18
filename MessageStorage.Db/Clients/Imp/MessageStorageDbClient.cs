@@ -73,9 +73,14 @@ namespace MessageStorage.Db.Clients.Imp
             return _dbRepositoryContext.BeginTransaction();
         }
 
-        public void ClearTransaction()
+        public void RemoveTransaction()
         {
             _dbRepositoryContext.ClearTransaction();
+        }
+
+        public void Dispose()
+        {
+            _dbRepositoryContext?.Dispose();
         }
     }
 }

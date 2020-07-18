@@ -1,3 +1,4 @@
+using System;
 using MessageStorage.Configurations;
 
 namespace MessageStorage.Db.Configurations
@@ -7,10 +8,10 @@ namespace MessageStorage.Db.Configurations
         public string ConnectionString { get; protected set; }
         public string Schema { get; protected set; } = "MessageStorage";
 
-        public DbRepositoryConfiguration SetConnectionString(string connectionString)
+        public DbRepositoryConfiguration(string connectionString, string schema = null)
         {
-            ConnectionString = connectionString;
-            return this;
+            ConnectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
+            Schema = schema ?? Schema;
         }
     }
 }

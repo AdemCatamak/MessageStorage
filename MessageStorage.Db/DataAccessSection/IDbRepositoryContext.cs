@@ -6,8 +6,8 @@ namespace MessageStorage.Db.DataAccessSection
 {
     public interface IDbRepositoryContext : IRepositoryContext
     {
-        IDbMessageRepository DbMessageRepository { get; }
-        IDbJobRepository DbJobRepository { get; }
+        IMessageDbRepository MessageDbRepository { get; }
+        IJobDbRepository JobDbRepository { get; }
 
         IDbTransaction BeginTransaction(IsolationLevel isolationLevel = IsolationLevel.ReadCommitted);
         void UseTransaction(IDbTransaction dbTransaction);

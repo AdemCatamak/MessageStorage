@@ -11,14 +11,12 @@ namespace MessageStorage
         {
             Serializer = new JSonMessageStorageSerializer();
         }
-
-
+        
         public static string Serialize(object obj)
         {
             return Serializer.Serialize(obj);
         }
-
-
+        
         public static T Deserialize<T>(string serializedObj)
         {
             return Serializer.Deserialize<T>(serializedObj);

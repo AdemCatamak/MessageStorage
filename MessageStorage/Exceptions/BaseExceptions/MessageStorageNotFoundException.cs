@@ -1,8 +1,8 @@
 namespace MessageStorage.Exceptions.BaseExceptions
 {
-    public class MessageStorageNotFoundException : MessageStorageCustomException
+    public abstract class MessageStorageNotFoundException : MessageStorageCustomException
     {
-        public MessageStorageNotFoundException(string friendlyMessage) : base(friendlyMessage)
+        protected MessageStorageNotFoundException(string friendlyMessage) : base(friendlyMessage)
         {
         }
     }

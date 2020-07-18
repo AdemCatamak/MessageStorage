@@ -23,9 +23,10 @@ namespace MessageStorage.Db.SqlServer.DI.Extension
 
             return messageStorageServiceCollection.AddMessageStorageDbClient<IMessageStorageDbClient>(provider =>
                                                                                                       {
+                                                                                                          var sqlServerDbConnectionFactory = new SqlServerDbConnectionFactory();
                                                                                                           var messageStorageDbClient
                                                                                                               = new MessageStorageDbClient(handlerManager,
-                                                                                                                                           new SqlServerDbRepositoryContext(sampleSqlServerDbRepositoryConfiguration, new SqlServerDbConnectionFactory()),
+                                                                                                                                           new SqlServerDbRepositoryContext(sampleSqlServerDbRepositoryConfiguration, sqlServerDbConnectionFactory),
                                                                                                                                            messageStorageDbConfiguration);
                                                                                                           return messageStorageDbClient;
                                                                                                       });

@@ -23,7 +23,7 @@ namespace MessageStorage.Db.SqlServer.DI.Extension.Tests
         [Test]
         public void WhenAddSqlServerJobProcessorMethodIsUSedWithHandlerManager__IJobProcessorCouldBeResolved()
         {
-            _messageStorageServiceCollection.AddSqlServerJobProcessor(new DbRepositoryConfiguration(), new Mock<IHandlerManager>().Object);
+            _messageStorageServiceCollection.AddSqlServerJobProcessor(new DbRepositoryConfiguration(string.Empty), new Mock<IHandlerManager>().Object);
             using (ServiceProvider serviceProvider = _serviceCollection.BuildServiceProvider())
             {
                 var jobProcessor = serviceProvider.GetService<IJobProcessor>();
@@ -40,7 +40,7 @@ namespace MessageStorage.Db.SqlServer.DI.Extension.Tests
         [Test]
         public void WhenAddSqlServerJobProcessorIsUsed__IJobProcessorCouldBeResolved()
         {
-            _messageStorageServiceCollection.AddSqlServerJobProcessor(new DbRepositoryConfiguration(), new[] {new Mock<Handler>().Object});
+            _messageStorageServiceCollection.AddSqlServerJobProcessor(new DbRepositoryConfiguration(string.Empty), new[] {new Mock<Handler>().Object});
             using (ServiceProvider serviceProvider = _serviceCollection.BuildServiceProvider())
             {
                 var jobProcessor = serviceProvider.GetService<IJobProcessor>();

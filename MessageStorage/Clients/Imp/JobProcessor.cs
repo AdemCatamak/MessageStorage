@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 
 namespace MessageStorage.Clients.Imp
 {
-    public class JobProcessor : IJobProcessor, IDisposable
+    public class JobProcessor : IJobProcessor
     {
         private readonly Func<IRepositoryContext> _repositoryContextFactory;
         private readonly IHandlerManager _handlerManager;
@@ -84,7 +84,6 @@ namespace MessageStorage.Clients.Imp
                 Thread.Sleep(_jobProcessorConfiguration.WaitAfterMessageHandled);
             }
         }
-
 
         private async Task HandleJob(Job job, IJobRepository jobRepository)
         {

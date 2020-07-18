@@ -58,8 +58,7 @@ namespace AccountWebApi
             string connectionStr = _configuration.GetConnectionString("SqlServerConnectionStr");
 
             // Step 1 (DbRepositoryConfiguration)
-            DbRepositoryConfiguration dbRepositoryConfiguration = new DbRepositoryConfiguration()
-               .SetConnectionString(connectionStr);
+            var dbRepositoryConfiguration = new DbRepositoryConfiguration(connectionStr);
 
             // Step 2 (Db Migration)
             IMessageStorageDbMigrationRunner messageStorageDbMigrationRunner = new SqlServerMessageStorageDbMigrationRunner();

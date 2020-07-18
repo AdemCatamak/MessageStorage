@@ -13,14 +13,14 @@ namespace MessageStorage.Db.SqlServer.DataAccessSection
         {
         }
 
-        protected override IDbMessageRepository CreateMessageRepository(IDbConnection dbConnection)
+        protected override IMessageDbRepository CreateMessageRepository(IDbConnection dbConnection)
         {
-            return new SqlServerDbMessageRepository(dbConnection, DbRepositoryConfiguration);
+            return new SqlServerMessageDbRepository(dbConnection, DbRepositoryConfiguration);
         }
 
-        protected override IDbJobRepository CreateJobRepository(IDbConnection dbConnection)
+        protected override IJobDbRepository CreateJobRepository(IDbConnection dbConnection)
         {
-            return new SqlServerDbJobRepository(dbConnection, DbRepositoryConfiguration);
+            return new SqlServerJobDbRepository(dbConnection, DbRepositoryConfiguration);
         }
     }
 }

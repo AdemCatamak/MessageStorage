@@ -22,8 +22,9 @@ namespace MessageStorage.Db.SqlServer.DI.Extension
         {
             return messageStorageServiceCollection.AddJobProcessor<IJobProcessor>(provider =>
                                                                                   {
+                                                                                      var sqlServerDbConnectionFactory = new SqlServerDbConnectionFactory();
                                                                                       var messageStorageDbClient
-                                                                                          = new JobProcessor(() => new SqlServerDbRepositoryContext(dbRepositoryConfiguration, new SqlServerDbConnectionFactory()),
+                                                                                          = new JobProcessor(() => new SqlServerDbRepositoryContext(dbRepositoryConfiguration, sqlServerDbConnectionFactory),
                                                                                                              handlerManager,
                                                                                                              logger,
                                                                                                              jobProcessorConfiguration);

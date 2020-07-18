@@ -9,10 +9,10 @@ using MessageStorage.Models;
 
 namespace MessageStorage.Db.DataAccessSection.Repositories.Imp
 {
-    public abstract class DbJobRepository : DbRepository<Job>,
-                                            IDbJobRepository
+    public abstract class JobDbRepository : DbRepository<Job>,
+                                            IJobDbRepository
     {
-        protected DbJobRepository(IDbConnection dbConnection, DbRepositoryConfiguration dbRepositoryConfiguration)
+        protected JobDbRepository(IDbConnection dbConnection, DbRepositoryConfiguration dbRepositoryConfiguration)
             : base(dbConnection, dbRepositoryConfiguration)
         {
         }
@@ -47,7 +47,7 @@ namespace MessageStorage.Db.DataAccessSection.Repositories.Imp
 
                     if (jobList.Count > 1)
                     {
-                        throw new DBConcurrencyException("Some message"); // TODO
+                        throw new MessageStorageAppException($"[{nameof(jobList)}.Count = {jobList.Count}] in {nameof(SetFirstWaitingJobToInProgress)}");
                     }
 
                     job = jobList.FirstOrDefault();

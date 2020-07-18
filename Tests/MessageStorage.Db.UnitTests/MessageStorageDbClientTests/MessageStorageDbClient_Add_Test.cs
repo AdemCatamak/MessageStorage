@@ -18,21 +18,21 @@ namespace MessageStorage.Db.UnitTests.MessageStorageDbClientTests
         private Mock<IHandlerManager> _mockHandlerManager;
         private Mock<IDbRepositoryContext> _mockDbRepositoryContext;
 
-        private Mock<IDbJobRepository> _dbJobRepositoryMock;
-        private Mock<IDbMessageRepository> _dbMessageRepositoryMock;
+        private Mock<IJobDbRepository> _dbJobRepositoryMock;
+        private Mock<IMessageDbRepository> _dbMessageRepositoryMock;
         private Mock<IDbTransaction> _dbTransactionMock;
 
         [SetUp]
         public void SetUp()
         {
-            _dbJobRepositoryMock = new Mock<IDbJobRepository>();
-            _dbMessageRepositoryMock = new Mock<IDbMessageRepository>();
+            _dbJobRepositoryMock = new Mock<IJobDbRepository>();
+            _dbMessageRepositoryMock = new Mock<IMessageDbRepository>();
             _mockDbRepositoryContext = new Mock<IDbRepositoryContext>();
-            _mockDbRepositoryContext.Setup(context => context.DbMessageRepository)
+            _mockDbRepositoryContext.Setup(context => context.MessageDbRepository)
                                     .Returns(_dbMessageRepositoryMock.Object);
             _mockDbRepositoryContext.Setup(context => context.MessageRepository)
                                     .Returns(_dbMessageRepositoryMock.Object);
-            _mockDbRepositoryContext.Setup(context => context.DbJobRepository)
+            _mockDbRepositoryContext.Setup(context => context.JobDbRepository)
                                     .Returns(_dbJobRepositoryMock.Object);
             _mockDbRepositoryContext.Setup(context => context.JobRepository)
                                     .Returns(_dbJobRepositoryMock.Object);

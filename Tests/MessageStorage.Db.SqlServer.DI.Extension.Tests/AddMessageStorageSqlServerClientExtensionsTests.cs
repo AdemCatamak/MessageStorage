@@ -9,12 +9,8 @@ using NUnit.Framework;
 
 namespace MessageStorage.Db.SqlServer.DI.Extension.Tests
 {
-    public class AddMessageStorageSqlServerClientExtensions
+    public class AddMessageStorageSqlServerClientExtensionsTests
     {
-        private class DummyDbRepositoryConfiguration : DbRepositoryConfiguration
-        {
-        }
-
         private IServiceCollection _serviceCollection;
         private MessageStorageServiceCollection _messageStorageServiceCollection;
 
@@ -28,9 +24,9 @@ namespace MessageStorage.Db.SqlServer.DI.Extension.Tests
         [Test]
         public void WhenAddAddMessageStorageSqlServerClientWithHandlerList_IMessageStorageDbClientCouldBeResolved()
         {
-            _messageStorageServiceCollection.AddMessageStorageSqlServerClient(new DummyDbRepositoryConfiguration(), new[] {new Mock<Handler>().Object,});
+            _messageStorageServiceCollection.AddMessageStorageSqlServerClient(new DbRepositoryConfiguration(string.Empty), new[] {new Mock<Handler>().Object,});
 
-            using (var serviceProvider = _serviceCollection.BuildServiceProvider())
+            using (ServiceProvider serviceProvider = _serviceCollection.BuildServiceProvider())
             {
                 var messageStorageClient = serviceProvider.GetService<IMessageStorageClient>();
                 Assert.IsNull(messageStorageClient);
@@ -38,7 +34,7 @@ namespace MessageStorage.Db.SqlServer.DI.Extension.Tests
                 var messageStorageDbClient = serviceProvider.GetService<IMessageStorageDbClient>();
                 Assert.IsNotNull(messageStorageDbClient);
 
-                var messageStorageSqlServerClient = serviceProvider.GetService<SqlServerDbMessageRepository>();
+                var messageStorageSqlServerClient = serviceProvider.GetService<SqlServerMessageDbRepository>();
                 Assert.IsNull(messageStorageSqlServerClient);
             }
         }
@@ -46,9 +42,9 @@ namespace MessageStorage.Db.SqlServer.DI.Extension.Tests
         [Test]
         public void WhenAddAddMessageStorageSqlServerClientWithHandlerManager_IMessageStorageDbClientCouldBeResolved()
         {
-            _messageStorageServiceCollection.AddMessageStorageSqlServerClient(new DummyDbRepositoryConfiguration(), new Mock<IHandlerManager>().Object);
+            _messageStorageServiceCollection.AddMessageStorageSqlServerClient(new DbRepositoryConfiguration(string.Empty), new Mock<IHandlerManager>().Object);
 
-            using (var serviceProvider = _serviceCollection.BuildServiceProvider())
+            using (ServiceProvider serviceProvider = _serviceCollection.BuildServiceProvider())
             {
                 var messageStorageClient = serviceProvider.GetService<IMessageStorageClient>();
                 Assert.IsNull(messageStorageClient);
@@ -56,7 +52,7 @@ namespace MessageStorage.Db.SqlServer.DI.Extension.Tests
                 var messageStorageDbClient = serviceProvider.GetService<IMessageStorageDbClient>();
                 Assert.IsNotNull(messageStorageDbClient);
 
-                var messageStorageSqlServerClient = serviceProvider.GetService<SqlServerDbMessageRepository>();
+                var messageStorageSqlServerClient = serviceProvider.GetService<SqlServerMessageDbRepository>();
                 Assert.IsNull(messageStorageSqlServerClient);
             }
         }

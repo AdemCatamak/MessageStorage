@@ -6,9 +6,9 @@ using Microsoft.Data.SqlClient;
 
 namespace MessageStorage.Db.SqlServer.DataAccessSection.Repositories
 {
-    public class SqlServerDbMessageRepository : DbMessageRepository
+    public class SqlServerMessageDbRepository : MessageDbRepository
     {
-        public SqlServerDbMessageRepository(IDbConnection dbConnection, DbRepositoryConfiguration dbRepositoryConfiguration)
+        public SqlServerMessageDbRepository(IDbConnection dbConnection, DbRepositoryConfiguration dbRepositoryConfiguration)
             : base(dbConnection, dbRepositoryConfiguration)
         {
         }

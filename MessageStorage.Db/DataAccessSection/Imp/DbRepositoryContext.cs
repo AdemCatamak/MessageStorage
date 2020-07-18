@@ -13,15 +13,52 @@ namespace MessageStorage.Db.DataAccessSection.Imp
 
         private IDbConnection _dbConnection;
         private IDbTransaction _dbTransaction;
+        private IMessageDbRepository _messageDbRepository;
+        private IJobDbRepository _jobDbRepository;
 
-        private IDbMessageRepository _dbMessageRepository;
-        private IDbJobRepository _dbJobRepository;
+        public IMessageRepository MessageRepository => MessageDbRepository;
+        public IJobRepository JobRepository => JobDbRepository;
 
-        public IMessageRepository MessageRepository => DbMessageRepository;
-        public IJobRepository JobRepository => DbJobRepository;
+        public IMessageDbRepository MessageDbRepository
+        {
+            [MethodImpl(MethodImplOptions.Synchronized)]
+            get
+            {
+                if (_messageDbRepository == null)
+                {
+                    IDbConnection dbConnection = GetDbConnection();
+                    _messageDbRepository = CreateMessageRepository(dbConnection);
+                    _messageDbRepository.UseTransaction(_dbTransaction);
+                }
+
+                return _messageDbRepository;
+            }
+        }
+
+        public IJobDbRepository JobDbRepository
+        {
+            [MethodImpl(MethodImplOptions.Synchronized)]
+            get
+            {
+                if (_jobDbRepository == null)
+                {
+                    IDbConnection dbConnection = GetDbConnection();
+                    _jobDbRepository = CreateJobRepository(dbConnection);
+                    _jobDbRepository.UseTransaction(_dbTransaction);
+                }
+
+                return _jobDbRepository;
+            }
+        }
 
         public DbRepositoryConfiguration DbRepositoryConfiguration { get; }
         public bool HasTransaction => _dbTransaction != null;
+
+        protected DbRepositoryContext(DbRepositoryConfiguration dbRepositoryConfiguration, IDbConnectionFactory dbConnectionFactory)
+        {
+            DbRepositoryConfiguration = dbRepositoryConfiguration;
+            _dbConnectionFactory = dbConnectionFactory;
+        }
 
         [MethodImpl(MethodImplOptions.Synchronized)]
         public IDbTransaction BeginTransaction(IsolationLevel isolationLevel = IsolationLevel.ReadCommitted)
@@ -40,54 +77,16 @@ namespace MessageStorage.Db.DataAccessSection.Imp
             }
 
             _dbTransaction = dbTransaction;
-            _dbMessageRepository?.UseTransaction(_dbTransaction);
-            _dbJobRepository?.UseTransaction(_dbTransaction);
+            _messageDbRepository?.UseTransaction(_dbTransaction);
+            _jobDbRepository?.UseTransaction(_dbTransaction);
         }
 
         [MethodImpl(MethodImplOptions.Synchronized)]
         public void ClearTransaction()
         {
             _dbTransaction = null;
-            _dbMessageRepository?.ClearTransaction();
-            _dbJobRepository?.ClearTransaction();
-        }
-
-        public IDbMessageRepository DbMessageRepository
-        {
-            [MethodImpl(MethodImplOptions.Synchronized)]
-            get
-            {
-                if (_dbMessageRepository == null)
-                {
-                    IDbConnection dbConnection = GetDbConnection();
-                    _dbMessageRepository = CreateMessageRepository(dbConnection);
-                    _dbMessageRepository.UseTransaction(_dbTransaction);
-                }
-
-                return _dbMessageRepository;
-            }
-        }
-
-        public IDbJobRepository DbJobRepository
-        {
-            [MethodImpl(MethodImplOptions.Synchronized)]
-            get
-            {
-                if (_dbJobRepository == null)
-                {
-                    IDbConnection dbConnection = GetDbConnection();
-                    _dbJobRepository = CreateJobRepository(dbConnection);
-                    _dbJobRepository.UseTransaction(_dbTransaction);
-                }
-
-                return _dbJobRepository;
-            }
-        }
-
-        protected DbRepositoryContext(DbRepositoryConfiguration dbRepositoryConfiguration, IDbConnectionFactory dbConnectionFactory)
-        {
-            DbRepositoryConfiguration = dbRepositoryConfiguration;
-            _dbConnectionFactory = dbConnectionFactory;
+            _messageDbRepository?.ClearTransaction();
+            _jobDbRepository?.ClearTransaction();
         }
 
         [MethodImpl(MethodImplOptions.Synchronized)]
@@ -96,8 +95,8 @@ namespace MessageStorage.Db.DataAccessSection.Imp
             return _dbConnection ??= _dbConnectionFactory.CreateConnection(DbRepositoryConfiguration.ConnectionString);
         }
 
-        protected abstract IDbMessageRepository CreateMessageRepository(IDbConnection dbConnection);
-        protected abstract IDbJobRepository CreateJobRepository(IDbConnection dbConnection);
+        protected abstract IMessageDbRepository CreateMessageRepository(IDbConnection dbConnection);
+        protected abstract IJobDbRepository CreateJobRepository(IDbConnection dbConnection);
 
         public void Dispose()
         {
