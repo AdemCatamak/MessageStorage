@@ -1,31 +1,31 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace SampleWebApi.EntityFrameworkSection.Migrations
+namespace AccountWebApi.EntityFrameworkSection.Migrations
 {
-    public partial class CreateTable_SampleModel : Migration
+    public partial class CreateTable_AccountModel : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Samples",
+                name: "Accounts",
                 columns: table => new
                 {
                     Id = table.Column<long>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Text = table.Column<string>(nullable: true),
+                    Email = table.Column<string>(nullable: true),
                     CreatedOn = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Samples", x => x.Id);
+                    table.PrimaryKey("PK_Accounts", x => x.Id);
                 });
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Samples");
+                name: "Accounts");
         }
     }
 }

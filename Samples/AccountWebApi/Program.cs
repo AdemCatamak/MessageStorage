@@ -1,11 +1,11 @@
+using AccountWebApi.EntityFrameworkSection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using SampleWebApi.EntityFrameworkSection;
 
-namespace SampleWebApi
+namespace AccountWebApi
 {
     public class Program
     {
@@ -15,7 +15,7 @@ namespace SampleWebApi
             {
                 using (IServiceScope scope = host.Services.CreateScope())
                 {
-                    var sampleDbContext=scope.ServiceProvider.GetService<SampleDbContext>();
+                    var sampleDbContext=scope.ServiceProvider.GetService<AccountDbContext>();
                     sampleDbContext.Database.Migrate();
                 }
                 

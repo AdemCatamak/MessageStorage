@@ -31,11 +31,11 @@
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       </Content>
-      <Content Include="..\..\docker-compose.sample-web-api.yml">
-        <Link>BuildFiles\docker-compose.sample-web-api.yml</Link>
+      <Content Include="..\..\account-web-api.Dockerfile">
+        <Link>BuildFiles\account-web-api.Dockerfile</Link>
       </Content>
-      <Content Include="..\..\sample-web-api.Dockerfile">
-        <Link>BuildFiles\sample-web-api.Dockerfile</Link>
+      <Content Include="..\..\docker-compose.account-web-api.yml">
+        <Link>BuildFiles\docker-compose.account-web-api.yml</Link>
       </Content>
     </ItemGroup>
 </Project>

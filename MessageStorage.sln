@@ -32,7 +32,7 @@ EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{D3A02853-0E08-486C-B0CA-0289A06B7EB5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleWebApi", "Samples\SampleWebApi\SampleWebApi.csproj", "{5EFD3FF5-DE11-4B2D-B18C-7E36149E5C7D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AccountWebApi", "Samples\AccountWebApi\AccountWebApi.csproj", "{5EFD3FF5-DE11-4B2D-B18C-7E36149E5C7D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageStorage.AspNetCore", "MessageStorage.AspNetCore\MessageStorage.AspNetCore.csproj", "{568A1ACA-FFEC-4E7C-9AE0-0A2DB77800DE}"
 EndProject

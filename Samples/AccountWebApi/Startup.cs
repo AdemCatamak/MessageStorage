@@ -1,6 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using AccountWebApi.AccountApiMessageStorageSection;
+using AccountWebApi.AccountApiMessageStorageSection.AccountHandlers;
+using AccountWebApi.Controllers;
+using AccountWebApi.EntityFrameworkSection;
 using MessageStorage;
 using MessageStorage.AspNetCore;
 using MessageStorage.Clients;
@@ -18,13 +22,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
-using SampleWebApi.Controllers;
-using SampleWebApi.EntityFrameworkSection;
-using SampleWebApi.WebApiMessageStorageSection;
-using SampleWebApi.WebApiMessageStorageSection.SampleHandlers;
-using JobProcessorHostedService = SampleWebApi.WebApiMessageStorageSection.JobProcessorHostedService;
 
-namespace SampleWebApi
+namespace AccountWebApi
 {
     public class Startup
     {
@@ -51,14 +50,14 @@ namespace SampleWebApi
                              });
 
             services.AddControllers()
-                    .AddApplicationPart(typeof(SampleController).Assembly);
+                    .AddApplicationPart(typeof(AccountController).Assembly);
 
             services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo()); });
 
             string connectionStr = _configuration.GetConnectionString("SqlServerConnectionStr");
 
             // Step 1 (DbRepositoryConfiguration)
-            var webApiSqlServerDbRepositoryConfiguration = new WebApiSqlServerDbRepositoryConfiguration(connectionStr);
+            var webApiSqlServerDbRepositoryConfiguration = new AccountApiSqlServerDbRepositoryConfiguration(connectionStr);
 
             // Step 2 (Db Migration)
             IMessageStorageDbMigrationRunner messageStorageDbMigrationRunner = new SqlServerMessageStorageDbMigrationRunner();
@@ -85,8 +84,8 @@ namespace SampleWebApi
             // Step 3 (Handlers & HandlerManager)
             var handlers = new List<Handler>
                            {
-                               new SampleMessageHandler(),
-                               new SampleCreatedMessageHandler()
+                               new AccountEventHandler(),
+                               new AccountCreatedEventHandler()
                            };
             IHandlerManager handlerManager = new HandlerManager(handlers);
 
@@ -97,16 +96,16 @@ namespace SampleWebApi
                 ISqlServerDbConnectionFactory sqlServerDbConnectionFactory = new SqlServerDbConnectionFactory();
 
                 // Step 5 (DbRepositoryContext)
-                services.AddScoped<IDbRepositoryContext<WebApiSqlServerDbRepositoryConfiguration>>(provider => new SqlServerDbRepositoryContext<WebApiSqlServerDbRepositoryConfiguration>(webApiSqlServerDbRepositoryConfiguration, sqlServerDbConnectionFactory));
+                services.AddScoped<IDbRepositoryContext<AccountApiSqlServerDbRepositoryConfiguration>>(provider => new SqlServerDbRepositoryContext<AccountApiSqlServerDbRepositoryConfiguration>(webApiSqlServerDbRepositoryConfiguration, sqlServerDbConnectionFactory));
 
                 // Step 6 (MessageStorageDbClient)
-                services.AddScoped<IMessageStorageDbClient>(provider => new WebApiDbMessageStorageClient(handlerManager, provider.GetRequiredService<IDbRepositoryContext<WebApiSqlServerDbRepositoryConfiguration>>()));
+                services.AddScoped<IMessageStorageDbClient>(provider => new AccountApiDbMessageStorageClient(handlerManager, provider.GetRequiredService<IDbRepositoryContext<AccountApiSqlServerDbRepositoryConfiguration>>()));
 
                 // Step 7 (JobProcessor)
-                services.AddSingleton<IJobProcessor>(provider => new JobProcessor<WebApiSqlServerDbRepositoryConfiguration>(provider.GetRequiredService<IDbRepositoryContext<WebApiSqlServerDbRepositoryConfiguration>>(), handlerManager, provider.GetRequiredService<ILogger<IJobProcessor>>()));
+                services.AddSingleton<IJobProcessor>(provider => new JobProcessor<AccountApiSqlServerDbRepositoryConfiguration>(provider.GetRequiredService<IDbRepositoryContext<AccountApiSqlServerDbRepositoryConfiguration>>(), handlerManager, provider.GetRequiredService<ILogger<IJobProcessor>>()));
 
                 // Step 8 (JobProcessorHostedService)
-                services.AddHostedService<JobProcessorHostedService>();
+                services.AddHostedService<AccountApiJobProcessorHostedService>();
             }
             else
             {
@@ -121,8 +120,8 @@ namespace SampleWebApi
 
             #endregion
 
-            services.AddDbContext<SampleDbContext>(builder => builder.UseSqlServer(connectionStr,
-                                                                                   optionsBuilder => optionsBuilder.MigrationsAssembly(typeof(SampleDbContext).Assembly.FullName)));
+            services.AddDbContext<AccountDbContext>(builder => builder.UseSqlServer(connectionStr,
+                                                                                   optionsBuilder => optionsBuilder.MigrationsAssembly(typeof(AccountDbContext).Assembly.FullName)));
         }
 
         public void Configure(IApplicationBuilder app)
