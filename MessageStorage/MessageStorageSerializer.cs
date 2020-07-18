@@ -5,23 +5,23 @@ namespace MessageStorage
 {
     public static class MessageStorageSerializer
     {
-        public static IMessageStorageSerializer OfficeSerializer { get; set; }
+        public static IMessageStorageSerializer Serializer { get; set; }
 
         static MessageStorageSerializer()
         {
-            OfficeSerializer = new JSonMessageStorageSerializer();
+            Serializer = new JSonMessageStorageSerializer();
         }
 
 
         public static string Serialize(object obj)
         {
-            return OfficeSerializer.Serialize(obj);
+            return Serializer.Serialize(obj);
         }
 
 
         public static T Deserialize<T>(string serializedObj)
         {
-            return OfficeSerializer.Deserialize<T>(serializedObj);
+            return Serializer.Deserialize<T>(serializedObj);
         }
     }
 }
