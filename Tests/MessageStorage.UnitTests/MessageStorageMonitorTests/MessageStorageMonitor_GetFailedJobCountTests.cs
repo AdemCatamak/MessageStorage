@@ -1,5 +1,4 @@
 using MessageStorage.Clients.Imp;
-using MessageStorage.Configurations;
 using MessageStorage.DataAccessSection;
 using MessageStorage.Models;
 using Moq;
@@ -9,15 +8,15 @@ namespace MessageStorage.UnitTests.MessageStorageMonitorTests
 {
     public class MessageStorageMonitor_GetFailedJobCountTests
     {
-        private MessageStorageMonitor<RepositoryConfiguration> _sut;
-        private Mock<IRepositoryContext<RepositoryConfiguration>> _mockRepositoryContext;
+        private MessageStorageMonitor _sut;
+        private Mock<IRepositoryContext> _mockRepositoryContext;
 
         [SetUp]
         public void SetUp()
         {
-            _mockRepositoryContext = new Mock<IRepositoryContext<RepositoryConfiguration>>();
+            _mockRepositoryContext = new Mock<IRepositoryContext>();
 
-            _sut = new MessageStorageMonitor<RepositoryConfiguration>(_mockRepositoryContext.Object);
+            _sut = new MessageStorageMonitor(_mockRepositoryContext.Object);
         }
 
         [Test, Sequential]

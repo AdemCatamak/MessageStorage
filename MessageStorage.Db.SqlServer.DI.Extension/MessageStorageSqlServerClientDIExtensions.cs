@@ -22,13 +22,13 @@ namespace MessageStorage.Db.SqlServer.DI.Extension
             messageStorageDbConfiguration ??= new MessageStorageDbConfiguration();
 
             return messageStorageServiceCollection.AddMessageStorageDbClient<IMessageStorageDbClient>(provider =>
-                                                                                                    {
-                                                                                                        var messageStorageDbClient
-                                                                                                            = new MessageStorageDbClient<DbRepositoryConfiguration>(handlerManager,
-                                                                                                                                                                    new SqlServerDbRepositoryContext<DbRepositoryConfiguration>(sampleSqlServerDbRepositoryConfiguration, new SqlServerDbConnectionFactory()),
-                                                                                                                                                                    messageStorageDbConfiguration);
-                                                                                                        return messageStorageDbClient;
-                                                                                                    });
+                                                                                                      {
+                                                                                                          var messageStorageDbClient
+                                                                                                              = new MessageStorageDbClient(handlerManager,
+                                                                                                                                           new SqlServerDbRepositoryContext(sampleSqlServerDbRepositoryConfiguration, new SqlServerDbConnectionFactory()),
+                                                                                                                                           messageStorageDbConfiguration);
+                                                                                                          return messageStorageDbClient;
+                                                                                                      });
         }
     }
 }

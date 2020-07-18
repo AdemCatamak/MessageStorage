@@ -9,12 +9,11 @@ using MessageStorage.Models;
 
 namespace MessageStorage.Db.DataAccessSection.Repositories.Imp
 {
-    public abstract class DbJobRepository<TDbRepositoryConfiguration>
-        : DbRepository<TDbRepositoryConfiguration, Job>,
-          IDbJobRepository<TDbRepositoryConfiguration>
-        where TDbRepositoryConfiguration : DbRepositoryConfiguration
+    public abstract class DbJobRepository : DbRepository<Job>,
+                                            IDbJobRepository
     {
-        protected DbJobRepository(IDbConnection dbConnection, TDbRepositoryConfiguration dbRepositoryConfiguration) : base(dbConnection, dbRepositoryConfiguration)
+        protected DbJobRepository(IDbConnection dbConnection, DbRepositoryConfiguration dbRepositoryConfiguration)
+            : base(dbConnection, dbRepositoryConfiguration)
         {
         }
 

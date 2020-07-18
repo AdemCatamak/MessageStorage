@@ -3,8 +3,7 @@ using MessageStorage.Clients;
 
 namespace MessageStorage.Db.Clients
 {
-    public interface IMessageStorageDbClient
-        : IMessageStorageClient
+    public interface IMessageStorageDbClient : IMessageStorageClient
     {
         void UseTransaction(IDbTransaction dbTransaction);
         IDbTransaction BeginTransaction();

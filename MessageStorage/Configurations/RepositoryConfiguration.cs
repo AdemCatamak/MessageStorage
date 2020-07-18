@@ -1,6 +1,6 @@
 namespace MessageStorage.Configurations
 {
-    public abstract class RepositoryConfiguration
+    public class RepositoryConfiguration
     {
     }
 }

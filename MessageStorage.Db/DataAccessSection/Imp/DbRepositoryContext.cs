@@ -7,23 +7,20 @@ using MessageStorage.Db.Exceptions;
 
 namespace MessageStorage.Db.DataAccessSection.Imp
 {
-    public abstract class DbRepositoryContext<TDbRepositoryConfiguration> :
-        IDbRepositoryContext<TDbRepositoryConfiguration>
-        where TDbRepositoryConfiguration : DbRepositoryConfiguration
+    public abstract class DbRepositoryContext : IDbRepositoryContext
     {
         private readonly IDbConnectionFactory _dbConnectionFactory;
 
         private IDbConnection _dbConnection;
         private IDbTransaction _dbTransaction;
 
-        private IDbMessageRepository<TDbRepositoryConfiguration> _dbMessageRepository;
-        private IDbJobRepository<TDbRepositoryConfiguration> _dbJobRepository;
+        private IDbMessageRepository _dbMessageRepository;
+        private IDbJobRepository _dbJobRepository;
 
-        public TDbRepositoryConfiguration RepositoryConfiguration => DbRepositoryConfiguration;
-        public IMessageRepository<TDbRepositoryConfiguration> MessageRepository => DbMessageRepository;
-        public IJobRepository<TDbRepositoryConfiguration> JobRepository => DbJobRepository;
+        public IMessageRepository MessageRepository => DbMessageRepository;
+        public IJobRepository JobRepository => DbJobRepository;
 
-        public TDbRepositoryConfiguration DbRepositoryConfiguration { get; }
+        public DbRepositoryConfiguration DbRepositoryConfiguration { get; }
         public bool HasTransaction => _dbTransaction != null;
 
         [MethodImpl(MethodImplOptions.Synchronized)]
@@ -55,7 +52,7 @@ namespace MessageStorage.Db.DataAccessSection.Imp
             _dbJobRepository?.ClearTransaction();
         }
 
-        public IDbMessageRepository<TDbRepositoryConfiguration> DbMessageRepository
+        public IDbMessageRepository DbMessageRepository
         {
             [MethodImpl(MethodImplOptions.Synchronized)]
             get
@@ -71,7 +68,7 @@ namespace MessageStorage.Db.DataAccessSection.Imp
             }
         }
 
-        public IDbJobRepository<TDbRepositoryConfiguration> DbJobRepository
+        public IDbJobRepository DbJobRepository
         {
             [MethodImpl(MethodImplOptions.Synchronized)]
             get
@@ -87,7 +84,7 @@ namespace MessageStorage.Db.DataAccessSection.Imp
             }
         }
 
-        protected DbRepositoryContext(TDbRepositoryConfiguration dbRepositoryConfiguration, IDbConnectionFactory dbConnectionFactory)
+        protected DbRepositoryContext(DbRepositoryConfiguration dbRepositoryConfiguration, IDbConnectionFactory dbConnectionFactory)
         {
             DbRepositoryConfiguration = dbRepositoryConfiguration;
             _dbConnectionFactory = dbConnectionFactory;
@@ -99,8 +96,8 @@ namespace MessageStorage.Db.DataAccessSection.Imp
             return _dbConnection ??= _dbConnectionFactory.CreateConnection(DbRepositoryConfiguration.ConnectionString);
         }
 
-        protected abstract IDbMessageRepository<TDbRepositoryConfiguration> CreateMessageRepository(IDbConnection dbConnection);
-        protected abstract IDbJobRepository<TDbRepositoryConfiguration> CreateJobRepository(IDbConnection dbConnection);
+        protected abstract IDbMessageRepository CreateMessageRepository(IDbConnection dbConnection);
+        protected abstract IDbJobRepository CreateJobRepository(IDbConnection dbConnection);
 
         public void Dispose()
         {

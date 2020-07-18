@@ -3,7 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using MessageStorage.Clients;
 using MessageStorage.Clients.Imp;
-using MessageStorage.Configurations;
 using MessageStorage.DataAccessSection;
 using MessageStorage.Models;
 using Microsoft.Extensions.Logging;
@@ -14,10 +13,10 @@ namespace MessageStorage.UnitTests.JobProcessServerTests
 {
     public class JobProcessServer_Execute_Tests : IDisposable
     {
-        private JobProcessor<RepositoryConfiguration> _sut;
+        private JobProcessor _sut;
         private Mock<ILogger<IJobProcessor>> _mockLogger;
         private CancellationTokenSource _cancellationTokenSource;
-        private Mock<IRepositoryContext<RepositoryConfiguration>> _mockRepositoryContext;
+        private Mock<IRepositoryContext> _mockRepositoryContext;
         private Mock<IHandlerManager> _mockHandlerManager;
 
         [SetUp]
@@ -25,9 +24,9 @@ namespace MessageStorage.UnitTests.JobProcessServerTests
         {
             _mockHandlerManager = new Mock<IHandlerManager>();
             _cancellationTokenSource = new CancellationTokenSource();
-            _mockRepositoryContext = new Mock<IRepositoryContext<RepositoryConfiguration>>();
+            _mockRepositoryContext = new Mock<IRepositoryContext>();
             _mockLogger = new Mock<ILogger<IJobProcessor>>();
-            _sut = new JobProcessor<RepositoryConfiguration>(() => _mockRepositoryContext.Object, _mockHandlerManager.Object, _mockLogger.Object);
+            _sut = new JobProcessor(() => _mockRepositoryContext.Object, _mockHandlerManager.Object, _mockLogger.Object);
         }
 
         [TearDown]

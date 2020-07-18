@@ -14,24 +14,20 @@ namespace MessageStorage.Db.UnitTests.MessageStorageDbClientTests
 {
     public class MessageStorageDbClient_Add_Test
     {
-        public class DummyDbRepositoryConfiguration : DbRepositoryConfiguration
-        {
-        }
-
-        private MessageStorageDbClient<DummyDbRepositoryConfiguration> _sut;
+        private MessageStorageDbClient _sut;
         private Mock<IHandlerManager> _mockHandlerManager;
-        private Mock<IDbRepositoryContext<DummyDbRepositoryConfiguration>> _mockDbRepositoryContext;
+        private Mock<IDbRepositoryContext> _mockDbRepositoryContext;
 
-        private Mock<IDbJobRepository<DummyDbRepositoryConfiguration>> _dbJobRepositoryMock;
-        private Mock<IDbMessageRepository<DummyDbRepositoryConfiguration>> _dbMessageRepositoryMock;
+        private Mock<IDbJobRepository> _dbJobRepositoryMock;
+        private Mock<IDbMessageRepository> _dbMessageRepositoryMock;
         private Mock<IDbTransaction> _dbTransactionMock;
 
         [SetUp]
         public void SetUp()
         {
-            _dbJobRepositoryMock = new Mock<IDbJobRepository<DummyDbRepositoryConfiguration>>();
-            _dbMessageRepositoryMock = new Mock<IDbMessageRepository<DummyDbRepositoryConfiguration>>();
-            _mockDbRepositoryContext = new Mock<IDbRepositoryContext<DummyDbRepositoryConfiguration>>();
+            _dbJobRepositoryMock = new Mock<IDbJobRepository>();
+            _dbMessageRepositoryMock = new Mock<IDbMessageRepository>();
+            _mockDbRepositoryContext = new Mock<IDbRepositoryContext>();
             _mockDbRepositoryContext.Setup(context => context.DbMessageRepository)
                                     .Returns(_dbMessageRepositoryMock.Object);
             _mockDbRepositoryContext.Setup(context => context.MessageRepository)
@@ -45,7 +41,7 @@ namespace MessageStorage.Db.UnitTests.MessageStorageDbClientTests
                                     .Returns(_dbTransactionMock.Object);
 
             _mockHandlerManager = new Mock<IHandlerManager>();
-            _sut = new MessageStorageDbClient<DummyDbRepositoryConfiguration>(_mockHandlerManager.Object, _mockDbRepositoryContext.Object, new MessageStorageDbConfiguration());
+            _sut = new MessageStorageDbClient(_mockHandlerManager.Object, _mockDbRepositoryContext.Object, new MessageStorageDbConfiguration());
         }
 
         [Test]

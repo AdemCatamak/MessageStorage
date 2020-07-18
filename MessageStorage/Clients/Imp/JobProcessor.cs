@@ -10,10 +10,9 @@ using Microsoft.Extensions.Logging.Abstractions;
 
 namespace MessageStorage.Clients.Imp
 {
-    public class JobProcessor<TRepositoryConfiguration> : IJobProcessor, IDisposable
-        where TRepositoryConfiguration : RepositoryConfiguration
+    public class JobProcessor : IJobProcessor, IDisposable
     {
-        private readonly Func<IRepositoryContext<TRepositoryConfiguration>> _repositoryContextFactory;
+        private readonly Func<IRepositoryContext> _repositoryContextFactory;
         private readonly IHandlerManager _handlerManager;
         private readonly JobProcessorConfiguration _jobProcessorConfiguration;
         private readonly ILogger<IJobProcessor> _logger;
@@ -22,7 +21,7 @@ namespace MessageStorage.Clients.Imp
 
         private Task _executionTask;
 
-        public JobProcessor(Func<IRepositoryContext<TRepositoryConfiguration>> repositoryContextFactory, IHandlerManager handlerManager, ILogger<IJobProcessor> logger, JobProcessorConfiguration jobProcessorConfiguration = null)
+        public JobProcessor(Func<IRepositoryContext> repositoryContextFactory, IHandlerManager handlerManager, ILogger<IJobProcessor> logger, JobProcessorConfiguration jobProcessorConfiguration = null)
         {
             _repositoryContextFactory = repositoryContextFactory ?? throw new ArgumentNullException(nameof(repositoryContextFactory));
             _handlerManager = handlerManager ?? throw new ArgumentNullException(nameof(handlerManager));
@@ -61,9 +60,9 @@ namespace MessageStorage.Clients.Imp
         {
             LogDebug($"{DateTime.UtcNow} - {nameof(IJobProcessor)}.{nameof(ExecuteAsync)} is called");
 
-            using (IRepositoryContext<TRepositoryConfiguration> repositoryContext = _repositoryContextFactory.Invoke())
+            using (IRepositoryContext repositoryContext = _repositoryContextFactory.Invoke())
             {
-                IJobRepository<TRepositoryConfiguration> jobRepository = repositoryContext.JobRepository;
+                IJobRepository jobRepository = repositoryContext.JobRepository;
                 try
                 {
                     Job job = jobRepository.SetFirstWaitingJobToInProgress();
@@ -87,7 +86,7 @@ namespace MessageStorage.Clients.Imp
         }
 
 
-        private async Task HandleJob(Job job, IJobRepository<TRepositoryConfiguration> jobRepository)
+        private async Task HandleJob(Job job, IJobRepository jobRepository)
         {
             LogDebug($"{DateTime.UtcNow} - {nameof(IJobProcessor)}.{nameof(HandleJob)} is called [JobId: {job.Id}]");
 

@@ -6,22 +6,21 @@ using MessageStorage.Db.SqlServer.DataAccessSection.Repositories;
 
 namespace MessageStorage.Db.SqlServer.DataAccessSection
 {
-    public class SqlServerDbRepositoryContext<TDbRepositoryConfiguration>
-        : DbRepositoryContext<TDbRepositoryConfiguration>
-        where TDbRepositoryConfiguration : DbRepositoryConfiguration
+    public class SqlServerDbRepositoryContext : DbRepositoryContext
     {
-        public SqlServerDbRepositoryContext(TDbRepositoryConfiguration dbRepositoryConfiguration, ISqlServerDbConnectionFactory dbConnectionFactory) : base(dbRepositoryConfiguration, dbConnectionFactory)
+        public SqlServerDbRepositoryContext(DbRepositoryConfiguration dbRepositoryConfiguration, ISqlServerDbConnectionFactory dbConnectionFactory)
+            : base(dbRepositoryConfiguration, dbConnectionFactory)
         {
         }
 
-        protected override IDbMessageRepository<TDbRepositoryConfiguration> CreateMessageRepository(IDbConnection dbConnection)
+        protected override IDbMessageRepository CreateMessageRepository(IDbConnection dbConnection)
         {
-            return new SqlServerDbMessageRepository<TDbRepositoryConfiguration>(dbConnection, DbRepositoryConfiguration);
+            return new SqlServerDbMessageRepository(dbConnection, DbRepositoryConfiguration);
         }
 
-        protected override IDbJobRepository<TDbRepositoryConfiguration> CreateJobRepository(IDbConnection dbConnection)
+        protected override IDbJobRepository CreateJobRepository(IDbConnection dbConnection)
         {
-            return new SqlServerDbJobRepository<TDbRepositoryConfiguration>(dbConnection, DbRepositoryConfiguration);
+            return new SqlServerDbJobRepository(dbConnection, DbRepositoryConfiguration);
         }
     }
 }

@@ -5,12 +5,10 @@ using MessageStorage.Models;
 
 namespace MessageStorage.Db.DataAccessSection.Repositories.Imp
 {
-    public abstract class DbMessageRepository<TDbRepositoryConfiguration>
-        : DbRepository<TDbRepositoryConfiguration, Message>,
-          IDbMessageRepository<TDbRepositoryConfiguration>
-        where TDbRepositoryConfiguration : DbRepositoryConfiguration
+    public abstract class DbMessageRepository : DbRepository<Message>,
+                                                IDbMessageRepository
     {
-        protected DbMessageRepository(IDbConnection dbConnection, TDbRepositoryConfiguration dbRepositoryConfiguration) : base(dbConnection, dbRepositoryConfiguration)
+        protected DbMessageRepository(IDbConnection dbConnection, DbRepositoryConfiguration dbRepositoryConfiguration) : base(dbConnection, dbRepositoryConfiguration)
         {
         }
     }

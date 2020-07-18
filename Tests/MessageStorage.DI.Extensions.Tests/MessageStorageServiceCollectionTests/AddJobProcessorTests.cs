@@ -1,6 +1,5 @@
 using MessageStorage.Clients;
 using MessageStorage.Clients.Imp;
-using MessageStorage.Configurations;
 using MessageStorage.DataAccessSection;
 using MessageStorage.DI.Extension;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,14 +14,14 @@ namespace MessageStorage.DI.Extensions.Tests.MessageStorageServiceCollectionTest
         private MessageStorageServiceCollection _sut;
         private ServiceCollection _serviceCollection;
         private Mock<IHandlerManager> _mockHandlerManager;
-        private Mock<IRepositoryContext<RepositoryConfiguration>> _mockRepositoryContext;
+        private Mock<IRepositoryContext> _mockRepositoryContext;
         private Mock<ILogger<IJobProcessor>> _mockLogger;
 
         [SetUp]
         public void SetUp()
         {
             _mockHandlerManager = new Mock<IHandlerManager>();
-            _mockRepositoryContext = new Mock<IRepositoryContext<RepositoryConfiguration>>();
+            _mockRepositoryContext = new Mock<IRepositoryContext>();
             _mockLogger = new Mock<ILogger<IJobProcessor>>();
 
             _serviceCollection = new ServiceCollection();
@@ -37,11 +36,11 @@ namespace MessageStorage.DI.Extensions.Tests.MessageStorageServiceCollectionTest
         [Test]
         public void WhenAddRepositoryContext_WithoutType__DerivedTypeShouldBeInjected()
         {
-            _sut.AddJobProcessor(provider => new JobProcessor<RepositoryConfiguration>(()=>_mockRepositoryContext.Object, _mockHandlerManager.Object, _mockLogger.Object));
+            _sut.AddJobProcessor(provider => new JobProcessor(()=>_mockRepositoryContext.Object, _mockHandlerManager.Object, _mockLogger.Object));
 
             using (ServiceProvider serviceProvider = _serviceCollection.BuildServiceProvider())
             {
-                var jobProcessor = serviceProvider.GetService<JobProcessor<RepositoryConfiguration>>();
+                var jobProcessor = serviceProvider.GetService<JobProcessor>();
                 Assert.NotNull(jobProcessor);
 
                 var baseJobProcessor = serviceProvider.GetService<IJobProcessor>();
@@ -52,11 +51,11 @@ namespace MessageStorage.DI.Extensions.Tests.MessageStorageServiceCollectionTest
         [Test]
         public void WhenAddMessageStorageClient_WithType__DefinedTypeShouldBeInjected()
         {
-            _sut.AddJobProcessor<IJobProcessor>(provider => new JobProcessor<RepositoryConfiguration>(()=>_mockRepositoryContext.Object, _mockHandlerManager.Object, _mockLogger.Object));
+            _sut.AddJobProcessor<IJobProcessor>(provider => new JobProcessor(()=>_mockRepositoryContext.Object, _mockHandlerManager.Object, _mockLogger.Object));
 
             using (ServiceProvider serviceProvider = _serviceCollection.BuildServiceProvider())
             {
-                var jobProcessor = serviceProvider.GetService<JobProcessor<RepositoryConfiguration>>();
+                var jobProcessor = serviceProvider.GetService<JobProcessor>();
                 Assert.Null(jobProcessor);
 
                 var baseJobProcessor = serviceProvider.GetService<IJobProcessor>();

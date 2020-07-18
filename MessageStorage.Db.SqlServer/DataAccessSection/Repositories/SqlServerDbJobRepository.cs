@@ -8,11 +8,10 @@ using Microsoft.Data.SqlClient;
 
 namespace MessageStorage.Db.SqlServer.DataAccessSection.Repositories
 {
-    public class SqlServerDbJobRepository<TDbRepositoryConfiguration>
-        : DbJobRepository<TDbRepositoryConfiguration>
-        where TDbRepositoryConfiguration : DbRepositoryConfiguration
+    public class SqlServerDbJobRepository : DbJobRepository
     {
-        public SqlServerDbJobRepository(IDbConnection dbConnection, TDbRepositoryConfiguration dbRepositoryConfiguration) : base(dbConnection, dbRepositoryConfiguration)
+        public SqlServerDbJobRepository(IDbConnection dbConnection, DbRepositoryConfiguration dbRepositoryConfiguration)
+            : base(dbConnection, dbRepositoryConfiguration)
         {
         }
 
@@ -57,7 +56,7 @@ SELECT j.JobId, j.JobStatus, j.AssignedHandlerName, j.LastOperationInfo, j.LastO
 ";
             return (commandText, new IDataParameter[] { }, BuildJob);
         }
-        
+
         protected override (string, IDataParameter[]) PrepareUpdateCommand(Job job)
         {
             string commandText = $"Update [{DbRepositoryConfiguration.Schema}].[{TableNames.JobTable}] Set CreatedOn = @CreatedOn, MessageId = @MessageId, AssignedHandlerName = @AssignedHandlerName, JobStatus = @JobStatus, LastOperationTime = @LastOperationTime, LastOperationInfo = @LastOperationInfo Where JobId = @JobId";
@@ -85,8 +84,8 @@ SELECT j.JobId, j.JobStatus, j.AssignedHandlerName, j.LastOperationInfo, j.LastO
 
             return (commandText, dataParameters);
         }
-        
-         private static Job BuildJob(IDataReader r)
+
+        private static Job BuildJob(IDataReader r)
         {
             Message message = MapDataToMessage(r);
             Job job = MapDataToJob(r, message);

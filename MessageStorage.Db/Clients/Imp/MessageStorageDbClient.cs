@@ -10,14 +10,12 @@ using MessageStorage.Models;
 
 namespace MessageStorage.Db.Clients.Imp
 {
-    public class MessageStorageDbClient<TDbRepositoryConfiguration>
-        : MessageStorageClient,
-          IMessageStorageDbClient
-        where TDbRepositoryConfiguration : DbRepositoryConfiguration
+    public class MessageStorageDbClient : MessageStorageClient,
+                                          IMessageStorageDbClient
     {
-        private readonly IDbRepositoryContext<TDbRepositoryConfiguration> _dbRepositoryContext;
+        private readonly IDbRepositoryContext _dbRepositoryContext;
 
-        public MessageStorageDbClient(IHandlerManager handlerManager, IDbRepositoryContext<TDbRepositoryConfiguration> dbRepositoryContext, MessageStorageDbConfiguration messageStorageConfiguration = null)
+        public MessageStorageDbClient(IHandlerManager handlerManager, IDbRepositoryContext dbRepositoryContext, MessageStorageDbConfiguration messageStorageConfiguration = null)
             : base(handlerManager, messageStorageConfiguration ?? new MessageStorageDbConfiguration())
         {
             _dbRepositoryContext = dbRepositoryContext ?? throw new ArgumentNullException(nameof(dbRepositoryContext));

@@ -1,23 +1,21 @@
-using MessageStorage.Configurations;
 using MessageStorage.DataAccessSection;
 using MessageStorage.DataAccessSection.Repositories;
 using MessageStorage.Models;
 
 namespace MessageStorage.Clients.Imp
 {
-    public class MessageStorageMonitor<TRepositoryConfiguration> : IMessageStorageMonitor
-        where TRepositoryConfiguration : RepositoryConfiguration
+    public class MessageStorageMonitor : IMessageStorageMonitor
     {
-        private readonly IRepositoryContext<TRepositoryConfiguration> _repositoryContext;
+        private readonly IRepositoryContext _repositoryContext;
 
-        public MessageStorageMonitor(IRepositoryContext<TRepositoryConfiguration> repositoryContext)
+        public MessageStorageMonitor(IRepositoryContext repositoryContext)
         {
             _repositoryContext = repositoryContext;
         }
 
         private int GetJobCountByStatus(JobStatuses jobStatus)
         {
-            IJobRepository<TRepositoryConfiguration> jobRepository = _repositoryContext.JobRepository;
+            IJobRepository jobRepository = _repositoryContext.JobRepository;
             int result = jobRepository.GetJobCountByStatus(jobStatus);
             return result;
         }

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using AccountWebApi.AccountApiMessageStorageSection;
 using AccountWebApi.AccountApiMessageStorageSection.AccountHandlers;
 using AccountWebApi.Controllers;
 using AccountWebApi.EntityFrameworkSection;
@@ -10,6 +9,8 @@ using MessageStorage.AspNetCore;
 using MessageStorage.Clients;
 using MessageStorage.Clients.Imp;
 using MessageStorage.Db.Clients;
+using MessageStorage.Db.Clients.Imp;
+using MessageStorage.Db.Configurations;
 using MessageStorage.Db.DataAccessSection;
 using MessageStorage.Db.DbMigrationRunners;
 using MessageStorage.Db.SqlServer;
@@ -57,7 +58,8 @@ namespace AccountWebApi
             string connectionStr = _configuration.GetConnectionString("SqlServerConnectionStr");
 
             // Step 1 (DbRepositoryConfiguration)
-            var webApiSqlServerDbRepositoryConfiguration = new AccountApiSqlServerDbRepositoryConfiguration(connectionStr);
+            DbRepositoryConfiguration dbRepositoryConfiguration = new DbRepositoryConfiguration()
+               .SetConnectionString(connectionStr);
 
             // Step 2 (Db Migration)
             IMessageStorageDbMigrationRunner messageStorageDbMigrationRunner = new SqlServerMessageStorageDbMigrationRunner();
@@ -66,7 +68,7 @@ namespace AccountWebApi
             try
             {
                 Console.WriteLine($"Db Migration attempt : {tryCount}");
-                messageStorageDbMigrationRunner.MigrateUp(webApiSqlServerDbRepositoryConfiguration);
+                messageStorageDbMigrationRunner.MigrateUp(dbRepositoryConfiguration);
             }
             catch (Exception)
             {
@@ -96,16 +98,16 @@ namespace AccountWebApi
                 ISqlServerDbConnectionFactory sqlServerDbConnectionFactory = new SqlServerDbConnectionFactory();
 
                 // Step 5 (DbRepositoryContext)
-                services.AddScoped<IDbRepositoryContext<AccountApiSqlServerDbRepositoryConfiguration>>(provider => new SqlServerDbRepositoryContext<AccountApiSqlServerDbRepositoryConfiguration>(webApiSqlServerDbRepositoryConfiguration, sqlServerDbConnectionFactory));
+                services.AddScoped<IDbRepositoryContext>(provider => new SqlServerDbRepositoryContext(dbRepositoryConfiguration, sqlServerDbConnectionFactory));
 
                 // Step 6 (MessageStorageDbClient)
-                services.AddScoped<IMessageStorageDbClient>(provider => new AccountApiDbMessageStorageClient(handlerManager, provider.GetRequiredService<IDbRepositoryContext<AccountApiSqlServerDbRepositoryConfiguration>>()));
+                services.AddScoped<IMessageStorageDbClient>(provider => new MessageStorageDbClient(handlerManager, provider.GetRequiredService<IDbRepositoryContext>()));
 
                 // Step 7 (JobProcessor)
-                services.AddSingleton<IJobProcessor>(provider => new JobProcessor<AccountApiSqlServerDbRepositoryConfiguration>(provider.GetRequiredService<IDbRepositoryContext<AccountApiSqlServerDbRepositoryConfiguration>>, handlerManager, provider.GetRequiredService<ILogger<IJobProcessor>>()));
+                services.AddSingleton<IJobProcessor>(provider => new JobProcessor(provider.GetRequiredService<IDbRepositoryContext>, handlerManager, provider.GetRequiredService<ILogger<IJobProcessor>>()));
 
                 // Step 8 (JobProcessorHostedService)
-                services.AddHostedService<AccountApiJobProcessorHostedService>();
+                services.AddHostedService<JobProcessorHostedService<IJobProcessor>>();
             }
             else
             {
@@ -113,8 +115,8 @@ namespace AccountWebApi
                         .AddMessageStorage(collection =>
                                            {
                                                // collection.AddMessageStorageDbClient(webapiSqlServerDbRepositoryConfiguration, handlerManager);
-                                               collection.AddMessageStorageSqlServerClient(webApiSqlServerDbRepositoryConfiguration, handlers);
-                                               collection.AddSqlServerJobProcessor(webApiSqlServerDbRepositoryConfiguration, handlers);
+                                               collection.AddMessageStorageSqlServerClient(dbRepositoryConfiguration, handlers);
+                                               collection.AddSqlServerJobProcessor(dbRepositoryConfiguration, handlers);
                                            });
             }
 

@@ -6,21 +6,19 @@ using MessageStorage.Models.Base;
 
 namespace MessageStorage.Db.DataAccessSection.Repositories.BaseRepository.Imp
 {
-    public abstract class DbRepository<TDbRepositoryConfiguration, TEntity> : IDbRepository<TDbRepositoryConfiguration, TEntity>
-        where TDbRepositoryConfiguration : DbRepositoryConfiguration
+    public abstract class DbRepository< TEntity> : IDbRepository< TEntity>
         where TEntity : Entity
     {
+        public DbRepositoryConfiguration DbRepositoryConfiguration { get; }
         protected readonly IDbConnection DbConnection;
         protected IDbTransaction DbTransaction;
 
-        public TDbRepositoryConfiguration RepositoryConfiguration => DbRepositoryConfiguration;
-        public TDbRepositoryConfiguration DbRepositoryConfiguration { get; }
         public bool HasTransaction => DbTransaction != null;
 
-        protected DbRepository(IDbConnection dbConnection, TDbRepositoryConfiguration dbRepositoryConfiguration)
+        protected DbRepository(IDbConnection dbConnection, DbRepositoryConfiguration dbRepositoryConfiguration)
         {
-            DbConnection = dbConnection;
             DbRepositoryConfiguration = dbRepositoryConfiguration;
+            DbConnection = dbConnection;
         }
 
         [MethodImpl(MethodImplOptions.Synchronized)]

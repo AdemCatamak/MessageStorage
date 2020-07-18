@@ -1,15 +1,11 @@
 using System;
-using MessageStorage.Configurations;
 using MessageStorage.DataAccessSection.Repositories;
 
 namespace MessageStorage.DataAccessSection
 {
-    public interface IRepositoryContext<out TRepositoryConfiguration> : IDisposable
-        where TRepositoryConfiguration : RepositoryConfiguration
+    public interface IRepositoryContext : IDisposable
     {
-        TRepositoryConfiguration RepositoryConfiguration { get; }
-
-        IMessageRepository<TRepositoryConfiguration> MessageRepository { get; }
-        IJobRepository<TRepositoryConfiguration> JobRepository { get; }
+        IMessageRepository MessageRepository { get; }
+        IJobRepository JobRepository { get; }
     }
 }
