@@ -21,7 +21,7 @@ namespace MessageStorage.Db.SqlServer.DI.Extension.Tests
         }
 
         [Test]
-        public void WhenAddSqlServerJobProcessorMethodIsUSedWithHandlerManager__IJobProcessorCouldBeResolved()
+        public void WhenAddSqlServerJobProcessorMethodIsUsedWithHandlerManager__IJobProcessorCouldBeResolved()
         {
             _messageStorageServiceCollection.AddSqlServerJobProcessor(new DbRepositoryConfiguration(string.Empty), new Mock<IHandlerManager>().Object);
             using (ServiceProvider serviceProvider = _serviceCollection.BuildServiceProvider())
@@ -41,6 +41,23 @@ namespace MessageStorage.Db.SqlServer.DI.Extension.Tests
         public void WhenAddSqlServerJobProcessorIsUsed__IJobProcessorCouldBeResolved()
         {
             _messageStorageServiceCollection.AddSqlServerJobProcessor(new DbRepositoryConfiguration(string.Empty), new[] {new Mock<Handler>().Object});
+            using (ServiceProvider serviceProvider = _serviceCollection.BuildServiceProvider())
+            {
+                var jobProcessor = serviceProvider.GetService<IJobProcessor>();
+                Assert.IsNotNull(jobProcessor);
+
+                var jobProcessorBaseDbRepositoryConfig = serviceProvider.GetService<JobProcessor>();
+                Assert.IsNull(jobProcessorBaseDbRepositoryConfig);
+
+                var jobProcessorDummyDbRepositoryConfig = serviceProvider.GetService<JobProcessor>();
+                Assert.IsNull(jobProcessorDummyDbRepositoryConfig);
+            }
+        }
+        
+        [Test]
+        public void WhenAddSqlServerJobProcessorIsUsed_WithIServiceProvider__IJobProcessorCouldBeResolved()
+        {
+            _messageStorageServiceCollection.AddSqlServerJobProcessor(new DbRepositoryConfiguration(string.Empty), provider => provider.GetServices<Handler>());
             using (ServiceProvider serviceProvider = _serviceCollection.BuildServiceProvider())
             {
                 var jobProcessor = serviceProvider.GetService<IJobProcessor>();

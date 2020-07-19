@@ -56,5 +56,23 @@ namespace MessageStorage.Db.SqlServer.DI.Extension.Tests
                 Assert.IsNull(messageStorageSqlServerClient);
             }
         }
+
+        [Test]
+        public void WhenAddAddMessageStorageSqlServerClientWithHandlers_WithIServiceProvider__IMessageStorageDbClientCouldBeResolved()
+        {
+            _messageStorageServiceCollection.AddMessageStorageSqlServerClient(new DbRepositoryConfiguration(string.Empty), provider => provider.GetServices<Handler>());
+
+            using (ServiceProvider serviceProvider = _serviceCollection.BuildServiceProvider())
+            {
+                var messageStorageClient = serviceProvider.GetService<IMessageStorageClient>();
+                Assert.IsNull(messageStorageClient);
+
+                var messageStorageDbClient = serviceProvider.GetService<IMessageStorageDbClient>();
+                Assert.IsNotNull(messageStorageDbClient);
+
+                var messageStorageSqlServerClient = serviceProvider.GetService<SqlServerMessageDbRepository>();
+                Assert.IsNull(messageStorageSqlServerClient);
+            }
+        }
     }
 }
