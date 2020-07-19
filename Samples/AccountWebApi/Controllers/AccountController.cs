@@ -36,7 +36,7 @@ namespace AccountWebApi.Controllers
                 _messageStorageDbClient.UseTransaction(transaction);
                 var accountCreatedEvent = new AccountCreatedEvent
                                           {
-                                              SampleModelId = accountModel.Id,
+                                              AccountId = accountModel.Id,
                                               Email = email
                                           };
 

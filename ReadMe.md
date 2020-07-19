@@ -31,23 +31,21 @@ You can access extension methods that help you with Microsoft.DependencyInjectio
  
  **Sample Startup** 
  
-  ```
+
+ ```
+services.AddJobProcessorHostedService();
+
 var dbRepositoryConfiguration = new DbRepositoryConfiguration(connectionStr);
 
-var handlers = new List<Handler>
-                 {
-                     new AccountEventHandler(),
-                     new AccountCreatedEventHandler()
-                 };
+services.AddSingleton<Handler,AccountEventHandler>();
+services.AddSingleton<Handler,AccountCreatedEventHandler>();
 
 services.AddMessageStorage(collection =>
     {
-        collection.AddMessageStorageSqlServerClient(dbRepositoryConfiguration, handlers);
-        collection.AddSqlServerJobProcessor(dbRepositoryConfiguration,handlers);
+        collection.AddMessageStorageSqlServerClient(dbRepositoryConfiguration, provider => provider.GetServices<Handler>());
+        collection.AddSqlServerJobProcessor(dbRepositoryConfiguration, provider => provider.GetServices<Handler>(), provider =>provider.GetRequiredService<ILogger<IJobProcessor>>());
         collection.AddMessageStorageSqlServerMonitor(dbRepositoryConfiguration);
     });
-
-services.AddJobProcessorHostedService();
  ```
 
 
@@ -55,12 +53,11 @@ services.AddJobProcessorHostedService();
 
 `AddSqlServerJobProcessor` method lets you introduce a predefined background service to the system. This service executes defined jobs on the system.
 
-`AddMessageStorageSqlServerMonitor` method lets you introduce monitor object for Sql Server. Monitor allow you take count of jobs that registered.
+`AddMessageStorageSqlServerMonitor` method lets you introduce monitor object for Sql Server. Monitor allow you take count of jobs those are saved into db.
 
 After these steps, you can use the object that is an implementation of `IMessageStorageDbClient` interface.
 
-
-__Example of registering user and saving AccountCreatedEvent message in the same transaction.__
+__Example of registering user (with entity-framework) and saving AccountCreatedEvent message in the same transaction.__
 
 ```
 public AccountController(IMessageStorageDbClient messageStorageDbClient, AccountDbContext accountDbContext)
@@ -83,7 +80,7 @@ public IActionResult PostAccount([FromBody] string email)
         _messageStorageDbClient.UseTransaction(transaction);
         var accountCreatedEvent = new AccountCreatedEvent
                                   {
-                                      SampleModelId = accountModel.Id,
+                                      AccountId = accountModel.Id,
                                       Email = email
                                   };
 
@@ -93,6 +90,22 @@ public IActionResult PostAccount([FromBody] string email)
     }
 
     return StatusCode((int) HttpStatusCode.Created);
+}
+```
+
+__Example of returning job count__
+
+```
+public MessageStorageController(IMessageStorageMonitor messageStorageMonitor)
+{
+    _messageStorageMonitor = messageStorageMonitor;
+}
+
+[HttpGet("{jobStatus}/count")]
+public IActionResult Get([FromRoute] JobStatus jobStatus)
+{
+    int jobCount = _messageStorageMonitor.GetJobCountByStatus(jobStatus);
+    return StatusCode((int) HttpStatusCode.OK, jobCount);
 }
 ```
 

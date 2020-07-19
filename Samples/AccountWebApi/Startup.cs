@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json.Serialization;
 using System.Threading;
 using AccountWebApi.AccountApiMessageStorageSection.AccountHandlers;
 using AccountWebApi.Controllers;
@@ -17,7 +18,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
-using Newtonsoft.Json.Converters;
 
 namespace AccountWebApi
 {
@@ -46,9 +46,9 @@ namespace AccountWebApi
                              });
 
             services.AddControllers()
-                    .AddNewtonsoftJson(options =>
-                                           options.SerializerSettings.Converters.Add(new StringEnumConverter()))
-                    .AddApplicationPart(typeof(AccountController).Assembly);
+                    .AddJsonOptions(options => 
+                                        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()))
+                    .AddApplicationPart(typeof(HomeController).Assembly);
 
             services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo()); });
 
