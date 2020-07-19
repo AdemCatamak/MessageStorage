@@ -1,15 +1,25 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
+        <PackageId>MessageStorage</PackageId>
+
         <TargetFramework>netstandard2.0</TargetFramework>
+
+        <IsPackable>true</IsPackable>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+
+        <Authors>Adem Catamak</Authors>
+        <Description>Message and Job Storage</Description>
         <LangVersion>latest</LangVersion>
 
+        <VersionPrefix>2.0.0</VersionPrefix>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="NewId" Version="3.0.2"/>
-        <PackageReference Include="Newtonsoft.Json" Version="12.0.3"/>
-        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.5"/>
+      <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.0.1" />
+      <PackageReference Include="NewId" Version="3.0.2" />
+      <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
     </ItemGroup>
 
 </Project>
