@@ -25,7 +25,7 @@ Defined jobs are registered into the system along with a message being registere
 
  **Usage**
  
-You have the required dependencies to register your messages and jobs on MsSql by downloading MessageStorage.Db.MsSql nuget package.
+You have the required dependencies to register your messages and jobs on SqlServer by downloading MessageStorage.Db.MsSql nuget package.
  
 You can access extension methods that help you with Microsoft.DependencyInjection by using MessageStorage.Db.MsSql.DI nuget package. By using this nuget package, you can manage MessageStorage.Db.MsSql dependencies.
  
@@ -49,11 +49,11 @@ services.AddMessageStorage(collection =>
  ```
 
 
-`AddMessageStorageSqlServerClient` method lets you introduce MsSql Server is used for system's data storage.
+`AddMessageStorageSqlServerClient` method lets you introduce SqlServer is used for system's data storage.
 
-`AddSqlServerJobProcessor` method lets you introduce a predefined background service to the system. This service executes defined jobs on the system.
+`AddSqlServerJobProcessor` method lets you introduce a predefined background service to the system. This service fetches tasks from db and executes.
 
-`AddMessageStorageSqlServerMonitor` method lets you introduce monitor object for Sql Server. Monitor allow you take count of jobs those are saved into db.
+`AddMessageStorageSqlServerMonitor` method lets you introduce monitor object for SqlServer. Monitor allow you take count of jobs those are saved into db.
 
 After these steps, you can use the object that is an implementation of `IMessageStorageDbClient` interface.
 
