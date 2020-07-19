@@ -18,7 +18,7 @@ var ProjectsToBePacked  = new Project[]
   new Project("MessageStorage.Db.SqlServer"),
   new Project("MessageStorage.Db.SqlServer.DI.Extension"),
   new Project("MessageStorage.Db.DI.Extension"),
-
+  new Project("MessageStorage.AspNetCore"),
 };
 
 var TestProjectPatterns = new string[]{
