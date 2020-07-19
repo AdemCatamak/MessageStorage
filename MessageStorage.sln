@@ -46,6 +46,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageStorage.Db.SqlServer
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageStorage.Db.DI.Extension", "MessageStorage.Db.DI.Extension\MessageStorage.Db.DI.Extension.csproj", "{9433E005-68AA-434D-ADC8-E036C0264665}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageStorage.AspNetCore.Tests", "Tests\MessageStorage.AspNetCore.Tests\MessageStorage.AspNetCore.Tests.csproj", "{1DE98348-1D60-474C-94FC-64660D47BA59}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -100,6 +102,10 @@ Global
 		{9433E005-68AA-434D-ADC8-E036C0264665}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9433E005-68AA-434D-ADC8-E036C0264665}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9433E005-68AA-434D-ADC8-E036C0264665}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1DE98348-1D60-474C-94FC-64660D47BA59}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1DE98348-1D60-474C-94FC-64660D47BA59}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1DE98348-1D60-474C-94FC-64660D47BA59}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1DE98348-1D60-474C-94FC-64660D47BA59}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{5EFD3FF5-DE11-4B2D-B18C-7E36149E5C7D} = {D3A02853-0E08-486C-B0CA-0289A06B7EB5}
@@ -107,5 +113,6 @@ Global
 		{25A28483-7091-4666-AD0A-DACAE3529193} = {1BFFE5B9-F6B5-4B3A-98CF-37A8E97397BD}
 		{D6931C48-BC48-4294-92FC-9C022EE1EE3D} = {1BFFE5B9-F6B5-4B3A-98CF-37A8E97397BD}
 		{56B48B6A-B306-4275-89D6-624187787DF0} = {1BFFE5B9-F6B5-4B3A-98CF-37A8E97397BD}
+		{1DE98348-1D60-474C-94FC-64660D47BA59} = {1BFFE5B9-F6B5-4B3A-98CF-37A8E97397BD}
 	EndGlobalSection
 EndGlobal
