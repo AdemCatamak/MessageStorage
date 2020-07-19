@@ -13,7 +13,7 @@ namespace MessageStorage.Db.SqlServer.DI.Extension
     public static class SqlServerJobProcessorDIExtensions
     {
         public static IMessageStorageServiceCollection AddSqlServerJobProcessor
-            (this IMessageStorageServiceCollection messageStorageServiceCollection, DbRepositoryConfiguration dbRepositoryConfiguration, Func<IServiceProvider, IEnumerable<Handler>> handlerCollectionFactory, Func<IServiceProvider, ILogger<IJobProcessor>> loggerFactory, JobProcessorConfiguration jobProcessorConfiguration = null)
+            (this IMessageStorageServiceCollection messageStorageServiceCollection, DbRepositoryConfiguration dbRepositoryConfiguration, Func<IServiceProvider, IEnumerable<Handler>> handlerCollectionFactory, Func<IServiceProvider, ILogger<IJobProcessor>> loggerFactory = null, JobProcessorConfiguration jobProcessorConfiguration = null)
         {
             return messageStorageServiceCollection.AddJobProcessor<IJobProcessor>(provider =>
                                                                                   {
@@ -21,7 +21,7 @@ namespace MessageStorage.Db.SqlServer.DI.Extension
                                                                                       var messageStorageDbClient
                                                                                           = new JobProcessor(() => new SqlServerDbRepositoryContext(dbRepositoryConfiguration, sqlServerDbConnectionFactory),
                                                                                                              new HandlerManager(handlerCollectionFactory.Invoke(provider)),
-                                                                                                             loggerFactory.Invoke(provider),
+                                                                                                             loggerFactory?.Invoke(provider),
                                                                                                              jobProcessorConfiguration);
                                                                                       return messageStorageDbClient;
                                                                                   });
