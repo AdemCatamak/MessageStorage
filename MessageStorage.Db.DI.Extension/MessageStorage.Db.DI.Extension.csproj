@@ -13,7 +13,7 @@
         <Description>Message and Job Storage</Description>
         <LangVersion>latest</LangVersion>
 
-        <VersionPrefix>2.0.0</VersionPrefix>
+        <VersionPrefix>2.0.0.1</VersionPrefix>
     </PropertyGroup>
 
 
