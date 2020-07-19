@@ -17,7 +17,7 @@ namespace MessageStorage.Db.SqlServer
             using (IServiceScope scope = serviceProvider.CreateScope())
             {
                 var runner = scope.ServiceProvider.GetRequiredService<IMigrationRunner>();
-
+                
                 runner.MigrateUp();
             }
         }

@@ -1,11 +1,11 @@
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using AccountWebApi.AccountApiMessageStorageSection.AccountHandlers;
 using AccountWebApi.Controllers;
 using AccountWebApi.EntityFrameworkSection;
 using MessageStorage;
 using MessageStorage.AspNetCore;
+using MessageStorage.Clients;
 using MessageStorage.Db.Configurations;
 using MessageStorage.Db.DbMigrationRunners;
 using MessageStorage.Db.SqlServer;
@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Converters;
 
@@ -77,18 +78,15 @@ namespace AccountWebApi
 
 
             // Step 3 (Handlers & HandlerManager)
-            var handlers = new List<Handler>
-                           {
-                               new AccountEventHandler(),
-                               new AccountCreatedEventHandler()
-                           };
+            services.AddSingleton<Handler, AccountEventHandler>();
+            services.AddSingleton<Handler, AccountCreatedEventHandler>();
 
             // Step 4 (Injection)
             services.AddJobProcessorHostedService()
                     .AddMessageStorage(collection =>
                                        {
-                                           collection.AddMessageStorageSqlServerClient(dbRepositoryConfiguration, handlers);
-                                           collection.AddSqlServerJobProcessor(dbRepositoryConfiguration, handlers);
+                                           collection.AddMessageStorageSqlServerClient(dbRepositoryConfiguration, provider => provider.GetServices<Handler>());
+                                           collection.AddSqlServerJobProcessor(dbRepositoryConfiguration, provider => provider.GetServices<Handler>(), provider => provider.GetRequiredService<ILogger<IJobProcessor>>());
                                            collection.AddMessageStorageSqlServerMonitor(dbRepositoryConfiguration);
                                        });
 
