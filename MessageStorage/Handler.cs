@@ -18,7 +18,7 @@ namespace MessageStorage
         {
             if (!(payload is T t))
             {
-                throw new ArgumentNotCompatibleException($"{payload.GetType().Name} could not converted {nameof(T)}");
+                throw new ArgumentNotCompatibleException(payload.GetType().Name, nameof(T));
             }
 
             return Handle(t);

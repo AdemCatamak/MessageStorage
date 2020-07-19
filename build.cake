@@ -12,11 +12,8 @@ string SelectedEnvironment = string.Empty;
 string SolutionName = "MessageStorage";
 var ProjectsToBePacked  = new Project[]
 {
-  new Project("MessageStorage"),
-  new Project("MessageStorage.DI.Extension"),
-  new Project("MessageStorage.Db"),
-  new Project("MessageStorage.Db.MsSql"),
-  new Project("MessageStorage.Db.MsSql.DI.Extension"),
+  new Project("MessageStorage.Db.SqlServer"),
+  new Project("MessageStorage.Db.SqlServer.DI.Extension"),
 };
 
 var TestProjectPatterns = new string[]{

@@ -21,9 +21,9 @@ namespace MessageStorage
         public HandlerManager(IEnumerable<Handler> handlers = null)
         {
             List<Handler> handlerList = handlers?.GroupBy(h => h.Name)
-                                                  .Select(g => g.First())
-                                                  .ToList()
-                                      ?? new List<Handler>();
+                                                 .Select(g => g.First())
+                                                 .ToList()
+                                     ?? new List<Handler>();
             Handlers = handlerList.AsReadOnly();
         }
 
@@ -53,15 +53,14 @@ namespace MessageStorage
 
             return availableHandlers;
         }
-
-
+        
         public Handler GetHandler(string handlerName)
         {
             if (string.IsNullOrEmpty(handlerName))
-                throw new HandlerNotFoundException($"Handler Name does not supplied");
+                throw new HandlerNameIsEmptyException();
             Handler handler = Handlers.FirstOrDefault(h => h.Name == handlerName);
             if (handler == null)
-                throw new HandlerNotFoundException($"Handler could not found #{handlerName}");
+                throw new HandlerNotFoundException(handlerName);
             return handler;
         }
     }
