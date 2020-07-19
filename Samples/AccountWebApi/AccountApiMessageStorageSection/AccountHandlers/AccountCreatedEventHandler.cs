@@ -9,7 +9,7 @@ namespace AccountWebApi.AccountApiMessageStorageSection.AccountHandlers
     {
         protected override Task Handle(AccountCreatedEvent payload)
         {
-            Console.WriteLine($"{payload} handled by {nameof(AccountCreatedEventHandler)}");
+            Console.WriteLine($"{payload} is handled by {nameof(AccountCreatedEventHandler)}");
             return Task.CompletedTask;
         }
     }

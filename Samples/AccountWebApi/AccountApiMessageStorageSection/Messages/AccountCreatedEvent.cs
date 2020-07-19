@@ -6,7 +6,7 @@ namespace AccountWebApi.AccountApiMessageStorageSection.Messages
 
         public override string ToString()
         {
-            return $"EventType: {this.GetType().Name} | Email: {Email}";
+            return $"Email: {Email} || {GetType().Name}";
         }
     }
 }
