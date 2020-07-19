@@ -1,28 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <PackageId>MessageStorage.DI.Extension</PackageId>
-
         <TargetFramework>netstandard2.0</TargetFramework>
-
-        <IsPackable>true</IsPackable>
-        <IncludeSymbols>true</IncludeSymbols>
-        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-
-        <Authors>Adem Catamak</Authors>
-        <Description>Message and Job Storage</Description>
         <LangVersion>latest</LangVersion>
-
-        <VersionPrefix>2.0.0</VersionPrefix>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.5" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.5"/>
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\MessageStorage.Db\MessageStorage.Db.csproj" />
-        <ProjectReference Include="..\MessageStorage\MessageStorage.csproj" />
+        <ProjectReference Include="..\MessageStorage.Db\MessageStorage.Db.csproj"/>
+        <ProjectReference Include="..\MessageStorage\MessageStorage.csproj"/>
     </ItemGroup>
 
 </Project>
