@@ -2,9 +2,11 @@ using MessageStorage.Exceptions.BaseExceptions;
 
 namespace MessageStorage.Exceptions
 {
-    public class HandlerNameIsEmptyException : MessageStorageValidationException
+    public class HandlerNameIsEmptyException : MessageStorageCustomException
     {
-        public HandlerNameIsEmptyException() : base("Handler name should not be null")
+        public const string MESSAGE = "Handler name should not be null or empty";
+
+        public HandlerNameIsEmptyException() : base(MESSAGE)
         {
         }
     }

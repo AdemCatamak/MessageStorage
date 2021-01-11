@@ -1,23 +1,28 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using MessageStorage.Configurations;
+using MessageStorage.DataAccessSection;
+using MessageStorage.DataAccessSection.Repositories;
 using MessageStorage.Models;
 
 namespace MessageStorage.Clients.Imp
 {
-    public abstract class MessageStorageClient : IMessageStorageClient
+    public class MessageStorageClient : IMessageStorageClient
     {
+        private readonly IMessageStorageRepositoryContext _messageStorageRepositoryContext;
         private readonly IHandlerManager _handlerManager;
-        private readonly MessageStorageConfiguration _messageStorageConfiguration;
+        private readonly MessageStorageClientConfiguration _messageStorageClientConfiguration;
 
-        protected MessageStorageClient(IHandlerManager handlerManager, MessageStorageConfiguration messageStorageConfiguration = null)
+        public MessageStorageClient(IMessageStorageRepositoryContext messageStorageRepositoryContext, IHandlerManager handlerManager, MessageStorageClientConfiguration? messageStorageConfiguration = null)
         {
+            _messageStorageRepositoryContext = messageStorageRepositoryContext ?? throw new ArgumentNullException(nameof(messageStorageRepositoryContext));
             _handlerManager = handlerManager ?? throw new ArgumentNullException(nameof(handlerManager));
-            _messageStorageConfiguration = messageStorageConfiguration ?? new MessageStorageConfiguration();
+            _messageStorageClientConfiguration = messageStorageConfiguration ?? new MessageStorageClientConfiguration();
         }
 
-        protected Tuple<Message, IEnumerable<Job>> PrepareMessageAndJobs(object payload, bool autoJobCreator)
+        private Tuple<Message, IEnumerable<Job>> PrepareMessageAndJobs(object payload, bool autoJobCreator)
         {
             var message = new Message(payload);
             var jobs = new List<Job>();
@@ -34,9 +39,56 @@ namespace MessageStorage.Clients.Imp
 
         public Tuple<Message, IEnumerable<Job>> Add<T>(T payload)
         {
-            return Add(payload, _messageStorageConfiguration.AutoJobCreation);
+            return Add(payload, _messageStorageClientConfiguration.AutoJobCreation);
         }
 
-        public abstract Tuple<Message, IEnumerable<Job>> Add<T>(T payload, bool autoJobCreation);
+        public Tuple<Message, IEnumerable<Job>> Add<T>(T payload, bool autoJobCreation)
+        {
+            IMessageStorageTransaction? transaction = null;
+            if (!_messageStorageRepositoryContext.HasTransaction)
+            {
+                transaction = _messageStorageRepositoryContext.BeginTransaction(IsolationLevel.ReadCommitted);
+            }
+
+            try
+            {
+                IJobRepository jobRepository = _messageStorageRepositoryContext.GetJobRepository();
+                IMessageRepository messageRepository = _messageStorageRepositoryContext.GetMessageRepository();
+
+                var result = PrepareMessageAndJobs(payload!, autoJobCreation);
+                messageRepository.Add(result.Item1);
+                foreach (Job job in result.Item2)
+                {
+                    jobRepository.Add(job);
+                }
+
+                transaction?.Commit();
+
+                return result;
+            }
+            finally
+            {
+                transaction?.Dispose();
+            }
+        }
+
+        public int GetJobCountByStatus(JobStatus jobStatus)
+        {
+            IJobRepository jobRepository = _messageStorageRepositoryContext.GetJobRepository();
+            int result = jobRepository.GetJobCount(jobStatus);
+            return result;
+        }
+
+        public IMessageStorageTransaction UseTransaction(IDbTransaction dbTransaction)
+        {
+            IMessageStorageTransaction messageStorageTransaction = _messageStorageRepositoryContext.UseTransaction(dbTransaction);
+            return messageStorageTransaction;
+        }
+
+        public IMessageStorageTransaction BeginTransaction(IsolationLevel isolationLevel)
+        {
+            IMessageStorageTransaction messageStorageTransaction = _messageStorageRepositoryContext.BeginTransaction(isolationLevel);
+            return messageStorageTransaction;
+        }
     }
 }

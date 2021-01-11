@@ -1,10 +1,11 @@
 using System.Data;
 using System.Data.Common;
 using System.Net;
-using AccountWebApi.AccountApiMessageStorageSection.Messages;
 using AccountWebApi.EntityFrameworkSection;
 using AccountWebApi.EntityFrameworkSection.Models;
-using MessageStorage.Db.Clients;
+using AccountWebApi.MessageStorageSection.Messages;
+using MessageStorage.Clients;
+using MessageStorage.DataAccessSection;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -14,13 +15,13 @@ namespace AccountWebApi.Controllers
     [Route("accounts")]
     public class AccountController : ControllerBase
     {
-        private readonly IMessageStorageDbClient _messageStorageDbClient;
+        private readonly IMessageStorageClient _messageStorageClient;
         private readonly AccountDbContext _accountDbContext;
 
 
-        public AccountController(IMessageStorageDbClient messageStorageDbClient, AccountDbContext accountDbContext)
+        public AccountController(IMessageStorageClient messageStorageClient, AccountDbContext accountDbContext)
         {
-            _messageStorageDbClient = messageStorageDbClient;
+            _messageStorageClient = messageStorageClient;
             _accountDbContext = accountDbContext;
         }
 
@@ -30,19 +31,15 @@ namespace AccountWebApi.Controllers
             var accountModel = new AccountModel(email);
             using (DbTransaction transaction = _accountDbContext.Database.BeginTransaction(IsolationLevel.ReadCommitted).GetDbTransaction())
             {
+                IMessageStorageTransaction messageStorageTransaction = _messageStorageClient.UseTransaction(transaction);
+
                 _accountDbContext.Accounts.Add(accountModel);
                 _accountDbContext.SaveChanges();
 
-                _messageStorageDbClient.UseTransaction(transaction);
-                var accountCreatedEvent = new AccountCreatedEvent
-                                          {
-                                              AccountId = accountModel.Id,
-                                              Email = email
-                                          };
+                var accountCreatedEvent = new AccountCreatedEvent(accountModel.Id, accountModel.Email);
+                _messageStorageClient.Add(accountCreatedEvent);
 
-                _messageStorageDbClient.Add(accountCreatedEvent);
-
-                transaction.Commit();
+                messageStorageTransaction.Commit();
             }
 
             return StatusCode((int) HttpStatusCode.Created);

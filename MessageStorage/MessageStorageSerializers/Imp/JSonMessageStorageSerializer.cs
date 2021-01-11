@@ -2,7 +2,7 @@ using Newtonsoft.Json;
 
 namespace MessageStorage.MessageStorageSerializers.Imp
 {
-    public class JSonMessageStorageSerializer : IMessageStorageSerializer
+    internal class JSonMessageStorageSerializer : IMessageStorageSerializer
     {
         private readonly JsonSerializerSettings _serializerSettings = new JsonSerializerSettings
                                                                       {

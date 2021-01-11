@@ -11,11 +11,9 @@
 
 **Nuget Versions**
 
-MessageStorage.Db.MsSql : ![Nuget](https://img.shields.io/nuget/v/MessageStorage.Db.MsSql.svg)
+MessageStorage.SqlServer : ![Nuget](https://img.shields.io/nuget/v/MessageStorage.SqlServer.svg)
 
-MessageStorage.Db.MsSql.DI.Extension : ![Nuget](https://img.shields.io/nuget/v/MessageStorage.Db.MsSql.DI.Extension.svg)
-
-MessageStorage.AspNetCore : ![Nuget](https://img.shields.io/nuget/v/MessageStorage.AspNetCore.svg)
+MessageStorage.SqlServer.DI.Extension : ![Nuget](https://img.shields.io/nuget/v/MessageStorage.SqlServer.DI.Extension.svg)
 
 **MessageStorage**
 
@@ -25,44 +23,40 @@ Defined jobs are registered into the system along with a message being registere
 
  **Usage**
  
-You have the required dependencies to register your messages and jobs on SqlServer by downloading MessageStorage.Db.MsSql nuget package.
+You have the required dependencies to register your messages and jobs on SqlServer by downloading MessageStorage.SqlServer nuget package.
  
-You can access extension methods that help you with Microsoft.DependencyInjection by using MessageStorage.Db.MsSql.DI nuget package. By using this nuget package, you can manage MessageStorage.Db.MsSql dependencies.
+You can access extension methods that help you with Microsoft.DependencyInjection by using MessageStorage.SqlServer.DI.Extension nuget package. By using this nuget package, you can manage MessageStorage.SqlServer dependencies.
  
  **Sample Startup** 
  
 
  ```
-services.AddJobProcessorHostedService();
 
-var dbRepositoryConfiguration = new DbRepositoryConfiguration(connectionStr);
+ services.AddMessageStorage(options =>
+ {
+     options.AddHandler(new AccountEventHandler());
+     options.AddHandler(new AccountCreatedEventHandler());
 
-services.AddSingleton<Handler,AccountEventHandler>();
-services.AddSingleton<Handler,AccountCreatedEventHandler>();
+     options.RunJob();
 
-services.AddMessageStorage(collection =>
-    {
-        collection.AddMessageStorageSqlServerClient(dbRepositoryConfiguration, provider => provider.GetServices<Handler>());
-        collection.AddSqlServerJobProcessor(dbRepositoryConfiguration, provider => provider.GetServices<Handler>(), provider =>provider.GetRequiredService<ILogger<IJobProcessor>>());
-        collection.AddMessageStorageSqlServerMonitor(dbRepositoryConfiguration);
-    });
+     options.UseSqlServer(connectionStr);
+ });
+
  ```
 
 
-`AddMessageStorageSqlServerClient` method lets you introduce SqlServer is used for system's data storage.
+`UseSqlServer` method lets you introduce SqlServer is used for system's data storage.
 
-`AddSqlServerJobProcessor` method lets you introduce a predefined background service to the system. This service fetches tasks from db and executes.
+`RunJob` method lets you introduce a predefined background service to the system. This service fetches tasks from db and executes.
 
-`AddMessageStorageSqlServerMonitor` method lets you introduce monitor object for SqlServer. Monitor allow you take count of jobs those are saved into db.
-
-After these steps, you can use the object that is an implementation of `IMessageStorageDbClient` interface.
+After these steps, you can use the object that is an implementation of `IMessageStorageClient` interface.
 
 __Example of registering user (with entity-framework) and saving AccountCreatedEvent message in the same transaction.__
 
 ```
-public AccountController(IMessageStorageDbClient messageStorageDbClient, AccountDbContext accountDbContext)
+public AccountController(IMessageStorageClient messageStorageClient, AccountDbContext accountDbContext)
 {
-    _messageStorageDbClient = messageStorageDbClient;
+    _messageStorageClient = messageStorageClient;
     _accountDbContext = accountDbContext;
 }
 
@@ -74,19 +68,15 @@ public IActionResult PostAccount([FromBody] string email)
     var accountModel = new AccountModel(email);
     using (DbTransaction transaction = _accountDbContext.Database.BeginTransaction(IsolationLevel.ReadCommitted).GetDbTransaction())
     {
+        IMessageStorageTransaction messageStorageTransaction = _messageStorageClient.UseTransaction(transaction);
+
         _accountDbContext.Accounts.Add(accountModel);
         _accountDbContext.SaveChanges();
 
-        _messageStorageDbClient.UseTransaction(transaction);
-        var accountCreatedEvent = new AccountCreatedEvent
-                                  {
-                                      AccountId = accountModel.Id,
-                                      Email = email
-                                  };
+        var accountCreatedEvent = new AccountCreatedEvent(accountModel.Id, accountModel.Email);
+        _messageStorageClient.Add(accountCreatedEvent);
 
-        _messageStorageDbClient.Add(accountCreatedEvent);
-
-        transaction.Commit();
+        messageStorageTransaction.Commit();
     }
 
     return StatusCode((int) HttpStatusCode.Created);
@@ -96,15 +86,15 @@ public IActionResult PostAccount([FromBody] string email)
 __Example of returning job count__
 
 ```
-public MessageStorageController(IMessageStorageMonitor messageStorageMonitor)
+public MessageStorageController(IMessageStorageClient messageStorageClient)
 {
-    _messageStorageMonitor = messageStorageMonitor;
+    _messageStorageClient = messageStorageClient;
 }
 
 [HttpGet("{jobStatus}/count")]
 public IActionResult Get([FromRoute] JobStatus jobStatus)
 {
-    int jobCount = _messageStorageMonitor.GetJobCountByStatus(jobStatus);
+    int jobCount = _messageStorageClient.GetJobCount(jobStatus);
     return StatusCode((int) HttpStatusCode.OK, jobCount);
 }
 ```

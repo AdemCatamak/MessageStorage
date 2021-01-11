@@ -4,9 +4,8 @@ namespace MessageStorage.Configurations
 {
     public class JobProcessorConfiguration
     {
-        public TimeSpan WaitWhenMessageNotFound { get; set; } = TimeSpan.FromSeconds(value: 5);
-        public TimeSpan WaitAfterMessageHandled { get; set; } = TimeSpan.Zero;
-
-        public TimeSpan StopTaskTimeout { get; } = TimeSpan.FromSeconds(value: 30);
+        public TimeSpan WaitWhenJobNotFound { get; set; } = TimeSpan.FromMilliseconds(value: 5000);
+        public TimeSpan WaitAfterJobHandled { get; set; } = TimeSpan.FromMilliseconds(value: 5);
+        public TimeSpan JobProcessDeadline { get; set; } = TimeSpan.FromSeconds(value: 3600);
     }
 }

@@ -1,6 +1,6 @@
 namespace MessageStorage.MessageStorageSerializers
 {
-    public interface IMessageStorageSerializer
+    internal interface IMessageStorageSerializer
     {
         string Serialize(object obj);
         T Deserialize<T>(string serializedObj);

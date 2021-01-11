@@ -15,17 +15,22 @@ namespace AccountWebApi
             {
                 using (IServiceScope scope = host.Services.CreateScope())
                 {
-                    var sampleDbContext=scope.ServiceProvider.GetService<AccountDbContext>();
+                    var sampleDbContext = scope.ServiceProvider.GetRequiredService<AccountDbContext>();
                     sampleDbContext.Database.Migrate();
                 }
-                
+
                 host.Run();
             }
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .ConfigureAppConfiguration((hostingContext, config) => { config.AddJsonFile("appsettings.json"); })
+                .ConfigureAppConfiguration((hostingContext, config) =>
+                                           {
+                                               config.AddJsonFile("appsettings.json");
+                                               if (hostingContext.HostingEnvironment.IsDevelopment())
+                                                   config.AddJsonFile("appsettings.dev.json");
+                                           })
                 .ConfigureWebHostDefaults(webBuilder =>
                                           {
                                               webBuilder.UseStartup<Startup>();

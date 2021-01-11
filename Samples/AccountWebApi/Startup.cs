@@ -1,22 +1,18 @@
 using System;
 using System.Text.Json.Serialization;
 using System.Threading;
-using AccountWebApi.AccountApiMessageStorageSection.AccountHandlers;
 using AccountWebApi.Controllers;
 using AccountWebApi.EntityFrameworkSection;
-using MessageStorage;
-using MessageStorage.AspNetCore;
-using MessageStorage.Clients;
-using MessageStorage.Db.Configurations;
-using MessageStorage.Db.DbMigrationRunners;
-using MessageStorage.Db.SqlServer;
-using MessageStorage.Db.SqlServer.DI.Extension;
+using AccountWebApi.MessageStorageSection.AccountHandlers;
+using MessageStorage.Configurations;
+using MessageStorage.DataAccessSection;
 using MessageStorage.DI.Extension;
+using MessageStorage.SqlServer.DI.Extension;
+using MessageStorage.SqlServer.Migrations;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 
 namespace AccountWebApi
@@ -46,7 +42,7 @@ namespace AccountWebApi
                              });
 
             services.AddControllers()
-                    .AddJsonOptions(options => 
+                    .AddJsonOptions(options =>
                                         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()))
                     .AddApplicationPart(typeof(HomeController).Assembly);
 
@@ -55,16 +51,16 @@ namespace AccountWebApi
             string connectionStr = _configuration.GetConnectionString("SqlServerConnectionStr");
 
             // Step 1 (DbRepositoryConfiguration)
-            var dbRepositoryConfiguration = new DbRepositoryConfiguration(connectionStr);
+            var repositoryConfiguration = new MessageStorageRepositoryContextConfiguration(connectionStr);
 
             // Step 2 (Db Migration)
-            IMessageStorageDbMigrationRunner messageStorageDbMigrationRunner = new SqlServerMessageStorageDbMigrationRunner();
+            IMessageStorageMigrationRunner messageStorageMigrationRunner = new SqlServerMessageStorageMigrationRunner();
             var tryCount = 1;
             DbMigrationTag:
             try
             {
                 Console.WriteLine($"Db Migration attempt : {tryCount}");
-                messageStorageDbMigrationRunner.MigrateUp(dbRepositoryConfiguration);
+                messageStorageMigrationRunner.MigrateUp(repositoryConfiguration);
             }
             catch (Exception)
             {
@@ -76,20 +72,46 @@ namespace AccountWebApi
                 }
             }
 
-
-            // Step 3 (Handlers & HandlerManager)
-            services.AddSingleton<Handler, AccountEventHandler>();
-            services.AddSingleton<Handler, AccountCreatedEventHandler>();
-
             // Step 4 (Injection)
-            services.AddJobProcessorHostedService()
-                    .AddMessageStorage(collection =>
-                                       {
-                                           collection.AddMessageStorageSqlServerClient(dbRepositoryConfiguration, provider => provider.GetServices<Handler>());
-                                           collection.AddSqlServerJobProcessor(dbRepositoryConfiguration, provider => provider.GetServices<Handler>(), provider => provider.GetRequiredService<ILogger<IJobProcessor>>());
-                                           collection.AddMessageStorageSqlServerMonitor(dbRepositoryConfiguration);
-                                       });
+            // services.AddMessageStorage<IMessageStorageClient>(options =>
+            //                                                   {
+            //                                                       options.AddHandler(new AccountEventHandler());
+            //                                                       options.AddHandler(new AccountCreatedEventHandler());
+            //                                                       
+            //                                                       // options.UseMessageStorageClientConfiguration(new MessageStorageClientConfiguration());
+            //                                                       // options.RunJob(new JobProcessorConfiguration());
+            //
+            //                                                       options.RunJob();
+            //                                                       
+            //                                                       options.UseRepositoryContextConfiguration(new MessageStorageRepositoryContextConfiguration(connectionStr));
+            //
+            //                                                       options.UseRepositoryContextFactoryMethod(r => new SqlServerMessageStorageRepositoryContext(r));
+            //                                                       options.UseMessageStorageClientFactoryMethod((repositoryContext, handlerManager, clientConfiguration) =>
+            //                                                                                                        new MessageStorageClient(repositoryContext, handlerManager, clientConfiguration));
+            //                                                   });
 
+            // services.AddMessageStorage<IMessageStorageClient>(options =>
+            //                                                   {
+            //                                                       options.AddHandler(new AccountEventHandler());
+            //                                                       options.AddHandler(new AccountCreatedEventHandler());
+            //
+            //                                                       options.RunJob();
+            //
+            //                                                       options.UseSqlServer(connectionStr);
+            //
+            //                                                       options.UseMessageStorageClientFactoryMethod((repositoryContext, handlerManager, clientConfiguration) =>
+            //                                                                                                        new MessageStorageClient(repositoryContext, handlerManager, clientConfiguration));
+            //                                                   });
+
+            services.AddMessageStorage(options =>
+                                       {
+                                           options.AddHandler(new AccountEventHandler());
+                                           options.AddHandler(new AccountCreatedEventHandler());
+
+                                           options.RunJob();
+
+                                           options.UseSqlServer(connectionStr);
+                                       });
 
             services.AddDbContext<AccountDbContext>(builder => builder.UseSqlServer(connectionStr,
                                                                                     optionsBuilder => optionsBuilder.MigrationsAssembly(typeof(AccountDbContext).Assembly.FullName)));
