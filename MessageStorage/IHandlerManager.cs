@@ -7,53 +7,41 @@ namespace MessageStorage
 {
     public interface IHandlerManager
     {
-        IReadOnlyCollection<Handler> Handlers { get; }
+        IReadOnlyCollection<HandlerDescription> HandlerDescriptions { get; }
 
         IEnumerable<string> GetAvailableHandlerNames(object payload);
 
         Handler GetHandler(string handlerName);
 
-        bool TryAddHandler(Handler handler);
-        bool TryAddHandler(Handler handler, out string errorMessage);
+        bool TryAddHandler<THandler>(HandlerDescription<THandler> handlerDescription) where THandler : Handler, new();
+        bool TryAddHandler<THandler>(HandlerDescription<THandler> handlerDescription, out string errorMessage) where THandler : Handler, new();
     }
 
     public class HandlerManager : IHandlerManager
     {
-        public IReadOnlyCollection<Handler> Handlers => _handlers.AsReadOnly();
-        private readonly List<Handler> _handlers;
+        public IReadOnlyCollection<HandlerDescription> HandlerDescriptions => _handlerDescriptions.AsReadOnly();
+        private readonly List<HandlerDescription> _handlerDescriptions;
 
-        public HandlerManager(IEnumerable<Handler>? handlers = null)
+        public HandlerManager(IEnumerable<HandlerDescription>? handlerDescriptions = null)
         {
-            _handlers = handlers?.Where(h => !string.IsNullOrEmpty(h.Name))
-                                 .GroupBy(h => h.Name)
-                                 .Select(g => g.First())
-                                 .ToList()
-                     ?? new List<Handler>();
+            _handlerDescriptions = handlerDescriptions?.Where(h => !string.IsNullOrEmpty(h.HandlerName))
+                                                       .GroupBy(h => h.HandlerName)
+                                                       .Select(g => g.First())
+                                                       .ToList()
+                                ?? new List<HandlerDescription>();
         }
 
         public IEnumerable<string> GetAvailableHandlerNames(object payload)
         {
             Type payloadType = payload.GetType();
-            IEnumerable<string> availableHandlers = Handlers.Where(h =>
-                                                                   {
-                                                                       Type? handlerType = h.GetType();
-
-                                                                       do
-                                                                       {
-                                                                           if (handlerType.IsGenericType)
-                                                                           {
-                                                                               IEnumerable<Type> handlerGenericArgumentTypes = handlerType.GenericTypeArguments;
-                                                                               bool isAssignable = handlerGenericArgumentTypes.Any(x => x.IsAssignableFrom(payloadType));
-                                                                               return isAssignable;
-                                                                           }
-
-                                                                           handlerType = handlerType.BaseType;
-                                                                       } while (handlerType != null);
-
-                                                                       return false;
-                                                                   }
-                                                                  )
-                                                            .Select(handler => handler.Name);
+            IEnumerable<string> availableHandlers = HandlerDescriptions.Where(h =>
+                                                                              {
+                                                                                  var parameterType = h.PayloadType;
+                                                                                  bool isAssignableFrom = parameterType.IsAssignableFrom(payloadType);
+                                                                                  return isAssignableFrom;
+                                                                              }
+                                                                             )
+                                                                       .Select(h => h.HandlerName);
 
             return availableHandlers;
         }
@@ -62,33 +50,35 @@ namespace MessageStorage
         {
             if (string.IsNullOrEmpty(handlerName))
                 throw new HandlerNameIsEmptyException();
-            Handler? handler = Handlers.FirstOrDefault(h => h.Name == handlerName);
-            if (handler == null)
-                throw new HandlerNotFoundException(handlerName);
-            return handler;
+
+            HandlerDescription? handlerDescription = HandlerDescriptions.FirstOrDefault(h => h.HandlerName == handlerName);
+            if (handlerDescription == null)
+                throw new HandlerDescriptionNotFoundException(handlerName);
+
+            return handlerDescription.HandlerFactoryMethod();
         }
 
-        public bool TryAddHandler(Handler handler)
+        public bool TryAddHandler<THandler>(HandlerDescription<THandler> handlerDescription) where THandler : Handler, new()
         {
-            return TryAddHandler(handler, out string _);
+            return TryAddHandler(handlerDescription, out string _);
         }
 
-        public bool TryAddHandler(Handler handler, out string errorMessage)
+        public bool TryAddHandler<THandler>(HandlerDescription<THandler> handlerDescription, out string errorMessage) where THandler : Handler, new()
         {
             errorMessage = string.Empty;
-            if (string.IsNullOrEmpty(handler.Name))
+            if (string.IsNullOrEmpty(handlerDescription.HandlerName))
             {
                 errorMessage = HandlerNameIsEmptyException.MESSAGE;
                 return false;
             }
 
-            if (_handlers.Any(x => x.Name == handler.Name))
+            if (_handlerDescriptions.Any(x => x.HandlerName == handlerDescription.HandlerName))
             {
                 errorMessage = HandlerAlreadyExistException.MESSAGE;
                 return false;
             }
 
-            _handlers.Add(handler);
+            _handlerDescriptions.Add(handlerDescription);
             return true;
         }
     }

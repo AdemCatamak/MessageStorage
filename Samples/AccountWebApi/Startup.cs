@@ -4,6 +4,7 @@ using System.Threading;
 using AccountWebApi.Controllers;
 using AccountWebApi.EntityFrameworkSection;
 using AccountWebApi.MessageStorageSection.AccountHandlers;
+using MessageStorage;
 using MessageStorage.Configurations;
 using MessageStorage.DataAccessSection;
 using MessageStorage.DI.Extension;
@@ -75,8 +76,8 @@ namespace AccountWebApi
             // Step 4 (Injection)
             // services.AddMessageStorage<IMessageStorageClient>(options =>
             //                                                   {
-            //                                                       options.AddHandler(new AccountEventHandler());
-            //                                                       options.AddHandler(new AccountCreatedEventHandler());
+            //                                                       options.AddHandlerDescription(new AccountEventHandler());
+            //                                                       options.AddHandlerDescription(new AccountCreatedEventHandler());
             //                                                       
             //                                                       // options.UseMessageStorageClientConfiguration(new MessageStorageClientConfiguration());
             //                                                       // options.RunJob(new JobProcessorConfiguration());
@@ -92,8 +93,8 @@ namespace AccountWebApi
 
             // services.AddMessageStorage<IMessageStorageClient>(options =>
             //                                                   {
-            //                                                       options.AddHandler(new AccountEventHandler());
-            //                                                       options.AddHandler(new AccountCreatedEventHandler());
+            //                                                       options.AddHandlerDescription(new AccountEventHandler());
+            //                                                       options.AddHandlerDescription(new AccountCreatedEventHandler());
             //
             //                                                       options.RunJob();
             //
@@ -105,8 +106,12 @@ namespace AccountWebApi
 
             services.AddMessageStorage(options =>
                                        {
-                                           options.AddHandler(new AccountEventHandler());
-                                           options.AddHandler(new AccountCreatedEventHandler());
+                                           options.AddHandlerDescription(new HandlerDescription<AccountCreatedEventHandler>
+                                                                             (() => new AccountCreatedEventHandler())
+                                                                        );
+
+                                           options.AddHandlerDescription(new HandlerDescription<AccountEventHandler>
+                                                                             (() => new AccountEventHandler()));
 
                                            options.RunJob();
 

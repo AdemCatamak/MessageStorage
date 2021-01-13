@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using MessageStorage.Exceptions;
@@ -9,6 +10,11 @@ namespace MessageStorage
         public abstract Task BaseHandleOperationAsync(object payload, CancellationToken cancellationToken);
 
         public virtual string Name => GetType().FullName;
+
+        public virtual Type PayloadType()
+        {
+            return typeof(object);
+        }
     }
 
     public abstract class Handler<T> : Handler
@@ -23,6 +29,11 @@ namespace MessageStorage
             }
 
             return HandleAsync(t, cancellationToken);
+        }
+
+        public override Type PayloadType()
+        {
+            return typeof(T);
         }
     }
 }

@@ -33,7 +33,7 @@ namespace MessageStorage.DI.Extension
         private static void AddMessageStorage<TMessageStorageClient>(this IServiceCollection serviceCollection, MessageStorageDIConfiguration<TMessageStorageClient> configuration)
             where TMessageStorageClient : class, IMessageStorageClient
         {
-            var handlerManager = new HandlerManager(configuration.Handlers);
+            var handlerManager = new HandlerManager(configuration.HandlerDescriptions);
 
             serviceCollection.AddScoped(provider =>
                                         {

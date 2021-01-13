@@ -19,7 +19,7 @@ namespace MessageStorage.DI.Extension
         IMessageStorageDIConfigurationBuilder<TMessageStorageClient> UseRepositoryContextFactoryMethod(Func<MessageStorageRepositoryContextConfiguration, IMessageStorageRepositoryContext> factoryMethod);
         IMessageStorageDIConfigurationBuilder<TMessageStorageClient> UseMessageStorageClientFactoryMethod(Func<IMessageStorageRepositoryContext, IHandlerManager, MessageStorageClientConfiguration, TMessageStorageClient> factoryMethod);
 
-        IMessageStorageDIConfigurationBuilder<TMessageStorageClient> AddHandler(Handler handler);
+        IMessageStorageDIConfigurationBuilder<TMessageStorageClient> AddHandlerDescription(HandlerDescription handlerDescription);
         MessageStorageDIConfiguration<TMessageStorageClient> Build();
     }
 
@@ -29,7 +29,7 @@ namespace MessageStorage.DI.Extension
         private MessageStorageRepositoryContextConfiguration? _repositoryContextConfiguration;
         private Func<MessageStorageRepositoryContextConfiguration, IMessageStorageRepositoryContext>? _messageStorageRepositoryContextFactory;
         private Func<IMessageStorageRepositoryContext, IHandlerManager, MessageStorageClientConfiguration, TMessageStorageClient> _messageStorageClientFactory;
-        private readonly List<Handler> _handlers = new List<Handler>();
+        private readonly List<HandlerDescription> _handlerDescriptions = new List<HandlerDescription>();
         private MessageStorageClientConfiguration? _messageStorageClientConfiguration;
         private JobProcessorConfiguration? _jobProcessorConfiguration;
         private bool _runJobProcessor;
@@ -71,9 +71,9 @@ namespace MessageStorage.DI.Extension
             return this;
         }
 
-        public IMessageStorageDIConfigurationBuilder<TMessageStorageClient> AddHandler(Handler handler)
+        public IMessageStorageDIConfigurationBuilder<TMessageStorageClient> AddHandlerDescription(HandlerDescription handlerDescription)
         {
-            _handlers.Add(handler);
+            _handlerDescriptions.Add(handlerDescription);
             return this;
         }
 
@@ -99,7 +99,7 @@ namespace MessageStorage.DI.Extension
                 = new MessageStorageDIConfiguration<TMessageStorageClient>(_repositoryContextConfiguration,
                                                                            _messageStorageRepositoryContextFactory,
                                                                            _messageStorageClientFactory,
-                                                                           _handlers,
+                                                                           _handlerDescriptions,
                                                                            _messageStorageClientConfiguration,
                                                                            _jobProcessorConfiguration,
                                                                            _runJobProcessor);
