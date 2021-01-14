@@ -13,8 +13,8 @@ namespace MessageStorage
 
         Handler GetHandler(string handlerName);
 
-        bool TryAddHandler<THandler>(HandlerDescription<THandler> handlerDescription) where THandler : Handler, new();
-        bool TryAddHandler<THandler>(HandlerDescription<THandler> handlerDescription, out string errorMessage) where THandler : Handler, new();
+        bool TryAddHandler<THandler>(HandlerDescription<THandler> handlerDescription) where THandler : Handler;
+        bool TryAddHandler<THandler>(HandlerDescription<THandler> handlerDescription, out string errorMessage) where THandler : Handler;
     }
 
     public class HandlerManager : IHandlerManager
@@ -56,12 +56,12 @@ namespace MessageStorage
             return handler;
         }
 
-        public bool TryAddHandler<THandler>(HandlerDescription<THandler> handlerDescription) where THandler : Handler, new()
+        public bool TryAddHandler<THandler>(HandlerDescription<THandler> handlerDescription) where THandler : Handler
         {
             return TryAddHandler(handlerDescription, out string _);
         }
 
-        public bool TryAddHandler<THandler>(HandlerDescription<THandler> handlerDescription, out string errorMessage) where THandler : Handler, new()
+        public bool TryAddHandler<THandler>(HandlerDescription<THandler> handlerDescription, out string errorMessage) where THandler : Handler
         {
             errorMessage = string.Empty;
             if (string.IsNullOrEmpty(handlerDescription.HandlerName))
