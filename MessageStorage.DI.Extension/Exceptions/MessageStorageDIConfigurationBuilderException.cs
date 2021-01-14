@@ -2,9 +2,9 @@ using MessageStorage.Exceptions.BaseExceptions;
 
 namespace MessageStorage.DI.Extension.Exceptions
 {
-    public class MessageStorageDIConfigurationBuilderException : MessageStorageCustomException
+    public class MessageStorageConfigurationBuilderException : MessageStorageCustomException
     {
-        public MessageStorageDIConfigurationBuilderException(string friendlyMessage) : base(friendlyMessage)
+        public MessageStorageConfigurationBuilderException(string friendlyMessage) : base(friendlyMessage)
         {
         }
     }

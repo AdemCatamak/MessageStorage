@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using MessageStorage.Clients;
 using MessageStorage.Configurations;
 using MessageStorage.DataAccessSection;
@@ -7,102 +6,103 @@ using MessageStorage.DI.Extension.Exceptions;
 
 namespace MessageStorage.DI.Extension
 {
-    public interface IMessageStorageDIConfigurationBuilder<TMessageStorageClient>
-        where TMessageStorageClient : class, IMessageStorageClient
+    public interface IMessageStorageConfigurationBuilder<TMessageStorageClient>
+        where TMessageStorageClient : IMessageStorageClient
     {
-        IMessageStorageDIConfigurationBuilder<TMessageStorageClient> RunJob();
-        IMessageStorageDIConfigurationBuilder<TMessageStorageClient> RunJob(JobProcessorConfiguration withConfiguration);
+        IMessageStorageConfigurationBuilder<TMessageStorageClient> WithClientConfiguration(MessageStorageClientConfiguration configuration);
+        IMessageStorageConfigurationBuilder<TMessageStorageClient> UseHandlers(Action<IHandlerManager, IServiceProvider> action);
+        IMessageStorageConfigurationBuilder<TMessageStorageClient> UseRepositoryContextConfiguration(MessageStorageRepositoryContextConfiguration configuration);
+        IMessageStorageConfigurationBuilder<TMessageStorageClient> UseRepositoryContext(Func<MessageStorageRepositoryContextConfiguration, IMessageStorageRepositoryContext> factory);
+        IMessageStorageConfigurationBuilder<TMessageStorageClient> WithJobProcessorServer(JobProcessorConfiguration? configuration = null);
+        public IMessageStorageConfigurationBuilder<TMessageStorageClient> Construct(Func<IMessageStorageRepositoryContext, IHandlerManager, MessageStorageClientConfiguration, TMessageStorageClient> factory);
 
-        IMessageStorageDIConfigurationBuilder<TMessageStorageClient> UseRepositoryContextConfiguration(MessageStorageRepositoryContextConfiguration configuration);
-        IMessageStorageDIConfigurationBuilder<TMessageStorageClient> UseMessageStorageClientConfiguration(MessageStorageClientConfiguration configuration);
-
-        IMessageStorageDIConfigurationBuilder<TMessageStorageClient> UseRepositoryContextFactoryMethod(Func<MessageStorageRepositoryContextConfiguration, IMessageStorageRepositoryContext> factoryMethod);
-        IMessageStorageDIConfigurationBuilder<TMessageStorageClient> UseMessageStorageClientFactoryMethod(Func<IMessageStorageRepositoryContext, IHandlerManager, MessageStorageClientConfiguration, TMessageStorageClient> factoryMethod);
-
-        IMessageStorageDIConfigurationBuilder<TMessageStorageClient> AddHandlerDescription(HandlerDescription handlerDescription);
-        MessageStorageDIConfiguration<TMessageStorageClient> Build();
+        MessageStorageConfiguration<TMessageStorageClient> Build();
     }
 
-    public class MessageStorageDIConfigurationBuilder<TMessageStorageClient> : IMessageStorageDIConfigurationBuilder<TMessageStorageClient>
-        where TMessageStorageClient : class, IMessageStorageClient
+    public class MessageStorageConfigurationBuilder<TMessageStorageClient>
+        : IMessageStorageConfigurationBuilder<TMessageStorageClient>
+        where TMessageStorageClient : IMessageStorageClient
     {
-        private MessageStorageRepositoryContextConfiguration? _repositoryContextConfiguration;
-        private Func<MessageStorageRepositoryContextConfiguration, IMessageStorageRepositoryContext>? _messageStorageRepositoryContextFactory;
-        private Func<IMessageStorageRepositoryContext, IHandlerManager, MessageStorageClientConfiguration, TMessageStorageClient> _messageStorageClientFactory;
-        private readonly List<HandlerDescription> _handlerDescriptions = new List<HandlerDescription>();
-        private MessageStorageClientConfiguration? _messageStorageClientConfiguration;
-        private JobProcessorConfiguration? _jobProcessorConfiguration;
-        private bool _runJobProcessor;
+        private readonly IServiceProvider _serviceProvider;
 
-        public IMessageStorageDIConfigurationBuilder<TMessageStorageClient> RunJob()
+        public MessageStorageConfigurationBuilder(IServiceProvider serviceProvider)
         {
-            _runJobProcessor = true;
+            _serviceProvider = serviceProvider;
+        }
+
+        public MessageStorageClientConfiguration MessageStorageClientConfiguration { get; private set; } = new MessageStorageClientConfiguration();
+        public bool RunJobProcessor { get; private set; } = false;
+        public JobProcessorConfiguration JobProcessorConfiguration { get; private set; } = new JobProcessorConfiguration();
+        public MessageStorageRepositoryContextConfiguration? MessageStorageRepositoryContextConfiguration { get; private set; }
+        public IHandlerManager HandlerManager { get; private set; } = new HandlerManager();
+        public Func<MessageStorageRepositoryContextConfiguration, IMessageStorageRepositoryContext>? MessageStorageRepositoryContextFactory { get; private set; }
+        public Func<IMessageStorageRepositoryContext, IHandlerManager, MessageStorageClientConfiguration, TMessageStorageClient>? MessageStorageClientFactory { get; private set; }
+
+        public IMessageStorageConfigurationBuilder<TMessageStorageClient> WithClientConfiguration(MessageStorageClientConfiguration configuration)
+        {
+            MessageStorageClientConfiguration = configuration;
             return this;
         }
 
-        public IMessageStorageDIConfigurationBuilder<TMessageStorageClient> RunJob(JobProcessorConfiguration withConfiguration)
+        public IMessageStorageConfigurationBuilder<TMessageStorageClient> UseHandlers(Action<IHandlerManager, IServiceProvider> action)
         {
-            _runJobProcessor = true;
-            _jobProcessorConfiguration = withConfiguration;
+            action.Invoke(HandlerManager, _serviceProvider);
             return this;
         }
 
-        public IMessageStorageDIConfigurationBuilder<TMessageStorageClient> UseRepositoryContextConfiguration(MessageStorageRepositoryContextConfiguration configuration)
+        public IMessageStorageConfigurationBuilder<TMessageStorageClient> UseRepositoryContextConfiguration(MessageStorageRepositoryContextConfiguration configuration)
         {
-            _repositoryContextConfiguration = configuration;
+            MessageStorageRepositoryContextConfiguration = configuration;
             return this;
         }
 
-        public IMessageStorageDIConfigurationBuilder<TMessageStorageClient> UseMessageStorageClientConfiguration(MessageStorageClientConfiguration configuration)
+        public IMessageStorageConfigurationBuilder<TMessageStorageClient> UseRepositoryContext(Func<MessageStorageRepositoryContextConfiguration, IMessageStorageRepositoryContext> factory)
         {
-            _messageStorageClientConfiguration = configuration;
+            MessageStorageRepositoryContextFactory = factory;
             return this;
         }
 
-        public IMessageStorageDIConfigurationBuilder<TMessageStorageClient> UseRepositoryContextFactoryMethod(Func<MessageStorageRepositoryContextConfiguration, IMessageStorageRepositoryContext> factoryMethod)
+        public IMessageStorageConfigurationBuilder<TMessageStorageClient> WithJobProcessorServer(JobProcessorConfiguration? configuration = null)
         {
-            _messageStorageRepositoryContextFactory = factoryMethod;
-            return this;
-        }
-
-        public IMessageStorageDIConfigurationBuilder<TMessageStorageClient> UseMessageStorageClientFactoryMethod(Func<IMessageStorageRepositoryContext, IHandlerManager, MessageStorageClientConfiguration, TMessageStorageClient> factoryMethod)
-        {
-            _messageStorageClientFactory = factoryMethod;
-            return this;
-        }
-
-        public IMessageStorageDIConfigurationBuilder<TMessageStorageClient> AddHandlerDescription(HandlerDescription handlerDescription)
-        {
-            _handlerDescriptions.Add(handlerDescription);
-            return this;
-        }
-
-
-        public MessageStorageDIConfiguration<TMessageStorageClient> Build()
-        {
-            if (_repositoryContextConfiguration == null)
+            RunJobProcessor = true;
+            if (configuration != null)
             {
-                throw new MessageStorageDIConfigurationBuilderException($"{nameof(UseRepositoryContextConfiguration)} method should be used");
+                JobProcessorConfiguration = configuration;
             }
 
-            if (_messageStorageRepositoryContextFactory == null)
+            return this;
+        }
+
+        public IMessageStorageConfigurationBuilder<TMessageStorageClient> Construct(Func<IMessageStorageRepositoryContext, IHandlerManager, MessageStorageClientConfiguration, TMessageStorageClient> factory)
+        {
+            MessageStorageClientFactory = factory;
+            return this;
+        }
+
+
+        public MessageStorageConfiguration<TMessageStorageClient> Build()
+        {
+            if (MessageStorageRepositoryContextConfiguration == null)
             {
-                throw new MessageStorageDIConfigurationBuilderException($"{nameof(UseRepositoryContextFactoryMethod)} method should be used");
+                throw new MessageStorageConfigurationBuilderException($"{nameof(UseRepositoryContextConfiguration)} should be called");
             }
 
-            if (_messageStorageClientFactory == null)
+            if (MessageStorageRepositoryContextFactory == null)
             {
-                throw new MessageStorageDIConfigurationBuilderException($"{nameof(UseMessageStorageClientFactoryMethod)} method should be used");
+                throw new MessageStorageConfigurationBuilderException($"{nameof(UseRepositoryContext)} should be called");
             }
 
-            MessageStorageDIConfiguration<TMessageStorageClient> configuration
-                = new MessageStorageDIConfiguration<TMessageStorageClient>(_repositoryContextConfiguration,
-                                                                           _messageStorageRepositoryContextFactory,
-                                                                           _messageStorageClientFactory,
-                                                                           _handlerDescriptions,
-                                                                           _messageStorageClientConfiguration,
-                                                                           _jobProcessorConfiguration,
-                                                                           _runJobProcessor);
+            if (MessageStorageClientFactory == null)
+            {
+                throw new MessageStorageConfigurationBuilderException($"{nameof(Construct)} should be called");
+            }
+
+            MessageStorageConfiguration<TMessageStorageClient> configuration
+                = new MessageStorageConfiguration<TMessageStorageClient>(MessageStorageRepositoryContextConfiguration,
+                                                                         MessageStorageRepositoryContextFactory,
+                                                                         MessageStorageClientFactory,
+                                                                         HandlerManager,
+                                                                         RunJobProcessor, JobProcessorConfiguration);
 
             return configuration;
         }

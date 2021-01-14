@@ -17,7 +17,7 @@ namespace MessageStorage.Clients.Imp
         private readonly JobProcessorConfiguration _jobProcessorConfiguration;
         private readonly ILogger<JobProcessor> _logger;
 
-        private Task _backgroundJob;
+        private Task? _backgroundJob;
         private readonly CancellationTokenSource _cancellationTokenSource;
 
         public JobProcessor(Func<IMessageStorageRepositoryContext> repositoryContextFactory, IHandlerManager handlerManager, ILogger<JobProcessor>? logger = null, JobProcessorConfiguration? jobProcessorConfiguration = null)
@@ -127,7 +127,7 @@ namespace MessageStorage.Clients.Imp
 
             _cancellationTokenSource.Cancel();
             TimeSpan timeout = _jobProcessorConfiguration.WaitWhenJobNotFound + _jobProcessorConfiguration.JobProcessDeadline;
-            _backgroundJob.Wait(timeout);
+            _backgroundJob?.Wait(timeout);
 
             _logger.LogDebug($"{nameof(JobProcessor)}.{nameof(StopAsync)} is completed - {DateTime.UtcNow}");
 

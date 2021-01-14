@@ -5,7 +5,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\MessageStorage.AspNetCore\MessageStorage.AspNetCore.csproj" />
         <ProjectReference Include="..\..\MessageStorage.DI.Extension\MessageStorage.DI.Extension.csproj" />
         <ProjectReference Include="..\..\MessageStorage.SqlServer.DI.Extension\MessageStorage.SqlServer.DI.Extension.csproj" />
       <ProjectReference Include="..\..\MessageStorage.SqlServer\MessageStorage.SqlServer.csproj" />

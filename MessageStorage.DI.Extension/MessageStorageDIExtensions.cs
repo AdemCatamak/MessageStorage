@@ -4,87 +4,79 @@ using MessageStorage.Clients.Imp;
 using MessageStorage.DataAccessSection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
 namespace MessageStorage.DI.Extension
 {
     public static class MessageStorageDIExtensions
     {
-        public static void AddMessageStorage(this IServiceCollection serviceCollection, Action<IMessageStorageDIConfigurationBuilder<IMessageStorageClient>> options)
+        public static IServiceCollection AddMessageStorage(this IServiceCollection serviceCollection, Action<IMessageStorageConfigurationBuilder<MessageStorageClient>> messageStorage)
         {
-            AddMessageStorage<IMessageStorageClient>(serviceCollection,
-                                                     builder =>
-                                                     {
-                                                         builder.UseMessageStorageClientFactoryMethod((context, manager, clientConfiguration) => new MessageStorageClient(context, manager, clientConfiguration));
-                                                         options.Invoke(builder);
-                                                     });
+            void MessageStorageConfigurationBuilderWithDefaultConstructor(IMessageStorageConfigurationBuilder<MessageStorageClient> builder)
+            {
+                builder.Construct((context, manager, configuration) => new MessageStorageClient(context, manager, configuration));
+                messageStorage.Invoke(builder);
+            }
+
+            return AddMessageStorage<IMessageStorageClient, MessageStorageClient>(serviceCollection, MessageStorageConfigurationBuilderWithDefaultConstructor);
         }
 
-        public static void AddMessageStorage(this IServiceCollection serviceCollection, Action<IMessageStorageDIConfigurationBuilder<IMessageStorageClient>, IServiceProvider> options)
-        {
-            AddMessageStorage<IMessageStorageClient>(serviceCollection,
-                                                     (builder, provider) =>
-                                                     {
-                                                         builder.UseMessageStorageClientFactoryMethod((context, manager, clientConfiguration) => new MessageStorageClient(context, manager, clientConfiguration));
-                                                         options.Invoke(builder, provider);
-                                                     });
-        }
 
-        public static void AddMessageStorage<TMessageStorageClient>(this IServiceCollection serviceCollection, Action<IMessageStorageDIConfigurationBuilder<TMessageStorageClient>> options)
+        public static IServiceCollection AddMessageStorage<TMessageStorageClient, TImpMessageStorageClient>(this IServiceCollection serviceCollection, Action<IMessageStorageConfigurationBuilder<TImpMessageStorageClient>> messageStorage)
             where TMessageStorageClient : class, IMessageStorageClient
+            where TImpMessageStorageClient : MessageStorageClient, TMessageStorageClient
         {
-            AddMessageStorage<TMessageStorageClient>(serviceCollection, (builder, provider) => { options.Invoke(builder); });
-        }
+            MessageStorageConfiguration<TImpMessageStorageClient>? messageStorageConfiguration = null;
 
+            serviceCollection.AddScoped<TMessageStorageClient, TImpMessageStorageClient>(provider =>
+                                                                                         {
+                                                                                             IServiceScope scope = provider.CreateScope();
+                                                                                             IServiceProvider localServiceProvider = scope.ServiceProvider;
 
-        public static void AddMessageStorage<TMessageStorageClient>(this IServiceCollection serviceCollection, Action<IMessageStorageDIConfigurationBuilder<TMessageStorageClient>, IServiceProvider> options)
-            where TMessageStorageClient : class, IMessageStorageClient
-        {
-            HandlerManager? h1 = null;
-            MessageStorageDIConfiguration<TMessageStorageClient>? c1 = null;
+                                                                                             if (messageStorageConfiguration == null)
+                                                                                             {
+                                                                                                 IMessageStorageConfigurationBuilder<TImpMessageStorageClient> builder = new MessageStorageConfigurationBuilder<TImpMessageStorageClient>(localServiceProvider);
+                                                                                                 messageStorage.Invoke(builder);
+                                                                                                 messageStorageConfiguration = builder.Build();
+                                                                                             }
 
-            IMessageStorageDIConfigurationBuilder<TMessageStorageClient> builder = new MessageStorageDIConfigurationBuilder<TMessageStorageClient>();
-            serviceCollection.AddScoped(provider =>
-                                        {
-                                            if (h1 == null)
-                                            {
-                                                IServiceScope scope = provider.CreateScope();
-                                                IServiceProvider p = scope.ServiceProvider;
-                                                options(builder, p);
-                                                c1 = builder.Build();
-                                                h1 = new HandlerManager(c1.HandlerDescriptions);
-                                            }
+                                                                                             IMessageStorageRepositoryContext? messageStorageRepositoryContext = messageStorageConfiguration.MessageStorageRepositoryContextFactory.Invoke(messageStorageConfiguration.MessageStorageRepositoryContextConfiguration);
+                                                                                             TImpMessageStorageClient messageStorageClient = messageStorageConfiguration.MessageStorageClientFactory.Invoke(messageStorageRepositoryContext,
+                                                                                                                                                                                                            messageStorageConfiguration.HandlerManager,
+                                                                                                                                                                                                            messageStorageConfiguration.MessageStorageClientConfiguration);
+                                                                                             return messageStorageClient;
+                                                                                         });
 
-                                            IMessageStorageRepositoryContext messageStorageRepositoryContext = c1.MessageStorageRepositoryContextFactory.Invoke(c1.MessageStorageRepositoryContextConfiguration);
-                                            TMessageStorageClient messageStorageClient = c1.MessageStorageClientFactory.Invoke(messageStorageRepositoryContext, h1, c1.MessageStorageClientConfiguration);
-                                            return messageStorageClient;
-                                        });
-
-            MessageStorageDIConfiguration<TMessageStorageClient>? c2;
             serviceCollection.AddSingleton<IHostedService>(provider =>
                                                            {
-                                                               IServiceScope scope = provider.CreateScope();
-                                                               IServiceProvider p = scope.ServiceProvider;
-                                                               options(builder, p);
-                                                               c2 = builder.Build();
+                                                               if (messageStorageConfiguration == null)
+                                                               {
+                                                                   IServiceScope scope = provider.CreateScope();
+                                                                   IServiceProvider localServiceProvider = scope.ServiceProvider;
+                                                                   IMessageStorageConfigurationBuilder<TImpMessageStorageClient> builder
+                                                                       = new MessageStorageConfigurationBuilder<TImpMessageStorageClient>(localServiceProvider);
+                                                                   messageStorage.Invoke(builder);
+                                                                   messageStorageConfiguration = builder.Build();
+                                                               }
 
                                                                IBackgroundProcessor backgroundProcessor;
-                                                               if (c2.RunJobProcessor)
+                                                               if (messageStorageConfiguration.RunJobProcessor)
                                                                {
-                                                                   var handlerManager = new HandlerManager(c2.HandlerDescriptions);
-                                                                   backgroundProcessor = new JobProcessor(() => c2.MessageStorageRepositoryContextFactory.Invoke(c2.MessageStorageRepositoryContextConfiguration),
-                                                                                                          handlerManager,
-                                                                                                          NullLogger<JobProcessor>.Instance,
-                                                                                                          c2.JobProcessorConfiguration);
+                                                                   backgroundProcessor = new JobProcessor(() => messageStorageConfiguration.MessageStorageRepositoryContextFactory.Invoke(messageStorageConfiguration.MessageStorageRepositoryContextConfiguration),
+                                                                                                          messageStorageConfiguration.HandlerManager,
+                                                                                                          provider.GetService<ILogger<JobProcessor>>());
                                                                }
                                                                else
                                                                {
-                                                                   backgroundProcessor = new DummyBackgroundProcessor();
+                                                                   backgroundProcessor = new DummyBackgroundProcessor(provider.GetService<ILogger<DummyBackgroundProcessor>>());
                                                                }
 
-                                                               var backgroundProcessorHostedService = new BackgroundProcessorHostedService(backgroundProcessor);
-                                                               return backgroundProcessorHostedService;
+                                                               IHostedService? backgroundProcessorHostedService = new BackgroundProcessorHostedService(backgroundProcessor);
+
+                                                               return backgroundProcessorHostedService!;
                                                            });
+            return serviceCollection;
         }
     }
 }

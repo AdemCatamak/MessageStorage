@@ -22,7 +22,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\MessageStorage.AspNetCore\MessageStorage.AspNetCore.csproj" />
       <ProjectReference Include="..\MessageStorage\MessageStorage.csproj" />
     </ItemGroup>
 

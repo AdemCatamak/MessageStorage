@@ -4,6 +4,7 @@ using System.Threading;
 using AccountWebApi.Controllers;
 using AccountWebApi.EntityFrameworkSection;
 using AccountWebApi.MessageStorageSection.AccountHandlers;
+using AccountWebApi.SecondMessageStorageSection;
 using MessageStorage;
 using MessageStorage.Configurations;
 using MessageStorage.DataAccessSection;
@@ -51,6 +52,7 @@ namespace AccountWebApi
 
             string connectionStr = _configuration.GetConnectionString("SqlServerConnectionStr");
 
+
             // Step 1 (DbRepositoryConfiguration)
             var repositoryConfiguration = new MessageStorageRepositoryContextConfiguration(connectionStr);
 
@@ -74,27 +76,49 @@ namespace AccountWebApi
             }
 
             // Step 4 (Injection)
-            services.AddMessageStorage((options, provider) =>
+            services.AddMessageStorage(messageStorage =>
                                        {
-                                           options.AddHandlerDescription(new HandlerDescription<AccountCreatedEventHandler_CustomConstructor>
-                                                                             (() =>
-                                                                              {
-                                                                                  var x = provider.GetRequiredService<AccountDbContext>();
-                                                                                  return new AccountCreatedEventHandler_CustomConstructor(x);
-                                                                              })
-                                                                        );
+                                           messageStorage.WithClientConfiguration(new MessageStorageClientConfiguration())
+                                                         .UseSqlServer(connectionStr)
+                                                         .UseHandlers((handlerManager, provider) =>
+                                                                      {
+                                                                          handlerManager.TryAddHandler(new HandlerDescription<AccountEventHandler>
+                                                                                                           (() => new AccountEventHandler()));
 
-                                           options.AddHandlerDescription(new HandlerDescription<AccountCreatedEventHandler>
-                                                                             (() => new AccountCreatedEventHandler())
-                                                                        );
-
-                                           options.AddHandlerDescription(new HandlerDescription<AccountEventHandler>
-                                                                             (() => new AccountEventHandler()));
-
-                                           options.RunJob();
-
-                                           options.UseSqlServer(connectionStr);
+                                                                          handlerManager.TryAddHandler(new HandlerDescription<AccountCreatedEventHandler>
+                                                                                                           (() =>
+                                                                                                            {
+                                                                                                                var x = provider.GetRequiredService<AccountDbContext>();
+                                                                                                                return new AccountCreatedEventHandler(x);
+                                                                                                            })
+                                                                                                      );
+                                                                      })
+                                               .WithJobProcessorServer(new JobProcessorConfiguration());
+                                               ;
                                        });
+
+            services.AddMessageStorage<ISecondMessageStorageClient, SecondMessageStorageClient>
+                (messageStorage =>
+                 {
+                     messageStorage.WithClientConfiguration(new MessageStorageClientConfiguration())
+                                   .UseSqlServer(connectionStr)
+                                   .UseHandlers((handlerManager, provider) =>
+                                                {
+                                                    handlerManager.TryAddHandler(new HandlerDescription<AccountEventHandler>
+                                                                                     (() => new AccountEventHandler()));
+
+                                                    handlerManager.TryAddHandler(new HandlerDescription<AccountCreatedEventHandler>
+                                                                                     (() =>
+                                                                                      {
+                                                                                          var x = provider.GetRequiredService<AccountDbContext>();
+                                                                                          return new AccountCreatedEventHandler(x);
+                                                                                      })
+                                                                                );
+                                                })
+                                   .Construct((context, manager, configuration) => new SecondMessageStorageClient(context, manager, configuration));
+
+                     messageStorage.WithJobProcessorServer(new JobProcessorConfiguration());
+                 });
 
             services.AddDbContext<AccountDbContext>(builder => builder.UseSqlServer(connectionStr,
                                                                                     optionsBuilder => optionsBuilder.MigrationsAssembly(typeof(AccountDbContext).Assembly.FullName)));

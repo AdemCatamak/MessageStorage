@@ -9,11 +9,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AccountWebApi.MessageStorageSection.AccountHandlers
 {
-    public class AccountCreatedEventHandler_CustomConstructor : Handler<AccountCreatedEvent>
+    public class AccountCreatedEventHandler : Handler<AccountCreatedEvent>
     {
         private readonly AccountDbContext _accountDbContext;
 
-        public AccountCreatedEventHandler_CustomConstructor(AccountDbContext accountDbContext)
+        public AccountCreatedEventHandler(AccountDbContext accountDbContext)
         {
             _accountDbContext = accountDbContext;
         }
@@ -22,7 +22,7 @@ namespace AccountWebApi.MessageStorageSection.AccountHandlers
         {
             long accountId = payload.AccountId;
             AccountModel accountModel = await _accountDbContext.Accounts.FirstAsync(x => x.Id == accountId, cancellationToken: cancellationToken);
-            Console.WriteLine($"{payload} is handled by {nameof(AccountCreatedEventHandler_CustomConstructor)} || #{accountModel.Id} - {accountModel}");
+            Console.WriteLine($"{payload} is handled by {nameof(AccountCreatedEventHandler)} || #{accountModel.Id} - {accountModel}");
         }
     }
 }
