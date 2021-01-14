@@ -27,6 +27,11 @@ namespace MessageStorage
             PayloadType = handler.PayloadType();
             HandlerFactoryMethod = handlerFactoryMethod;
         }
-        
+
+        public virtual Handler GetHandler()
+        {
+            var handler = HandlerFactoryMethod.Invoke();
+            return handler;
+        }
     }
 }

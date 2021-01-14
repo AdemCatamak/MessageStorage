@@ -36,8 +36,8 @@ namespace MessageStorage
             Type payloadType = payload.GetType();
             IEnumerable<string> availableHandlers = HandlerDescriptions.Where(h =>
                                                                               {
-                                                                                  var parameterType = h.PayloadType;
-                                                                                  bool isAssignableFrom = parameterType.IsAssignableFrom(payloadType);
+                                                                                  Type acceptedPayloadTypeByHandler = h.PayloadType;
+                                                                                  bool isAssignableFrom = acceptedPayloadTypeByHandler.IsAssignableFrom(payloadType);
                                                                                   return isAssignableFrom;
                                                                               }
                                                                              )
@@ -48,14 +48,12 @@ namespace MessageStorage
 
         public Handler GetHandler(string handlerName)
         {
-            if (string.IsNullOrEmpty(handlerName))
-                throw new HandlerNameIsEmptyException();
-
             HandlerDescription? handlerDescription = HandlerDescriptions.FirstOrDefault(h => h.HandlerName == handlerName);
             if (handlerDescription == null)
                 throw new HandlerDescriptionNotFoundException(handlerName);
 
-            return handlerDescription.HandlerFactoryMethod();
+            Handler handler = handlerDescription.HandlerFactoryMethod();
+            return handler;
         }
 
         public bool TryAddHandler<THandler>(HandlerDescription<THandler> handlerDescription) where THandler : Handler, new()

@@ -6,11 +6,11 @@ using Microsoft.Extensions.Hosting;
 
 namespace MessageStorage.DI.Extension
 {
-    public class JobProcessorHostedService : IHostedService
+    public class BackgroundProcessorHostedService : IHostedService
     {
-        private readonly IJobProcessor _jobProcessor;
+        private readonly IBackgroundProcessor _jobProcessor;
 
-        public JobProcessorHostedService(IJobProcessor jobProcessor)
+        public BackgroundProcessorHostedService(IBackgroundProcessor jobProcessor)
         {
             _jobProcessor = jobProcessor ?? throw new ArgumentNullException(nameof(jobProcessor));
         }

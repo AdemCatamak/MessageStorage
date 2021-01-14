@@ -74,38 +74,16 @@ namespace AccountWebApi
             }
 
             // Step 4 (Injection)
-            // services.AddMessageStorage<IMessageStorageClient>(options =>
-            //                                                   {
-            //                                                       options.AddHandlerDescription(new AccountEventHandler());
-            //                                                       options.AddHandlerDescription(new AccountCreatedEventHandler());
-            //                                                       
-            //                                                       // options.UseMessageStorageClientConfiguration(new MessageStorageClientConfiguration());
-            //                                                       // options.RunJob(new JobProcessorConfiguration());
-            //
-            //                                                       options.RunJob();
-            //                                                       
-            //                                                       options.UseRepositoryContextConfiguration(new MessageStorageRepositoryContextConfiguration(connectionStr));
-            //
-            //                                                       options.UseRepositoryContextFactoryMethod(r => new SqlServerMessageStorageRepositoryContext(r));
-            //                                                       options.UseMessageStorageClientFactoryMethod((repositoryContext, handlerManager, clientConfiguration) =>
-            //                                                                                                        new MessageStorageClient(repositoryContext, handlerManager, clientConfiguration));
-            //                                                   });
-
-            // services.AddMessageStorage<IMessageStorageClient>(options =>
-            //                                                   {
-            //                                                       options.AddHandlerDescription(new AccountEventHandler());
-            //                                                       options.AddHandlerDescription(new AccountCreatedEventHandler());
-            //
-            //                                                       options.RunJob();
-            //
-            //                                                       options.UseSqlServer(connectionStr);
-            //
-            //                                                       options.UseMessageStorageClientFactoryMethod((repositoryContext, handlerManager, clientConfiguration) =>
-            //                                                                                                        new MessageStorageClient(repositoryContext, handlerManager, clientConfiguration));
-            //                                                   });
-
-            services.AddMessageStorage(options =>
+            services.AddMessageStorage((options, provider) =>
                                        {
+                                           options.AddHandlerDescription(new HandlerDescription<AccountCreatedEventHandler_CustomConstructor>
+                                                                             (() =>
+                                                                              {
+                                                                                  var x = provider.GetRequiredService<AccountDbContext>();
+                                                                                  return new AccountCreatedEventHandler_CustomConstructor(x);
+                                                                              })
+                                                                        );
+
                                            options.AddHandlerDescription(new HandlerDescription<AccountCreatedEventHandler>
                                                                              (() => new AccountCreatedEventHandler())
                                                                         );
