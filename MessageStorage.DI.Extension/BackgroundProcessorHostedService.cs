@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using MessageStorage.Clients;
@@ -8,21 +9,27 @@ namespace MessageStorage.DI.Extension
 {
     public class BackgroundProcessorHostedService : IHostedService
     {
-        private readonly IBackgroundProcessor _jobProcessor;
+        private readonly IEnumerable<IBackgroundProcessor> _backgroundProcessors;
 
-        public BackgroundProcessorHostedService(IBackgroundProcessor jobProcessor)
+        public BackgroundProcessorHostedService(IEnumerable<IBackgroundProcessor>? backgroundProcessors)
         {
-            _jobProcessor = jobProcessor ?? throw new ArgumentNullException(nameof(jobProcessor));
+            _backgroundProcessors = backgroundProcessors ?? new List<IBackgroundProcessor>();
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            await _jobProcessor.StartAsync(cancellationToken);
+            foreach (IBackgroundProcessor backgroundProcessor in _backgroundProcessors)
+            {
+                await backgroundProcessor.StartAsync(cancellationToken);
+            }
         }
 
         public async Task StopAsync(CancellationToken cancellationToken)
         {
-            await _jobProcessor.StopAsync(cancellationToken);
+            foreach (IBackgroundProcessor backgroundProcessor in _backgroundProcessors)
+            {
+                await backgroundProcessor.StopAsync(cancellationToken);
+            }
         }
     }
 }

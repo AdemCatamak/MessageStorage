@@ -1,17 +1,16 @@
 ﻿using System;
 using MessageStorage.Clients;
 using MessageStorage.Clients.Imp;
+using MessageStorage.Configurations;
 using MessageStorage.DataAccessSection;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 
 namespace MessageStorage.DI.Extension
 {
     public static class MessageStorageDIExtensions
     {
-        public static IServiceCollection AddMessageStorage(this IServiceCollection serviceCollection, Action<IMessageStorageConfigurationBuilder<MessageStorageClient>> messageStorage)
+        public static (IServiceCollection, Action<IMessageStorageConfigurationBuilder<MessageStorageClient>>) AddMessageStorage(this IServiceCollection serviceCollection, Action<IMessageStorageConfigurationBuilder<MessageStorageClient>> messageStorage)
         {
             void MessageStorageConfigurationBuilderWithDefaultConstructor(IMessageStorageConfigurationBuilder<MessageStorageClient> builder)
             {
@@ -22,8 +21,13 @@ namespace MessageStorage.DI.Extension
             return AddMessageStorage<IMessageStorageClient, MessageStorageClient>(serviceCollection, MessageStorageConfigurationBuilderWithDefaultConstructor);
         }
 
+        public static (IServiceCollection, Action<IMessageStorageConfigurationBuilder<TImpMessageStorageClient>>) AddMessageStorage<TImpMessageStorageClient>(this IServiceCollection serviceCollection, Action<IMessageStorageConfigurationBuilder<TImpMessageStorageClient>> messageStorage)
+            where TImpMessageStorageClient : MessageStorageClient
+        {
+            return AddMessageStorage<TImpMessageStorageClient, TImpMessageStorageClient>(serviceCollection, messageStorage);
+        }
 
-        public static IServiceCollection AddMessageStorage<TMessageStorageClient, TImpMessageStorageClient>(this IServiceCollection serviceCollection, Action<IMessageStorageConfigurationBuilder<TImpMessageStorageClient>> messageStorage)
+        public static (IServiceCollection, Action<IMessageStorageConfigurationBuilder<TImpMessageStorageClient>>) AddMessageStorage<TMessageStorageClient, TImpMessageStorageClient>(this IServiceCollection serviceCollection, Action<IMessageStorageConfigurationBuilder<TImpMessageStorageClient>> messageStorage)
             where TMessageStorageClient : class, IMessageStorageClient
             where TImpMessageStorageClient : MessageStorageClient, TMessageStorageClient
         {
@@ -48,35 +52,41 @@ namespace MessageStorage.DI.Extension
                                                                                              return messageStorageClient;
                                                                                          });
 
-            serviceCollection.AddSingleton<IHostedService>(provider =>
-                                                           {
-                                                               if (messageStorageConfiguration == null)
-                                                               {
-                                                                   IServiceScope scope = provider.CreateScope();
-                                                                   IServiceProvider localServiceProvider = scope.ServiceProvider;
-                                                                   IMessageStorageConfigurationBuilder<TImpMessageStorageClient> builder
-                                                                       = new MessageStorageConfigurationBuilder<TImpMessageStorageClient>(localServiceProvider);
-                                                                   messageStorage.Invoke(builder);
-                                                                   messageStorageConfiguration = builder.Build();
-                                                               }
+            return (serviceCollection, messageStorage);
+        }
 
-                                                               IBackgroundProcessor backgroundProcessor;
-                                                               if (messageStorageConfiguration.RunJobProcessor)
-                                                               {
-                                                                   backgroundProcessor = new JobProcessor(() => messageStorageConfiguration.MessageStorageRepositoryContextFactory.Invoke(messageStorageConfiguration.MessageStorageRepositoryContextConfiguration),
-                                                                                                          messageStorageConfiguration.HandlerManager,
-                                                                                                          provider.GetService<ILogger<JobProcessor>>());
-                                                               }
-                                                               else
-                                                               {
-                                                                   backgroundProcessor = new DummyBackgroundProcessor(provider.GetService<ILogger<DummyBackgroundProcessor>>());
-                                                               }
+        public static (IServiceCollection, Action<IMessageStorageConfigurationBuilder<TImpMessageStorageClient>>) WithJobProcessor<TImpMessageStorageClient>(this (IServiceCollection, Action<IMessageStorageConfigurationBuilder<TImpMessageStorageClient>>) messageStorage, JobProcessorConfiguration? jobProcessorConfiguration = null)
+            where TImpMessageStorageClient : MessageStorageClient
+        {
+            jobProcessorConfiguration ??= new JobProcessorConfiguration();
 
-                                                               IHostedService? backgroundProcessorHostedService = new BackgroundProcessorHostedService(backgroundProcessor);
+            MessageStorageConfiguration<TImpMessageStorageClient>? messageStorageConfiguration = null;
 
-                                                               return backgroundProcessorHostedService!;
-                                                           });
-            return serviceCollection;
+            IServiceCollection serviceCollection = messageStorage.Item1;
+            Action<IMessageStorageConfigurationBuilder<TImpMessageStorageClient>>? configure = messageStorage.Item2;
+
+            serviceCollection.AddSingleton<IBackgroundProcessor>(provider =>
+                                                                 {
+                                                                     if (messageStorageConfiguration == null)
+                                                                     {
+                                                                         IServiceScope scope = provider.CreateScope();
+                                                                         IServiceProvider localServiceProvider = scope.ServiceProvider;
+                                                                         IMessageStorageConfigurationBuilder<TImpMessageStorageClient> builder
+                                                                             = new MessageStorageConfigurationBuilder<TImpMessageStorageClient>(localServiceProvider);
+                                                                         configure(builder);
+                                                                         messageStorageConfiguration = builder.Build();
+                                                                     }
+
+                                                                     var backgroundProcessor = new JobProcessor(() => messageStorageConfiguration.MessageStorageRepositoryContextFactory.Invoke(messageStorageConfiguration.MessageStorageRepositoryContextConfiguration),
+                                                                                                                messageStorageConfiguration.HandlerManager,
+                                                                                                                provider.GetService<ILogger<JobProcessor>>(),
+                                                                                                                jobProcessorConfiguration);
+
+                                                                     return backgroundProcessor!;
+                                                                 });
+            serviceCollection.AddHostedService<BackgroundProcessorHostedService>();
+
+            return messageStorage;
         }
     }
 }

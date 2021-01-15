@@ -93,32 +93,32 @@ namespace AccountWebApi
                                                                                                             })
                                                                                                       );
                                                                       })
-                                               .WithJobProcessorServer(new JobProcessorConfiguration());
                                                ;
-                                       });
+                                       })
+                    .WithJobProcessor();
 
             services.AddMessageStorage<ISecondMessageStorageClient, SecondMessageStorageClient>
-                (messageStorage =>
-                 {
-                     messageStorage.WithClientConfiguration(new MessageStorageClientConfiguration())
-                                   .UseSqlServer(connectionStr)
-                                   .UseHandlers((handlerManager, provider) =>
-                                                {
-                                                    handlerManager.TryAddHandler(new HandlerDescription<AccountEventHandler>
-                                                                                     (() => new AccountEventHandler()));
+                     (messageStorage =>
+                      {
+                          messageStorage.WithClientConfiguration(new MessageStorageClientConfiguration())
+                                        .UseSqlServer(connectionStr)
+                                        .UseHandlers((handlerManager, provider) =>
+                                                     {
+                                                         handlerManager.TryAddHandler(new HandlerDescription<AccountEventHandler>
+                                                                                          (() => new AccountEventHandler()));
 
-                                                    handlerManager.TryAddHandler(new HandlerDescription<AccountCreatedEventHandler>
-                                                                                     (() =>
-                                                                                      {
-                                                                                          var x = provider.GetRequiredService<AccountDbContext>();
-                                                                                          return new AccountCreatedEventHandler(x);
-                                                                                      })
-                                                                                );
-                                                })
-                                   .Construct((context, manager, configuration) => new SecondMessageStorageClient(context, manager, configuration));
-
-                     messageStorage.WithJobProcessorServer(new JobProcessorConfiguration());
-                 });
+                                                         handlerManager.TryAddHandler(new HandlerDescription<AccountCreatedEventHandler>
+                                                                                          (() =>
+                                                                                           {
+                                                                                               var x = provider.GetRequiredService<AccountDbContext>();
+                                                                                               return new AccountCreatedEventHandler(x);
+                                                                                           })
+                                                                                     );
+                                                     })
+                                        .Construct((context, manager, configuration) => new SecondMessageStorageClient(context, manager, configuration));
+                      })
+                    .WithJobProcessor(new JobProcessorConfiguration())
+                ;
 
             services.AddDbContext<AccountDbContext>(builder => builder.UseSqlServer(connectionStr,
                                                                                     optionsBuilder => optionsBuilder.MigrationsAssembly(typeof(AccountDbContext).Assembly.FullName)));
