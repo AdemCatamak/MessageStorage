@@ -91,7 +91,6 @@ namespace MessageStorage.DataAccessSection
             messageStorageTransaction.Rollbacked -= OwnedTransactionFinalized;
             messageStorageTransaction.Disposed -= OwnedTransactionDisposed;
 
-            messageStorageTransaction.Dispose();
             _ownedDbTransaction = null;
         }
 
