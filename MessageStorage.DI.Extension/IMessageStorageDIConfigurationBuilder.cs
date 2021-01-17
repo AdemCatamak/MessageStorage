@@ -13,7 +13,7 @@ namespace MessageStorage.DI.Extension
         IMessageStorageConfigurationBuilder<TMessageStorageClient> UseHandlers(Action<IHandlerManager, IServiceProvider> action);
         IMessageStorageConfigurationBuilder<TMessageStorageClient> UseRepositoryContextConfiguration(MessageStorageRepositoryContextConfiguration configuration);
         IMessageStorageConfigurationBuilder<TMessageStorageClient> UseRepositoryContext(Func<MessageStorageRepositoryContextConfiguration, IMessageStorageRepositoryContext> factory);
-        public IMessageStorageConfigurationBuilder<TMessageStorageClient> Construct(Func<IMessageStorageRepositoryContext, IHandlerManager, MessageStorageClientConfiguration, TMessageStorageClient> factory);
+        IMessageStorageConfigurationBuilder<TMessageStorageClient> Construct(Func<IMessageStorageRepositoryContext, IHandlerManager, MessageStorageClientConfiguration, TMessageStorageClient> factory);
 
         MessageStorageConfiguration<TMessageStorageClient> Build();
     }
