@@ -90,5 +90,10 @@ namespace MessageStorage.Clients.Imp
             IMessageStorageTransaction messageStorageTransaction = _messageStorageRepositoryContext.BeginTransaction(isolationLevel);
             return messageStorageTransaction;
         }
+
+        public void Dispose()
+        {
+            _messageStorageRepositoryContext.Dispose();
+        }
     }
 }

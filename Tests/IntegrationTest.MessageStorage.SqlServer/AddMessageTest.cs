@@ -171,26 +171,30 @@ namespace IntegrationTest.MessageStorage.SqlServer
             object myObj = "dummy-message";
             using (IDbConnection connection = _sqlServerTestFixture.CreateDbConnection())
             {
-                IMessageStorageClient localClient = new MessageStorageClient(_sqlServerTestFixture.CreateMessageStorageSqlServerRepositoryContext(),
-                    new HandlerManager());
-                
-                dotMemory.Check(memory => Assert.Equal(2,
-                        memory.GetObjects(o => o.Type.Is<MessageStorageClient>())
-                            .ObjectsCount
-                    )
-                );
-                
-                connection.Open();
-                using (IDbTransaction dbTransaction = connection.BeginTransaction(IsolationLevel.ReadCommitted))
+                using (IMessageStorageClient localClient = new MessageStorageClient(
+                    _sqlServerTestFixture.CreateMessageStorageSqlServerRepositoryContext(),
+                    new HandlerManager()))
                 {
-                    using (IMessageStorageTransaction messageStorageTransaction = localClient.UseTransaction(dbTransaction))
+
+                    dotMemory.Check(memory => Assert.Equal(2,
+                            memory.GetObjects(o => o.Type.Is<MessageStorageClient>())
+                                .ObjectsCount
+                        )
+                    );
+
+                    connection.Open();
+                    using (IDbTransaction dbTransaction = connection.BeginTransaction(IsolationLevel.ReadCommitted))
                     {
-                        localClient.Add(myObj);
-                        messageStorageTransaction.Commit();
+                        using (IMessageStorageTransaction messageStorageTransaction =
+                            localClient.UseTransaction(dbTransaction))
+                        {
+                            localClient.Add(myObj);
+                            messageStorageTransaction.Commit();
+                        }
                     }
                 }
             }
-            
+
             GC.WaitForPendingFinalizers();
 
             dotMemory.Check(memory => Assert.Equal(1,

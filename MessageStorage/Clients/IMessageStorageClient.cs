@@ -6,7 +6,7 @@ using MessageStorage.Models;
 
 namespace MessageStorage.Clients
 {
-    public interface IMessageStorageClient
+    public interface IMessageStorageClient : IDisposable
     {
         Tuple<Message, IEnumerable<Job>> Add<T>(T payload);
         Tuple<Message, IEnumerable<Job>> Add<T>(T payload, bool autoJobCreation);
