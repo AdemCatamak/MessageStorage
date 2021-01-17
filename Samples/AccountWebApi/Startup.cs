@@ -6,6 +6,7 @@ using AccountWebApi.EntityFrameworkSection;
 using AccountWebApi.MessageStorageSection.AccountHandlers;
 using AccountWebApi.SecondMessageStorageSection;
 using MessageStorage;
+using MessageStorage.AspNetCore;
 using MessageStorage.Configurations;
 using MessageStorage.DataAccessSection;
 using MessageStorage.DI.Extension;
@@ -97,26 +98,27 @@ namespace AccountWebApi
                                        })
                     .WithJobProcessor();
 
-            services.AddMessageStorage<ISecondMessageStorageClient, SecondMessageStorageClient>
-                     (messageStorage =>
-                      {
-                          messageStorage.WithClientConfiguration(new MessageStorageClientConfiguration())
-                                        .UseSqlServer(connectionStr)
-                                        .UseHandlers((handlerManager, provider) =>
-                                                     {
-                                                         handlerManager.TryAddHandler(new HandlerDescription<AccountEventHandler>
-                                                                                          (() => new AccountEventHandler()));
+            services.AddMessageStorageHostedService()
+                    .AddMessageStorage<ISecondMessageStorageClient, SecondMessageStorageClient>
+                         (messageStorage =>
+                          {
+                              messageStorage.WithClientConfiguration(new MessageStorageClientConfiguration())
+                                            .UseSqlServer(connectionStr)
+                                            .UseHandlers((handlerManager, provider) =>
+                                                         {
+                                                             handlerManager.TryAddHandler(new HandlerDescription<AccountEventHandler>
+                                                                                              (() => new AccountEventHandler()));
 
-                                                         handlerManager.TryAddHandler(new HandlerDescription<AccountCreatedEventHandler>
-                                                                                          (() =>
-                                                                                           {
-                                                                                               var x = provider.GetRequiredService<AccountDbContext>();
-                                                                                               return new AccountCreatedEventHandler(x);
-                                                                                           })
-                                                                                     );
-                                                     })
-                                        .Construct((context, manager, configuration) => new SecondMessageStorageClient(context, manager, configuration));
-                      })
+                                                             handlerManager.TryAddHandler(new HandlerDescription<AccountCreatedEventHandler>
+                                                                                              (() =>
+                                                                                               {
+                                                                                                   var x = provider.GetRequiredService<AccountDbContext>();
+                                                                                                   return new AccountCreatedEventHandler(x);
+                                                                                               })
+                                                                                         );
+                                                         })
+                                            .Construct((context, manager, configuration) => new SecondMessageStorageClient(context, manager, configuration));
+                          })
                     .WithJobProcessor(new JobProcessorConfiguration())
                 ;
 

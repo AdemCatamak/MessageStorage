@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using MessageStorage.Clients;
 using Microsoft.Extensions.Hosting;
 
-namespace MessageStorage.DI.Extension
+namespace MessageStorage.AspNetCore
 {
     public class BackgroundProcessorHostedService : IHostedService
     {

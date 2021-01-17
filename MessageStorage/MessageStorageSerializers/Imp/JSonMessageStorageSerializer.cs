@@ -16,8 +16,6 @@ namespace MessageStorage.MessageStorageSerializers.Imp
                                       FloatFormatHandling = FloatFormatHandling.DefaultValue,
                                       TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Full
                                   };
-
-            _serializerSettings.Converters ??= new List<JsonConverter>();
         }
 
         public string Serialize(object obj)
@@ -27,7 +25,8 @@ namespace MessageStorage.MessageStorageSerializers.Imp
 
         public T Deserialize<T>(string serializedObj)
         {
-            return JsonConvert.DeserializeObject<T>(serializedObj, _serializerSettings);
+            var result = JsonConvert.DeserializeObject<T>(serializedObj, _serializerSettings);
+            return result!;
         }
     }
 }

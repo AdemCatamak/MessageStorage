@@ -49,15 +49,6 @@ namespace IntegrationTest.MessageStorage.SqlServer
                                                           });
                 Assert.Equal(1, count);
             }
-
-            dotMemory.Check(memory => Assert.Equal(0,
-                                                   memory.GetObjects(o => o.Type.Is<IDbConnection>()).ObjectsCount
-                                                  )
-                           );
-            dotMemory.Check(memory => Assert.Equal(0,
-                                                   memory.GetObjects(o => o.Type.Is<IDbTransaction>()).ObjectsCount
-                                                  )
-                           );
         }
 
         [Fact]
@@ -69,7 +60,7 @@ namespace IntegrationTest.MessageStorage.SqlServer
 
             using (IDbConnection connection = _sqlServerTestFixture.CreateDbConnection())
             {
-                IEnumerable<Job> jobList = jobs?.ToList() ?? new List<Job>();
+                IEnumerable<Job> jobList = jobs.ToList();
                 Assert.Single(jobList);
                 var messageCount = connection.ExecuteScalar<int>($"Select count(*) from [{SqlServerTestFixture.SCHEMA}].[Messages] where MessageId = @messageId",
                                                                  new
@@ -85,15 +76,6 @@ namespace IntegrationTest.MessageStorage.SqlServer
                                                              });
                 Assert.Equal(1, jobCount);
             }
-
-            dotMemory.Check(memory => Assert.Equal(0,
-                                                   memory.GetObjects(o => o.Type.Is<IDbConnection>()).ObjectsCount
-                                                  )
-                           );
-            dotMemory.Check(memory => Assert.Equal(0,
-                                                   memory.GetObjects(o => o.Type.Is<IDbTransaction>()).ObjectsCount
-                                                  )
-                           );
         }
 
         [Fact]

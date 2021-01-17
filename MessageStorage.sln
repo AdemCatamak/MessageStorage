@@ -40,6 +40,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageStorage.SqlServer.DI
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationTest.MessageStorage.SqlServer", "Tests\IntegrationTest.MessageStorage.SqlServer\IntegrationTest.MessageStorage.SqlServer.csproj", "{629A1799-4E0B-4CCD-B6B3-7742E67D7F02}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageStorage.AspNetCore", "MessageStorage.AspNetCore\MessageStorage.AspNetCore.csproj", "{21374F50-AC22-40B8-A6D7-ECFB21D32418}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationTest.MessageStorage.SqlServer.DI.Extension", "Tests\IntegrationTest.MessageStorage.SqlServer.DI.Extension\IntegrationTest.MessageStorage.SqlServer.DI.Extension.csproj", "{7161F3EF-4C2D-47BD-8E53-31048ED3A5AA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -70,9 +74,18 @@ Global
 		{629A1799-4E0B-4CCD-B6B3-7742E67D7F02}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{629A1799-4E0B-4CCD-B6B3-7742E67D7F02}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{629A1799-4E0B-4CCD-B6B3-7742E67D7F02}.Release|Any CPU.Build.0 = Release|Any CPU
+		{21374F50-AC22-40B8-A6D7-ECFB21D32418}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{21374F50-AC22-40B8-A6D7-ECFB21D32418}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{21374F50-AC22-40B8-A6D7-ECFB21D32418}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{21374F50-AC22-40B8-A6D7-ECFB21D32418}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7161F3EF-4C2D-47BD-8E53-31048ED3A5AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7161F3EF-4C2D-47BD-8E53-31048ED3A5AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7161F3EF-4C2D-47BD-8E53-31048ED3A5AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7161F3EF-4C2D-47BD-8E53-31048ED3A5AA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{FF0A4C46-8809-4A18-9547-DD44BC2AA8ED} = {E04ABF64-B3EE-4DFB-B7EC-2422CDA930EE}
 		{629A1799-4E0B-4CCD-B6B3-7742E67D7F02} = {F55E2E17-DCE6-4DD7-B7F9-9811D392BFF8}
+		{7161F3EF-4C2D-47BD-8E53-31048ED3A5AA} = {F55E2E17-DCE6-4DD7-B7F9-9811D392BFF8}
 	EndGlobalSection
 EndGlobal

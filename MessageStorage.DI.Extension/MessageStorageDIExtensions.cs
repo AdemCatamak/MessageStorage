@@ -84,7 +84,6 @@ namespace MessageStorage.DI.Extension
 
                                                                      return backgroundProcessor!;
                                                                  });
-            serviceCollection.AddHostedService<BackgroundProcessorHostedService>();
 
             return messageStorage;
         }
