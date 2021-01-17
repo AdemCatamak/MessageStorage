@@ -15,6 +15,8 @@ MessageStorage.SqlServer : ![Nuget](https://img.shields.io/nuget/v/MessageStorag
 
 MessageStorage.SqlServer.DI.Extension : ![Nuget](https://img.shields.io/nuget/v/MessageStorage.SqlServer.DI.Extension.svg)
 
+MessageStorage.AspNetCore : ![Nuget](https://img.shields.io/nuget/v/MessageStorage.AspNetCore.svg)
+
 **MessageStorage**
 
 MessageStorage registers messages that are created on the system such as Event and Command. If there are any jobs that are wished to be handled after the creation of these messages, it is possible to define those jobs on the system as well.
@@ -32,22 +34,35 @@ You can access extension methods that help you with Microsoft.DependencyInjectio
 
  ```
 
- services.AddMessageStorage(options =>
- {
-     options.AddHandler(new AccountEventHandler());
-     options.AddHandler(new AccountCreatedEventHandler());
+services.AddMessageStorageHostedService();
 
-     options.RunJob();
+services.AddMessageStorage(messageStorage =>
+                           {
+                               messageStorage.UseSqlServer(connectionStr)
+                                             .UseHandlers((handlerManager, provider) =>
+                                                          {
+                                                              handlerManager.TryAddHandler(new HandlerDescription<AccountEventHandler>
+                                                                                               (() => new AccountEventHandler()));
 
-     options.UseSqlServer(connectionStr);
- });
+                                                              handlerManager.TryAddHandler(new HandlerDescription<AccountCreatedEventHandler>
+                                                                                               (() =>
+                                                                                                {
+                                                                                                    var x = provider.GetRequiredService<AccountDbContext>();
+                                                                                                    return new AccountCreatedEventHandler(x);
+                                                                                                })
+                                                                                          );
+                                                          });
+                           })
+        .WithJobProcessor();
 
  ```
 
 
 `UseSqlServer` method lets you introduce SqlServer is used for system's data storage.
 
-`RunJob` method lets you introduce a predefined background service to the system. This service fetches tasks from db and executes.
+`UseHandlers` method lets you introduce Hadnlers that is used.
+
+`WithJobProcessor` method lets you introduce a predefined background service to the system. This service fetches tasks from db and executes.
 
 After these steps, you can use the object that is an implementation of `IMessageStorageClient` interface.
 

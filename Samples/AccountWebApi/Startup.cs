@@ -77,6 +77,8 @@ namespace AccountWebApi
             }
 
             // Step 4 (Injection)
+            services.AddMessageStorageHostedService();
+
             services.AddMessageStorage(messageStorage =>
                                        {
                                            messageStorage.WithClientConfiguration(new MessageStorageClientConfiguration())
@@ -98,27 +100,26 @@ namespace AccountWebApi
                                        })
                     .WithJobProcessor();
 
-            services.AddMessageStorageHostedService()
-                    .AddMessageStorage<ISecondMessageStorageClient, SecondMessageStorageClient>
-                         (messageStorage =>
-                          {
-                              messageStorage.WithClientConfiguration(new MessageStorageClientConfiguration())
-                                            .UseSqlServer(connectionStr)
-                                            .UseHandlers((handlerManager, provider) =>
-                                                         {
-                                                             handlerManager.TryAddHandler(new HandlerDescription<AccountEventHandler>
-                                                                                              (() => new AccountEventHandler()));
+            services.AddMessageStorage<ISecondMessageStorageClient, SecondMessageStorageClient>
+                     (messageStorage =>
+                      {
+                          messageStorage.WithClientConfiguration(new MessageStorageClientConfiguration())
+                                        .UseSqlServer(connectionStr)
+                                        .UseHandlers((handlerManager, provider) =>
+                                                     {
+                                                         handlerManager.TryAddHandler(new HandlerDescription<AccountEventHandler>
+                                                                                          (() => new AccountEventHandler()));
 
-                                                             handlerManager.TryAddHandler(new HandlerDescription<AccountCreatedEventHandler>
-                                                                                              (() =>
-                                                                                               {
-                                                                                                   var x = provider.GetRequiredService<AccountDbContext>();
-                                                                                                   return new AccountCreatedEventHandler(x);
-                                                                                               })
-                                                                                         );
-                                                         })
-                                            .Construct((context, manager, configuration) => new SecondMessageStorageClient(context, manager, configuration));
-                          })
+                                                         handlerManager.TryAddHandler(new HandlerDescription<AccountCreatedEventHandler>
+                                                                                          (() =>
+                                                                                           {
+                                                                                               var x = provider.GetRequiredService<AccountDbContext>();
+                                                                                               return new AccountCreatedEventHandler(x);
+                                                                                           })
+                                                                                     );
+                                                     })
+                                        .Construct((context, manager, configuration) => new SecondMessageStorageClient(context, manager, configuration));
+                      })
                     .WithJobProcessor(new JobProcessorConfiguration())
                 ;
 
