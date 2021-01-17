@@ -16,7 +16,7 @@ namespace MessageStorage.DataAccessSection
     {
         private readonly IDbTransaction _dbTransaction;
 
-        public MessageStorageTransaction(IDbTransaction dbTransaction, EventHandler? committed = null, EventHandler? rollbacked = null, EventHandler disposed = null)
+        public MessageStorageTransaction(IDbTransaction dbTransaction, EventHandler? committed = null, EventHandler? rollbacked = null, EventHandler? disposed = null)
         {
             _dbTransaction = dbTransaction ?? throw new ArgumentNullException(nameof(dbTransaction));
             Committed = committed;
