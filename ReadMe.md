@@ -60,9 +60,12 @@ services.AddMessageStorage(messageStorage =>
 
 `UseSqlServer` method lets you introduce SqlServer is used for system's data storage.
 
-`UseHandlers` method lets you introduce Hadnlers that is used.
+`UseHandlers` method lets you introduce Handlers that is used.
 
 `WithJobProcessor` method lets you introduce a predefined background service to the system. This service fetches tasks from db and executes.
+
+`AddMessageStorageHostedService` method inject one hosted service which execute all injected background services.
+
 
 After these steps, you can use the object that is an implementation of `IMessageStorageClient` interface.
 
