@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using JetBrains.dotMemoryUnit;
 using MessageStorage;
 using MessageStorage.Clients;
 using MessageStorage.Clients.Imp;
@@ -11,6 +12,7 @@ using MessageStorage.DataAccessSection;
 using MessageStorage.Models;
 using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace IntegrationTest.MessageStorage.SqlServer
 {
@@ -27,8 +29,10 @@ namespace IntegrationTest.MessageStorage.SqlServer
                                                                                     WaitAfterJobHandled = TimeSpan.Zero
                                                                                 };
 
-        public JobProcessorTest(SqlServerTestFixture sqlServerTestFixture)
+        public JobProcessorTest(SqlServerTestFixture sqlServerTestFixture,ITestOutputHelper outputHelper)
         {
+            DotMemoryUnitTestOutput.SetOutputMethod(outputHelper.WriteLine);
+
             _sqlServerTestFixture = sqlServerTestFixture;
 
             IMessageStorageRepositoryContext repositoryContext = _sqlServerTestFixture.CreateMessageStorageSqlServerRepositoryContext();

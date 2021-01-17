@@ -1,4 +1,3 @@
-using System;
 using System.Data;
 using MessageStorage.Clients;
 using MessageStorage.DataAccessSection;

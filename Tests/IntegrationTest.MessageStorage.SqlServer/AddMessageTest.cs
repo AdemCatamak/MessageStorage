@@ -6,7 +6,9 @@ using MessageStorage;
 using MessageStorage.Clients;
 using MessageStorage.Clients.Imp;
 using MessageStorage.DataAccessSection;
+using Microsoft.Data.SqlClient;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace IntegrationTest.MessageStorage.SqlServer
 {
@@ -17,8 +19,11 @@ namespace IntegrationTest.MessageStorage.SqlServer
 
         private readonly IMessageStorageClient _sut;
 
-        public AddMessageTest(SqlServerTestFixture sqlServerTestFixture)
+        
+        public AddMessageTest(SqlServerTestFixture sqlServerTestFixture,ITestOutputHelper outputHelper)
         {
+            DotMemoryUnitTestOutput.SetOutputMethod(outputHelper.WriteLine);
+
             _sqlServerTestFixture = sqlServerTestFixture;
 
             IMessageStorageRepositoryContext repositoryContext = _sqlServerTestFixture.CreateMessageStorageSqlServerRepositoryContext();
@@ -54,17 +59,20 @@ namespace IntegrationTest.MessageStorage.SqlServer
                 string messageId;
                 using (IDbTransaction dbTransaction = connection.BeginTransaction(IsolationLevel.ReadCommitted))
                 {
-                    _sut.UseTransaction(dbTransaction);
-                    var (message, _) = _sut.Add(myObj);
-                    messageId = message.Id;
+                    using (_sut.UseTransaction(dbTransaction))
+                    {
+                        var (message, _) = _sut.Add(myObj);
+                        messageId = message.Id;
 
-                    var countInTransaction = connection.ExecuteScalar<int>($"Select count(*) from [{SqlServerTestFixture.SCHEMA}].[Messages] where MessageId = @messageId",
-                                                                           new
-                                                                           {
-                                                                               messageId
-                                                                           },
-                                                                           dbTransaction);
-                    Assert.Equal(1, countInTransaction);
+                        var countInTransaction = connection.ExecuteScalar<int>(
+                            $"Select count(*) from [{SqlServerTestFixture.SCHEMA}].[Messages] where MessageId = @messageId",
+                            new
+                            {
+                                messageId
+                            },
+                            dbTransaction);
+                        Assert.Equal(1, countInTransaction);
+                    }
                 }
 
                 var count = connection.ExecuteScalar<int>($"Select count(*) from [{SqlServerTestFixture.SCHEMA}].[Messages] where MessageId = @messageId",
@@ -86,18 +94,21 @@ namespace IntegrationTest.MessageStorage.SqlServer
                 string messageId;
                 using (var dbTransaction = connection.BeginTransaction(IsolationLevel.ReadCommitted))
                 {
-                    IMessageStorageTransaction messageStorageTransaction = _sut.UseTransaction(dbTransaction);
-                    var (message, _) = _sut.Add(myObj);
-                    messageId = message.Id;
-                    messageStorageTransaction.Commit();
+                    using (IMessageStorageTransaction messageStorageTransaction = _sut.UseTransaction(dbTransaction))
+                    {
+                        var (message, _) = _sut.Add(myObj);
+                        messageId = message.Id;
+                        messageStorageTransaction.Commit();
 
-                    var countInTransaction = connection.ExecuteScalar<int>($"Select count(*) from [{SqlServerTestFixture.SCHEMA}].[Messages] where MessageId = @messageId",
-                                                                           new
-                                                                           {
-                                                                               messageId
-                                                                           },
-                                                                           dbTransaction);
-                    Assert.Equal(1, countInTransaction);
+                        var countInTransaction = connection.ExecuteScalar<int>(
+                            $"Select count(*) from [{SqlServerTestFixture.SCHEMA}].[Messages] where MessageId = @messageId",
+                            new
+                            {
+                                messageId
+                            },
+                            dbTransaction);
+                        Assert.Equal(1, countInTransaction);
+                    }
                 }
 
                 var count = connection.ExecuteScalar<int>($"Select count(*) from [{SqlServerTestFixture.SCHEMA}].[Messages] where MessageId = @messageId",
@@ -119,18 +130,22 @@ namespace IntegrationTest.MessageStorage.SqlServer
                 string messageId1, messageId2;
                 using (IDbTransaction dbTransaction = connection.BeginTransaction(IsolationLevel.ReadCommitted))
                 {
-                    IMessageStorageTransaction messageStorageTransaction = _sut.UseTransaction(dbTransaction);
-                    var (message, _) = _sut.Add(myObj);
-                    messageId1 = message.Id;
-                    messageStorageTransaction.Commit();
+                    using (IMessageStorageTransaction messageStorageTransaction = _sut.UseTransaction(dbTransaction))
+                    {
+                        var (message, _) = _sut.Add(myObj);
+                        messageId1 = message.Id;
+                        messageStorageTransaction.Commit();
+                    }
                 }
 
                 using (IDbTransaction dbTransaction = connection.BeginTransaction(IsolationLevel.ReadCommitted))
                 {
-                    IMessageStorageTransaction messageStorageTransaction = _sut.UseTransaction(dbTransaction);
-                    var (message, _) = _sut.Add(myObj);
-                    messageId2 = message.Id;
-                    messageStorageTransaction.Commit();
+                    using (IMessageStorageTransaction messageStorageTransaction = _sut.UseTransaction(dbTransaction))
+                    {
+                        var (message, _) = _sut.Add(myObj);
+                        messageId2 = message.Id;
+                        messageStorageTransaction.Commit();
+                    }
                 }
 
                 var count = connection.ExecuteScalar<int>($"Select count(*) from [{SqlServerTestFixture.SCHEMA}].[Messages] where MessageId in (@messageId1, @messageId2)",
@@ -148,7 +163,7 @@ namespace IntegrationTest.MessageStorage.SqlServer
         public void When_AddMessage_MessageStorageTransactionCommitted__MessageStorageClientShouldBeDisposed()
         {
             dotMemory.Check(memory => Assert.Equal(1,
-                                                   memory.GetObjects(o => o.Type.Is<IMessageStorageClient>())
+                                                   memory.GetObjects(o => o.Type.Is<MessageStorageClient>())
                                                          .ObjectsCount
                                                   )
                            );
@@ -156,27 +171,40 @@ namespace IntegrationTest.MessageStorage.SqlServer
             object myObj = "dummy-message";
             using (IDbConnection connection = _sqlServerTestFixture.CreateDbConnection())
             {
+                IMessageStorageClient localClient = new MessageStorageClient(_sqlServerTestFixture.CreateMessageStorageSqlServerRepositoryContext(),
+                    new HandlerManager());
+                
+                dotMemory.Check(memory => Assert.Equal(2,
+                        memory.GetObjects(o => o.Type.Is<MessageStorageClient>())
+                            .ObjectsCount
+                    )
+                );
+                
                 connection.Open();
                 using (IDbTransaction dbTransaction = connection.BeginTransaction(IsolationLevel.ReadCommitted))
                 {
-                    IMessageStorageTransaction messageStorageTransaction = _sut.UseTransaction(dbTransaction);
-                    _sut.Add(myObj);
-                    messageStorageTransaction.Commit();
+                    using (IMessageStorageTransaction messageStorageTransaction = localClient.UseTransaction(dbTransaction))
+                    {
+                        localClient.Add(myObj);
+                        messageStorageTransaction.Commit();
+                    }
                 }
             }
+            
+            GC.WaitForPendingFinalizers();
 
+            dotMemory.Check(memory => Assert.Equal(1,
+                    memory.GetObjects(o => o.Type.Is<MessageStorageClient>())
+                        .ObjectsCount
+                )
+            );
             dotMemory.Check(memory => Assert.Equal(0,
-                                                   memory.GetObjects(o => o.Type.Is<IDbConnection>())
+                                                   memory.GetObjects(o => o.Type.Is<SqlConnection>())
                                                          .ObjectsCount
                                                   )
                            );
             dotMemory.Check(memory => Assert.Equal(0,
-                                                   memory.GetObjects(o => o.Type.Is<IDbTransaction>())
-                                                         .ObjectsCount
-                                                  )
-                           );
-            dotMemory.Check(memory => Assert.Equal(0,
-                                                   memory.GetObjects(o => o.Type.Is<IMessageStorageClient>())
+                                                   memory.GetObjects(o => o.Type.Is<SqlTransaction>())
                                                          .ObjectsCount
                                                   )
                            );

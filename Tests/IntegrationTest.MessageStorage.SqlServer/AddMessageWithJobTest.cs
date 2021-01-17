@@ -12,18 +12,20 @@ using MessageStorage.Clients.Imp;
 using MessageStorage.DataAccessSection;
 using MessageStorage.Models;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace IntegrationTest.MessageStorage.SqlServer
 {
-    [DotMemoryUnit(FailIfRunWithoutSupport = false)]
     public class AddMessageWithJobTest : IClassFixture<SqlServerTestFixture>
     {
         private readonly SqlServerTestFixture _sqlServerTestFixture;
 
         private readonly IMessageStorageClient _sut;
 
-        public AddMessageWithJobTest(SqlServerTestFixture sqlServerTestFixture)
+        public AddMessageWithJobTest(SqlServerTestFixture sqlServerTestFixture, ITestOutputHelper outputHelper)
         {
+            DotMemoryUnitTestOutput.SetOutputMethod(outputHelper.WriteLine);
+
             _sqlServerTestFixture = sqlServerTestFixture;
 
             IMessageStorageRepositoryContext repositoryContext = _sqlServerTestFixture.CreateMessageStorageSqlServerRepositoryContext();
