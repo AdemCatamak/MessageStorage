@@ -224,17 +224,15 @@ namespace IntegrationTest.MessageStorage.SqlServer
                            );
 
             object myObj = "dummy-message";
-                using (IMessageStorageClient localClient = new MessageStorageClient(
+            using (IMessageStorageClient localClient = new MessageStorageClient(
                     _sqlServerTestFixture.CreateMessageStorageSqlServerRepositoryContext(),
                     new HandlerManager()))
                 {
-
                     dotMemory.Check(memory => Assert.Equal(2,
                             memory.GetObjects(o => o.Type.Is<MessageStorageClient>())
                                 .ObjectsCount
                         )
                     );
-                    
                     using (IMessageStorageTransaction messageStorageTransaction =
                             localClient.BeginTransaction(IsolationLevel.ReadCommitted))
                         {
@@ -242,8 +240,9 @@ namespace IntegrationTest.MessageStorage.SqlServer
                             messageStorageTransaction.Commit();
                         }
                 }
+            
 
-            dotMemory.Check(memory => Assert.Equal(1,
+                dotMemory.Check(memory => Assert.Equal(1,
                     memory.GetObjects(o => o.Type.Is<MessageStorageClient>())
                         .ObjectsCount
                 )
