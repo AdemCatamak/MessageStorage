@@ -88,6 +88,7 @@ namespace MessageStorage.DataAccessSection
             _ownedDbTransaction!.Committed -= OwnedTransactionFinalized;
             _ownedDbTransaction.Rollbacked -= OwnedTransactionFinalized;
 
+            _ownedDbTransaction.Dispose();
             _ownedDbTransaction = null;
         }
 
@@ -96,6 +97,7 @@ namespace MessageStorage.DataAccessSection
             _borrowedDbTransaction!.Committed -= OwnedTransactionFinalized;
             _borrowedDbTransaction.Rollbacked -= OwnedTransactionFinalized;
 
+            _borrowedDbTransaction.Dispose();
             _borrowedDbTransaction = null;
         }
 

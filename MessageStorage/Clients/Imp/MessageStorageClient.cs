@@ -93,7 +93,8 @@ namespace MessageStorage.Clients.Imp
 
         public void Dispose()
         {
-            _messageStorageRepositoryContext.Dispose();
+            // TODO: This object not created by MessageStorageClient. 
+            // _messageStorageRepositoryContext.Dispose();
         }
     }
 }
