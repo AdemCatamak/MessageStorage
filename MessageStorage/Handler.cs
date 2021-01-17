@@ -23,7 +23,26 @@ namespace MessageStorage
 
         public override Task BaseHandleOperationAsync(object payload, CancellationToken cancellationToken)
         {
-            if (!(payload is T t))
+            object val = payload;
+            try
+            {
+                Type typeT = typeof(T);
+                if (typeT == typeof(short))
+                {
+                    val = Convert.ToInt16(payload.ToString());
+                }
+
+                if (typeT == typeof(int))
+                {
+                    val = Convert.ToInt32(payload.ToString());
+                }
+            }
+            catch
+            {
+                // ignore
+            }
+
+            if (!(val is T t))
             {
                 throw new ArgumentNotCompatibleException(payload.GetType().Name, nameof(T));
             }

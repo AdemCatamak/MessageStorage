@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using Dapper;
@@ -14,6 +15,7 @@ namespace MessageStorage.DataAccessSection.Repositories
         Job? SetFirstWaitingJobToInProgress();
         void UpdateJobStatus(Job job);
         int GetJobCount(JobStatus jobStatus);
+        Job? GetJob(string id);
     }
 
     public abstract class BaseJobRepository : BaseRepository<Job>,
@@ -103,6 +105,30 @@ namespace MessageStorage.DataAccessSection.Repositories
                                                          DbTransaction);
 
             return result;
+        }
+
+        protected abstract string GetJobStatement { get; }
+
+        public Job? GetJob(string id)
+        {
+            IEnumerable<Job>? jobs = DbConnection.Query(GetJobStatement,
+                                                        new
+                                                        {
+                                                            JobId = id
+                                                        },
+                                                        DbTransaction)
+                                                 .Select(row => new Job(
+                                                                        (string) row.JobId,
+                                                                        (DateTime) row.JobCreatedOn,
+                                                                        (string) row.AssignedHandlerName,
+                                                                        (JobStatus) row.JobStatus,
+                                                                        (DateTime) row.LastOperationTime,
+                                                                        (string) row.LastOperationInfo,
+                                                                        new Message((string) row.MessageId, (DateTime) row.MessageCreatedOn, (string) row.SerializedPayload)
+                                                                       )
+                                                        );
+
+            return jobs.FirstOrDefault();
         }
     }
 }

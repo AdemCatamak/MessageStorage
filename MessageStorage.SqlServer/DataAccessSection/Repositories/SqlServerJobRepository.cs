@@ -23,6 +23,15 @@ namespace MessageStorage.SqlServer.DataAccessSection.Repositories
             $"Select Count(JobId) From [{MessageStorageRepositoryContextConfiguration.Schema}].[{TableNames.JobTable}] " +
             "Where JobStatus = @JobStatus";
 
+        protected override string GetJobStatement =>
+            $@"
+SELECT j.JobId, j.JobStatus, j.AssignedHandlerName, j.LastOperationInfo, j.LastOperationTime, j.MessageId, j.CreatedOn as JobCreatedOn,
+        m.CreatedOn as MessageCreatedOn, m.SerializedPayload, m.PayloadClassName, m.PayloadClassFullName 
+    FROM [{MessageStorageRepositoryContextConfiguration.Schema}].[{TableNames.JobTable}] j
+    INNER JOIN [{MessageStorageRepositoryContextConfiguration.Schema}].[{TableNames.MessageTable}] m on j.MessageId = m.MessageId
+WHERE J.JobId = @JobId
+";
+
         protected override string UpdateJobStatusStatement =>
             $"Update [{MessageStorageRepositoryContextConfiguration.Schema}].[{TableNames.JobTable}] " +
             "Set JobStatus = @JobStatus, LastOperationTime = @LastOperationTime, LastOperationInfo = @LastOperationInfo " +
@@ -33,7 +42,7 @@ namespace MessageStorage.SqlServer.DataAccessSection.Repositories
             "(JobId, MessageId, AssignedHandlerName, JobStatus, LastOperationTime, LastOperationInfo, CreatedOn) " +
             "Values " +
             "(@JobId, @MessageId, @AssignedHandlerName, @JobStatus, @LastOperationTime, @LastOperationInfo, @CreatedOn)";
-        
+
         protected override string SetFirstWaitingJobToInProgressStatement =>
             $@"
 DECLARE @Updated table( [JobId] nvarchar(255))

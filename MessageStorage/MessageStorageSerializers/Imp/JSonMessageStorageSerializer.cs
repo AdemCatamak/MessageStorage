@@ -1,16 +1,24 @@
+using System.Collections.Generic;
 using Newtonsoft.Json;
 
 namespace MessageStorage.MessageStorageSerializers.Imp
 {
     internal class JSonMessageStorageSerializer : IMessageStorageSerializer
     {
-        private readonly JsonSerializerSettings _serializerSettings = new JsonSerializerSettings
-                                                                      {
-                                                                          TypeNameHandling = TypeNameHandling.All,
-                                                                          DateFormatHandling = DateFormatHandling.IsoDateFormat,
-                                                                          FloatFormatHandling = FloatFormatHandling.DefaultValue,
-                                                                          TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Full
-                                                                      };
+        private readonly JsonSerializerSettings _serializerSettings;
+
+        public JSonMessageStorageSerializer()
+        {
+            _serializerSettings = new JsonSerializerSettings
+                                  {
+                                      TypeNameHandling = TypeNameHandling.All,
+                                      DateFormatHandling = DateFormatHandling.IsoDateFormat,
+                                      FloatFormatHandling = FloatFormatHandling.DefaultValue,
+                                      TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Full
+                                  };
+
+            _serializerSettings.Converters ??= new List<JsonConverter>();
+        }
 
         public string Serialize(object obj)
         {
