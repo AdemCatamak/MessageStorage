@@ -19,8 +19,8 @@ namespace IntegrationTest.MessageStorage.SqlServer
 
         private readonly IMessageStorageClient _sut;
 
-        
-        public AddMessageTest(SqlServerTestFixture sqlServerTestFixture,ITestOutputHelper outputHelper)
+
+        public AddMessageTest(SqlServerTestFixture sqlServerTestFixture, ITestOutputHelper outputHelper)
         {
             DotMemoryUnitTestOutput.SetOutputMethod(outputHelper.WriteLine);
 
@@ -65,12 +65,12 @@ namespace IntegrationTest.MessageStorage.SqlServer
                         messageId = message.Id;
 
                         var countInTransaction = connection.ExecuteScalar<int>(
-                            $"Select count(*) from [{SqlServerTestFixture.SCHEMA}].[Messages] where MessageId = @messageId",
-                            new
-                            {
-                                messageId
-                            },
-                            dbTransaction);
+                                                                               $"Select count(*) from [{SqlServerTestFixture.SCHEMA}].[Messages] where MessageId = @messageId",
+                                                                               new
+                                                                               {
+                                                                                   messageId
+                                                                               },
+                                                                               dbTransaction);
                         Assert.Equal(1, countInTransaction);
                     }
                 }
@@ -101,12 +101,12 @@ namespace IntegrationTest.MessageStorage.SqlServer
                         messageStorageTransaction.Commit();
 
                         var countInTransaction = connection.ExecuteScalar<int>(
-                            $"Select count(*) from [{SqlServerTestFixture.SCHEMA}].[Messages] where MessageId = @messageId",
-                            new
-                            {
-                                messageId
-                            },
-                            dbTransaction);
+                                                                               $"Select count(*) from [{SqlServerTestFixture.SCHEMA}].[Messages] where MessageId = @messageId",
+                                                                               new
+                                                                               {
+                                                                                   messageId
+                                                                               },
+                                                                               dbTransaction);
                         Assert.Equal(1, countInTransaction);
                     }
                 }
@@ -172,15 +172,14 @@ namespace IntegrationTest.MessageStorage.SqlServer
             using (IDbConnection connection = _sqlServerTestFixture.CreateDbConnection())
             {
                 using (IMessageStorageClient localClient = new MessageStorageClient(
-                    _sqlServerTestFixture.CreateMessageStorageSqlServerRepositoryContext(),
-                    new HandlerManager()))
+                                                                                    _sqlServerTestFixture.CreateMessageStorageSqlServerRepositoryContext(),
+                                                                                    new HandlerManager()))
                 {
-
                     dotMemory.Check(memory => Assert.Equal(2,
-                            memory.GetObjects(o => o.Type.Is<MessageStorageClient>())
-                                .ObjectsCount
-                        )
-                    );
+                                                           memory.GetObjects(o => o.Type.Is<MessageStorageClient>())
+                                                                 .ObjectsCount
+                                                          )
+                                   );
 
                     connection.Open();
                     using (IDbTransaction dbTransaction = connection.BeginTransaction(IsolationLevel.ReadCommitted))
@@ -195,13 +194,11 @@ namespace IntegrationTest.MessageStorage.SqlServer
                 }
             }
 
-            GC.WaitForPendingFinalizers();
-
             dotMemory.Check(memory => Assert.Equal(1,
-                    memory.GetObjects(o => o.Type.Is<MessageStorageClient>())
-                        .ObjectsCount
-                )
-            );
+                                                   memory.GetObjects(o => o.Type.Is<MessageStorageClient>())
+                                                         .ObjectsCount
+                                                  )
+                           );
             dotMemory.Check(memory => Assert.Equal(0,
                                                    memory.GetObjects(o => o.Type.Is<SqlConnection>())
                                                          .ObjectsCount
@@ -213,7 +210,7 @@ namespace IntegrationTest.MessageStorage.SqlServer
                                                   )
                            );
         }
-        
+
         [Fact]
         public void When_AddMessage_BeginTransaction_MessageStorageTransactionCommitted__MessageStorageClientShouldBeDisposed()
         {
@@ -224,29 +221,27 @@ namespace IntegrationTest.MessageStorage.SqlServer
                            );
 
             object myObj = "dummy-message";
-            using (IMessageStorageClient localClient = new MessageStorageClient(
-                    _sqlServerTestFixture.CreateMessageStorageSqlServerRepositoryContext(),
-                    new HandlerManager()))
+            using (IMessageStorageClient localClient = new MessageStorageClient(_sqlServerTestFixture.CreateMessageStorageSqlServerRepositoryContext(),
+                                                                                new HandlerManager()))
+            {
+                dotMemory.Check(memory => Assert.Equal(2,
+                                                       memory.GetObjects(o => o.Type.Is<MessageStorageClient>())
+                                                             .ObjectsCount
+                                                      )
+                               );
+                using (IMessageStorageTransaction messageStorageTransaction = localClient.BeginTransaction(IsolationLevel.ReadCommitted))
                 {
-                    dotMemory.Check(memory => Assert.Equal(2,
-                            memory.GetObjects(o => o.Type.Is<MessageStorageClient>())
-                                .ObjectsCount
-                        )
-                    );
-                    using (IMessageStorageTransaction messageStorageTransaction =
-                            localClient.BeginTransaction(IsolationLevel.ReadCommitted))
-                        {
-                            localClient.Add(myObj);
-                            messageStorageTransaction.Commit();
-                        }
+                    localClient.Add(myObj);
+                    messageStorageTransaction.Commit();
                 }
-            
+            }
 
-                dotMemory.Check(memory => Assert.Equal(1,
-                    memory.GetObjects(o => o.Type.Is<MessageStorageClient>())
-                        .ObjectsCount
-                )
-            );
+
+            dotMemory.Check(memory => Assert.Equal(1,
+                                                   memory.GetObjects(o => o.Type.Is<MessageStorageClient>())
+                                                         .ObjectsCount
+                                                  )
+                           );
             dotMemory.Check(memory => Assert.Equal(0,
                                                    memory.GetObjects(o => o.Type.Is<SqlConnection>())
                                                          .ObjectsCount
@@ -258,6 +253,5 @@ namespace IntegrationTest.MessageStorage.SqlServer
                                                   )
                            );
         }
-    
     }
 }

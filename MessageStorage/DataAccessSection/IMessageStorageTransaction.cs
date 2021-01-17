@@ -7,6 +7,7 @@ namespace MessageStorage.DataAccessSection
     {
         event EventHandler? Committed;
         event EventHandler? Rollbacked;
+        event EventHandler? Disposed;
 
         IDbTransaction ToDbTransaction();
     }
@@ -15,11 +16,12 @@ namespace MessageStorage.DataAccessSection
     {
         private readonly IDbTransaction _dbTransaction;
 
-        public MessageStorageTransaction(IDbTransaction dbTransaction, EventHandler? committed = null, EventHandler? rollbacked = null)
+        public MessageStorageTransaction(IDbTransaction dbTransaction, EventHandler? committed = null, EventHandler? rollbacked = null, EventHandler disposed = null)
         {
             _dbTransaction = dbTransaction ?? throw new ArgumentNullException(nameof(dbTransaction));
             Committed = committed;
             Rollbacked = rollbacked;
+            Disposed = disposed;
         }
 
         public IDbConnection Connection => _dbTransaction.Connection;
@@ -42,6 +44,8 @@ namespace MessageStorage.DataAccessSection
         public void Dispose()
         {
             _dbTransaction.Dispose();
+            EventHandler? handler = Disposed;
+            handler?.Invoke(this, EventArgs.Empty);
         }
 
         public IDbTransaction ToDbTransaction()
@@ -51,5 +55,6 @@ namespace MessageStorage.DataAccessSection
 
         public event EventHandler? Committed;
         public event EventHandler? Rollbacked;
+        public event EventHandler? Disposed;
     }
 }

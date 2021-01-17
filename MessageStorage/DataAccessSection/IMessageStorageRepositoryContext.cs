@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using MessageStorage.Clients;
 using MessageStorage.Configurations;
 using MessageStorage.DataAccessSection.Repositories;
 using MessageStorage.Exceptions;
@@ -60,7 +61,7 @@ namespace MessageStorage.DataAccessSection
             if (HasTransaction) throw new ContextAlreadyHasTransaction();
 
             IDbTransaction transaction = DbConnection.BeginTransaction(isolationLevel);
-            var messageStorageTransaction = new MessageStorageTransaction(transaction, OwnedTransactionFinalized, OwnedTransactionFinalized);
+            var messageStorageTransaction = new MessageStorageTransaction(transaction, OwnedTransactionFinalized, OwnedTransactionFinalized, OwnedTransactionDisposed);
 
             _ownedDbTransaction = messageStorageTransaction;
 
@@ -71,7 +72,7 @@ namespace MessageStorage.DataAccessSection
         {
             if (HasTransaction) throw new ContextAlreadyHasTransaction();
 
-            var messageStorageTransaction = new MessageStorageTransaction(dbTransaction, BorrowedTransactionFinalized, BorrowedTransactionFinalized);
+            var messageStorageTransaction = new MessageStorageTransaction(dbTransaction, BorrowedTransactionFinalized, BorrowedTransactionFinalized, BorrowedTransactionDisposed);
             _borrowedDbTransaction = messageStorageTransaction;
 
             return messageStorageTransaction;
@@ -85,19 +86,42 @@ namespace MessageStorage.DataAccessSection
 
         private void OwnedTransactionFinalized(object sender, EventArgs e)
         {
-            _ownedDbTransaction!.Committed -= OwnedTransactionFinalized;
-            _ownedDbTransaction.Rollbacked -= OwnedTransactionFinalized;
+            var messageStorageTransaction = sender as IMessageStorageTransaction;
+            messageStorageTransaction!.Committed -= OwnedTransactionFinalized;
+            messageStorageTransaction.Rollbacked -= OwnedTransactionFinalized;
+            messageStorageTransaction.Disposed -= OwnedTransactionDisposed;
 
-            _ownedDbTransaction.Dispose();
+            messageStorageTransaction.Dispose();
+            _ownedDbTransaction = null;
+        }
+
+        private void OwnedTransactionDisposed(object sender, EventArgs e)
+        {
+            var messageStorageTransaction = sender as IMessageStorageTransaction;
+            messageStorageTransaction!.Committed -= OwnedTransactionFinalized;
+            messageStorageTransaction.Rollbacked -= OwnedTransactionFinalized;
+            messageStorageTransaction.Disposed -= OwnedTransactionDisposed;
+
             _ownedDbTransaction = null;
         }
 
         private void BorrowedTransactionFinalized(object sender, EventArgs e)
         {
-            _borrowedDbTransaction!.Committed -= OwnedTransactionFinalized;
-            _borrowedDbTransaction.Rollbacked -= OwnedTransactionFinalized;
+            var messageStorageTransaction = sender as IMessageStorageTransaction;
+            messageStorageTransaction!.Committed -= BorrowedTransactionFinalized;
+            messageStorageTransaction.Rollbacked -= BorrowedTransactionFinalized;
+            messageStorageTransaction.Disposed -= BorrowedTransactionDisposed;
 
-            _borrowedDbTransaction.Dispose();
+            _borrowedDbTransaction = null;
+        }
+
+        private void BorrowedTransactionDisposed(object sender, EventArgs e)
+        {
+            var messageStorageTransaction = sender as IMessageStorageTransaction;
+            messageStorageTransaction!.Committed -= BorrowedTransactionFinalized;
+            messageStorageTransaction.Rollbacked -= BorrowedTransactionFinalized;
+            messageStorageTransaction.Disposed -= BorrowedTransactionDisposed;
+
             _borrowedDbTransaction = null;
         }
 
