@@ -24,7 +24,7 @@ namespace AccountWebApi
     {
         private readonly IConfiguration _configuration;
         private const string ALLOWED_ORIGIN_POLICY = "AllowedOriginPolicy";
-
+        public static string ConnectionStr { get; private set; }
 
         public Startup(IConfiguration configuration)
         {
@@ -51,11 +51,10 @@ namespace AccountWebApi
 
             services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo()); });
 
-            string connectionStr = _configuration.GetConnectionString("SqlServerConnectionStr");
-
+            ConnectionStr = _configuration.GetConnectionString("SqlServerConnectionStr");
 
             // Step 1 (DbRepositoryConfiguration)
-            var repositoryConfiguration = new MessageStorageRepositoryContextConfiguration(connectionStr);
+            var repositoryConfiguration = new MessageStorageRepositoryContextConfiguration(ConnectionStr);
 
             // Step 2 (Db Migration)
             IMessageStorageMigrationRunner messageStorageMigrationRunner = new SqlServerMessageStorageMigrationRunner();
@@ -82,7 +81,7 @@ namespace AccountWebApi
             services.AddMessageStorage(messageStorage =>
                                        {
                                            messageStorage.WithClientConfiguration(new MessageStorageClientConfiguration())
-                                                         .UseSqlServer(connectionStr)
+                                                         .UseSqlServer(ConnectionStr)
                                                          .UseHandlers((handlerManager, provider) =>
                                                                       {
                                                                           handlerManager.TryAddHandler(new HandlerDescription<AccountEventHandler>
@@ -104,7 +103,7 @@ namespace AccountWebApi
                      (messageStorage =>
                       {
                           messageStorage.WithClientConfiguration(new MessageStorageClientConfiguration())
-                                        .UseSqlServer(connectionStr)
+                                        .UseSqlServer(ConnectionStr)
                                         .UseHandlers((handlerManager, provider) =>
                                                      {
                                                          handlerManager.TryAddHandler(new HandlerDescription<AccountEventHandler>
@@ -123,7 +122,7 @@ namespace AccountWebApi
                     .WithJobProcessor(new JobProcessorConfiguration())
                 ;
 
-            services.AddDbContext<AccountDbContext>(builder => builder.UseSqlServer(connectionStr,
+            services.AddDbContext<AccountDbContext>(builder => builder.UseSqlServer(ConnectionStr,
                                                                                     optionsBuilder => optionsBuilder.MigrationsAssembly(typeof(AccountDbContext).Assembly.FullName)));
         }
 
