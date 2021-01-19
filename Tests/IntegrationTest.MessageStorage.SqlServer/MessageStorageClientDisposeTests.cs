@@ -67,6 +67,8 @@ namespace IntegrationTest.MessageStorage.SqlServer
             }
 
             GC.Collect();
+            GC.WaitForPendingFinalizers();
+            GC.Collect();
 
             dotMemory.Check(memory => Assert.Equal(0,
                                                    memory.GetObjects(o => o.Type.Is<MessageStorageClient>())
@@ -140,6 +142,8 @@ namespace IntegrationTest.MessageStorage.SqlServer
                 }
             }
 
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
             GC.Collect();
 
             dotMemory.Check(memory => Assert.Equal(0,
