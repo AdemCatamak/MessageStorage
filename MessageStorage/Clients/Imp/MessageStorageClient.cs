@@ -52,8 +52,8 @@ namespace MessageStorage.Clients.Imp
 
             try
             {
-                IJobRepository jobRepository = _messageStorageRepositoryContext.GetJobRepository();
-                IMessageRepository messageRepository = _messageStorageRepositoryContext.GetMessageRepository();
+                using var jobRepository = _messageStorageRepositoryContext.GetJobRepository();
+                using var messageRepository = _messageStorageRepositoryContext.GetMessageRepository();
 
                 var result = PrepareMessageAndJobs(payload!, autoJobCreation);
                 messageRepository.Add(result.Item1);
@@ -74,7 +74,7 @@ namespace MessageStorage.Clients.Imp
 
         public int GetJobCountByStatus(JobStatus jobStatus)
         {
-            IJobRepository jobRepository = _messageStorageRepositoryContext.GetJobRepository();
+            using IJobRepository jobRepository = _messageStorageRepositoryContext.GetJobRepository();
             int result = jobRepository.GetJobCount(jobStatus);
             return result;
         }
@@ -87,7 +87,7 @@ namespace MessageStorage.Clients.Imp
 
         public IMessageStorageTransaction BeginTransaction(IsolationLevel isolationLevel)
         {
-            IMessageStorageTransaction messageStorageTransaction = _messageStorageRepositoryContext.BeginTransaction(isolationLevel);
+             IMessageStorageTransaction messageStorageTransaction = _messageStorageRepositoryContext.BeginTransaction(isolationLevel);
             return messageStorageTransaction;
         }
 

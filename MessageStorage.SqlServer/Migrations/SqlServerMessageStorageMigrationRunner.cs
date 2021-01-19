@@ -11,19 +11,17 @@ namespace MessageStorage.SqlServer.Migrations
     {
         public void MigrateUp(MessageStorageRepositoryContextConfiguration messageStorageRepositoryContextConfiguration)
         {
-            IServiceProvider serviceProvider = CreateServices(messageStorageRepositoryContextConfiguration);
+            var serviceProvider = CreateServices(messageStorageRepositoryContextConfiguration);
 
-            using (IServiceScope scope = serviceProvider.CreateScope())
-            {
-                var runner = scope.ServiceProvider.GetRequiredService<FluentMigrator.Runner.IMigrationRunner>();
+            using IServiceScope scope = serviceProvider.CreateScope();
+            var runner = scope.ServiceProvider.GetRequiredService<FluentMigrator.Runner.IMigrationRunner>();
 
-                runner.MigrateUp();
-            }
+            runner.MigrateUp();
         }
 
         private IServiceProvider CreateServices(MessageStorageRepositoryContextConfiguration messageStorageRepositoryContextConfiguration)
         {
-            IServiceCollection serviceCollection = new ServiceCollection()
+            var serviceCollection = new ServiceCollection()
                                                   .AddFluentMigratorCore()
                                                   .AddLogging(lb => lb.AddFluentMigratorConsole())
                                                   .AddScoped<IVersionTableMetaData, _0001_VersionTable>()

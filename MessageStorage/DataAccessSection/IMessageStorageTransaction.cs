@@ -14,7 +14,7 @@ namespace MessageStorage.DataAccessSection
 
     public class MessageStorageTransaction : IMessageStorageTransaction
     {
-        private readonly IDbTransaction _dbTransaction;
+        private IDbTransaction _dbTransaction;
 
         public MessageStorageTransaction(IDbTransaction dbTransaction, EventHandler? committed = null, EventHandler? rollbacked = null, EventHandler? disposed = null)
         {
@@ -44,6 +44,7 @@ namespace MessageStorage.DataAccessSection
         public void Dispose()
         {
             _dbTransaction.Dispose();
+            _dbTransaction = null;
             EventHandler? handler = Disposed;
             handler?.Invoke(this, EventArgs.Empty);
         }

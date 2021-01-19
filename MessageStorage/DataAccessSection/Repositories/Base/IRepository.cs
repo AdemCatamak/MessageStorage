@@ -5,13 +5,14 @@ using MessageStorage.Models.Base;
 
 namespace MessageStorage.DataAccessSection.Repositories.Base
 {
-    public interface IRepository<in TEntity>
+    public interface IRepository<in TEntity> : IDisposable
         where TEntity : Entity
     {
         void Add(TEntity entity);
     }
-
-    public abstract class BaseRepository<TEntity> : IRepository<TEntity> where TEntity : Entity
+    
+    public abstract class BaseRepository<TEntity> : IRepository<TEntity> 
+        where TEntity : Entity
     {
         protected readonly IDbConnection DbConnection;
         protected readonly IDbTransaction? DbTransaction;
@@ -35,5 +36,10 @@ namespace MessageStorage.DataAccessSection.Repositories.Base
         }
 
         public abstract void Add(TEntity entity);
+
+        public void Dispose()
+        {
+            // There is no item owned
+        }
     }
 }

@@ -82,6 +82,8 @@ namespace MessageStorage.DataAccessSection
         {
             _dbConnection?.Dispose();
             _ownedDbTransaction?.Dispose();
+            _dbConnection = null;
+            _ownedDbTransaction = null;
         }
 
         private void OwnedTransactionFinalized(object sender, EventArgs e)

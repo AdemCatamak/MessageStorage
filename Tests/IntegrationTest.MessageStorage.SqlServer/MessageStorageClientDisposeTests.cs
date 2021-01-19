@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using System.Threading.Tasks;
 using JetBrains.dotMemoryUnit;
 using MessageStorage;
 using MessageStorage.Clients;
@@ -22,150 +23,199 @@ namespace IntegrationTest.MessageStorage.SqlServer
         {
             _sqlServerTestFixture = sqlServerTestFixture;
             DotMemoryUnitTestOutput.SetOutputMethod(outputHelper.WriteLine);
+            
         }
+        
 
         [Fact]
         public void When_BeginTransaction_MessageStorageTransactionCommitted__MessageStorageClientShouldBeDisposed()
         {
-            dotMemory.Check(memory => Assert.Equal(0,
-                                                   memory.GetObjects(o => o.Type.Is<MessageStorageClient>())
-                                                         .ObjectsCount
-                                                  )
-                           );
-            dotMemory.Check(memory => Assert.Equal(0,
-                                                   memory.GetObjects(o => o.Type.Is<MessageStorageTransaction>())
-                                                         .ObjectsCount
-                                                  )
-                           );
-            dotMemory.Check(memory => Assert.Equal(0,
-                                                   memory.GetObjects(o => o.Type.Is<SqlConnection>())
-                                                         .ObjectsCount
-                                                  )
-                           );
-            dotMemory.Check(memory => Assert.Equal(0,
-                                                   memory.GetObjects(o => o.Type.Is<SqlTransaction>())
-                                                         .ObjectsCount
-                                                  )
-                           );
+     
+            dotMemory.Check(memory =>
+            {
+                Assert.Equal(0,
+                    memory.GetObjects(o => o.Type.Is<MessageStorageClient>())
+                        .ObjectsCount
+                );
+
+                Assert.Equal(0,
+                    memory.GetObjects(o => o.Type.Is<MessageStorageTransaction>())
+                        .ObjectsCount
+                );
+
+                Assert.Equal(0,
+                    memory.GetObjects(o => o.Type.Is<SqlConnection>())
+                        .ObjectsCount
+                );
+
+                Assert.Equal(0,
+                    memory.GetObjects(o => o.Type.Is<SqlTransaction>())
+                        .ObjectsCount
+                );
+
+            });
 
             object myObj = "dummy-message";
             using (var repositoryContext = new SqlServerMessageStorageRepositoryContext(new MessageStorageRepositoryContextConfiguration(SqlServerTestFixture.CONNECTION_STR)))
             {
-                using (IMessageStorageClient localClient = new MessageStorageClient(repositoryContext, new HandlerManager()))
+                using IMessageStorageClient localClient = new MessageStorageClient(repositoryContext, new HandlerManager());
+                using var messageStorageTransaction = localClient.BeginTransaction(IsolationLevel.ReadCommitted);
+  
+                dotMemory.Check(memory =>
                 {
-                    dotMemory.Check(memory => Assert.Equal(1,
-                                                           memory.GetObjects(o => o.Type.Is<MessageStorageClient>())
-                                                                 .ObjectsCount
-                                                          )
-                                   );
-                    using (IMessageStorageTransaction messageStorageTransaction = localClient.BeginTransaction(IsolationLevel.ReadCommitted))
-                    {
-                        localClient.Add(myObj);
-                        messageStorageTransaction.Commit();
-                    }
-                }
+                    Assert.Equal(1,
+                        memory.GetObjects(o => o.Type.Is<MessageStorageClient>())
+                            .ObjectsCount
+                    ); 
+                
+                    Assert.Equal(1,
+                        memory.GetObjects(o => o.Type.Is<MessageStorageTransaction>())
+                            .ObjectsCount
+                    );
+
+                    Assert.Equal(1,
+                        memory.GetObjects(o => o.Type.Is<SqlConnection>())
+                            .ObjectsCount
+                    );
+
+                    Assert.Equal(1,
+                        memory.GetObjects(o => o.Type.Is<SqlTransaction>())
+                            .ObjectsCount
+                    );
+                });
+                
+                localClient.Add(myObj);
+                messageStorageTransaction.Commit();
             }
 
             GC.Collect();
             GC.WaitForPendingFinalizers();
-            GC.Collect();
+            for (int j = 0; j < 1000; j++)
+            {
+                // Wait
+            }
 
-            dotMemory.Check(memory => Assert.Equal(0,
-                                                   memory.GetObjects(o => o.Type.Is<MessageStorageClient>())
-                                                         .ObjectsCount
-                                                  )
-                           );
-            dotMemory.Check(memory => Assert.Equal(0,
-                                                   memory.GetObjects(o => o.Type.Is<MessageStorageTransaction>())
-                                                         .ObjectsCount
-                                                  )
-                           );
-            dotMemory.Check(memory => Assert.Equal(0,
-                                                   memory.GetObjects(o => o.Type.Is<SqlConnection>())
-                                                         .ObjectsCount
-                                                  )
-                           );
-            dotMemory.Check(memory => Assert.Equal(0,
-                                                   memory.GetObjects(o => o.Type.Is<SqlTransaction>())
-                                                         .ObjectsCount
-                                                  )
-                           );
+      
+            dotMemory.Check(memory =>
+            {
+                Assert.Equal(0,
+                    memory.GetObjects(o => o.Type.Is<MessageStorageClient>())
+                        .ObjectsCount
+                ); 
+                
+                Assert.Equal(0,
+                    memory.GetObjects(o => o.Type.Is<MessageStorageTransaction>())
+                        .ObjectsCount
+                );
+
+                Assert.Equal(0,
+                    memory.GetObjects(o => o.Type.Is<SqlConnection>())
+                        .ObjectsCount
+                );
+
+                Assert.Equal(0,
+                    memory.GetObjects(o => o.Type.Is<SqlTransaction>())
+                        .ObjectsCount
+                );
+
+            });
         }
 
         [Fact]
         public void When_UseTransaction_MessageStorageTransactionCommitted__MessageStorageClientShouldBeDisposed()
         {
-            dotMemory.Check(memory => Assert.Equal(0,
-                                                   memory.GetObjects(o => o.Type.Is<MessageStorageClient>())
-                                                         .ObjectsCount
-                                                  )
-                           );
-            dotMemory.Check(memory => Assert.Equal(0,
-                                                   memory.GetObjects(o => o.Type.Is<MessageStorageTransaction>())
-                                                         .ObjectsCount
-                                                  )
-                           );
-            dotMemory.Check(memory => Assert.Equal(0,
-                                                   memory.GetObjects(o => o.Type.Is<SqlConnection>())
-                                                         .ObjectsCount
-                                                  )
-                           );
-            dotMemory.Check(memory => Assert.Equal(0,
-                                                   memory.GetObjects(o => o.Type.Is<SqlTransaction>())
-                                                         .ObjectsCount
-                                                  )
-                           );
+            dotMemory.Check(memory =>
+            {
+                Assert.Equal(0,
+                    memory.GetObjects(o => o.Type.Is<MessageStorageClient>())
+                        .ObjectsCount
+                );
+
+                Assert.Equal(0,
+                    memory.GetObjects(o => o.Type.Is<MessageStorageTransaction>())
+                        .ObjectsCount
+                );
+
+                Assert.Equal(0,
+                    memory.GetObjects(o => o.Type.Is<SqlConnection>())
+                        .ObjectsCount
+                );
+
+                Assert.Equal(0,
+                    memory.GetObjects(o => o.Type.Is<SqlTransaction>())
+                        .ObjectsCount
+                );
+
+            });
 
             object myObj = "dummy-message";
             using (IDbConnection connection = _sqlServerTestFixture.CreateDbConnection())
             {
-                using (IMessageStorageClient localClient = new MessageStorageClient(
-                                                                                    _sqlServerTestFixture.CreateMessageStorageSqlServerRepositoryContext(),
-                                                                                    new HandlerManager()))
-                {
-                    dotMemory.Check(memory => Assert.Equal(2,
-                                                           memory.GetObjects(o => o.Type.Is<MessageStorageClient>())
-                                                                 .ObjectsCount
-                                                          )
-                                   );
+                using var repositoryContext = _sqlServerTestFixture.CreateMessageStorageSqlServerRepositoryContext();
+                using IMessageStorageClient localClient = new MessageStorageClient(repositoryContext, new HandlerManager());
 
-                    connection.Open();
-                    using (IDbTransaction dbTransaction = connection.BeginTransaction(IsolationLevel.ReadCommitted))
-                    {
-                        using (IMessageStorageTransaction messageStorageTransaction =
-                            localClient.UseTransaction(dbTransaction))
-                        {
-                            localClient.Add(myObj);
-                            messageStorageTransaction.Commit();
-                        }
-                    }
-                }
+                connection.Open();
+                using IDbTransaction dbTransaction = connection.BeginTransaction(IsolationLevel.ReadCommitted);
+                using IMessageStorageTransaction messageStorageTransaction = localClient.UseTransaction(dbTransaction);
+               
+                dotMemory.Check(memory =>
+                {
+                    Assert.Equal(1,
+                        memory.GetObjects(o => o.Type.Is<MessageStorageClient>())
+                            .ObjectsCount
+                    ); 
+                
+                    Assert.Equal(1,
+                        memory.GetObjects(o => o.Type.Is<MessageStorageTransaction>())
+                            .ObjectsCount
+                    );
+
+                    Assert.Equal(1,
+                        memory.GetObjects(o => o.Type.Is<SqlConnection>())
+                            .ObjectsCount
+                    );
+
+                    Assert.Equal(1,
+                        memory.GetObjects(o => o.Type.Is<SqlTransaction>())
+                            .ObjectsCount
+                    );
+                });
+                
+                localClient.Add(myObj);
+                messageStorageTransaction.Commit();
             }
 
             GC.Collect();
             GC.WaitForPendingFinalizers();
-            GC.Collect();
+            for (int j = 0; j < 1000; j++)
+            {
+                // Wait
+            }
 
-            dotMemory.Check(memory => Assert.Equal(0,
-                                                   memory.GetObjects(o => o.Type.Is<MessageStorageClient>())
-                                                         .ObjectsCount
-                                                  )
-                           );
-            dotMemory.Check(memory => Assert.Equal(0,
-                                                   memory.GetObjects(o => o.Type.Is<MessageStorageTransaction>())
-                                                         .ObjectsCount
-                                                  )
-                           );
-            dotMemory.Check(memory => Assert.Equal(0,
-                                                   memory.GetObjects(o => o.Type.Is<SqlConnection>())
-                                                         .ObjectsCount
-                                                  )
-                           );
-            dotMemory.Check(memory => Assert.Equal(0,
-                                                   memory.GetObjects(o => o.Type.Is<SqlTransaction>())
-                                                         .ObjectsCount
-                                                  )
-                           );
+            
+            dotMemory.Check(memory =>
+            {
+                Assert.Equal(0,
+                    memory.GetObjects(o => o.Type.Is<MessageStorageClient>())
+                        .ObjectsCount
+                );
+
+                Assert.Equal(0,
+                    memory.GetObjects(o => o.Type.Is<MessageStorageTransaction>())
+                        .ObjectsCount
+                );
+
+                Assert.Equal(0,
+                    memory.GetObjects(o => o.Type.Is<SqlConnection>())
+                        .ObjectsCount
+                );
+
+                Assert.Equal(0,
+                    memory.GetObjects(o => o.Type.Is<SqlTransaction>())
+                        .ObjectsCount
+                );
+
+            });
         }
     }
 }

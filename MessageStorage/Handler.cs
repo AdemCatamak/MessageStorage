@@ -29,12 +29,18 @@ namespace MessageStorage
                 Type typeT = typeof(T);
                 if (typeT == typeof(short))
                 {
-                    val = Convert.ToInt16(payload.ToString());
+                    if(short.TryParse(payload.ToString(), out short v))
+                    {
+                        val = v;
+                    }
                 }
 
                 if (typeT == typeof(int))
                 {
-                    val = Convert.ToInt32(payload.ToString());
+                    if(int.TryParse(payload.ToString(), out int v))
+                    {
+                        val = v;
+                    }
                 }
             }
             catch
