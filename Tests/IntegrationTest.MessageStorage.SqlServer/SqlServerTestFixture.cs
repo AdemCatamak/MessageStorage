@@ -29,7 +29,7 @@ namespace IntegrationTest.MessageStorage.SqlServer
             return repositoryContext;
         }
 
-        public IDbConnection CreateDbConnection()
+        public static IDbConnection CreateDbConnection()
         {
             SqlConnection sqlConnection = new SqlConnection(CONNECTION_STR);
             return sqlConnection;

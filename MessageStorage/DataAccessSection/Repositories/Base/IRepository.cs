@@ -39,7 +39,7 @@ namespace MessageStorage.DataAccessSection.Repositories.Base
 
         public void Dispose()
         {
-            // There is no item owned
+            // This class didn't create anything so it has no right to dispose anything
         }
     }
 }

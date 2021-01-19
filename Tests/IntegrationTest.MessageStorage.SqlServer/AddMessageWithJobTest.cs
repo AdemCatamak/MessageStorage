@@ -18,17 +18,13 @@ namespace IntegrationTest.MessageStorage.SqlServer
 {
     public class AddMessageWithJobTest : IClassFixture<SqlServerTestFixture>
     {
-        private readonly SqlServerTestFixture _sqlServerTestFixture;
-
         private readonly IMessageStorageClient _sut;
 
         public AddMessageWithJobTest(SqlServerTestFixture sqlServerTestFixture, ITestOutputHelper outputHelper)
         {
             DotMemoryUnitTestOutput.SetOutputMethod(outputHelper.WriteLine);
 
-            _sqlServerTestFixture = sqlServerTestFixture;
-
-            IMessageStorageRepositoryContext repositoryContext = _sqlServerTestFixture.CreateMessageStorageSqlServerRepositoryContext();
+            IMessageStorageRepositoryContext repositoryContext = sqlServerTestFixture.CreateMessageStorageSqlServerRepositoryContext();
             var handlerDescription = new HandlerDescription<DummyHandler>(() => new DummyHandler());
             IHandlerManager handlerManager = new HandlerManager(new[] {handlerDescription});
             _sut = new MessageStorageClient(repositoryContext, handlerManager);
@@ -41,7 +37,7 @@ namespace IntegrationTest.MessageStorage.SqlServer
 
             var (message, jobs) = _sut.Add(myObj);
 
-            using (IDbConnection connection = _sqlServerTestFixture.CreateDbConnection())
+            using (IDbConnection connection = SqlServerTestFixture.CreateDbConnection())
             {
                 Assert.Empty(jobs);
                 var count = connection.ExecuteScalar<int>($"Select count(*) from [{SqlServerTestFixture.SCHEMA}].[Messages] where MessageId = @messageId",
@@ -60,7 +56,7 @@ namespace IntegrationTest.MessageStorage.SqlServer
 
             var (message, jobs) = _sut.Add(myObj);
 
-            using (IDbConnection connection = _sqlServerTestFixture.CreateDbConnection())
+            using (IDbConnection connection = SqlServerTestFixture.CreateDbConnection())
             {
                 IEnumerable<Job> jobList = jobs.ToList();
                 Assert.Single(jobList);

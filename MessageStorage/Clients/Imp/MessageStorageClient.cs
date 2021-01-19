@@ -87,14 +87,13 @@ namespace MessageStorage.Clients.Imp
 
         public IMessageStorageTransaction BeginTransaction(IsolationLevel isolationLevel)
         {
-             IMessageStorageTransaction messageStorageTransaction = _messageStorageRepositoryContext.BeginTransaction(isolationLevel);
+            IMessageStorageTransaction messageStorageTransaction = _messageStorageRepositoryContext.BeginTransaction(isolationLevel);
             return messageStorageTransaction;
         }
 
         public void Dispose()
         {
-            // TODO: This object not created by MessageStorageClient. 
-            // _messageStorageRepositoryContext.Dispose();
+            // This class didn't create anything so it has no right to dispose anything
         }
     }
 }

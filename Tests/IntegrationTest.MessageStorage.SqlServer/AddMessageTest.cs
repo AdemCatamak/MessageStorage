@@ -6,7 +6,6 @@ using MessageStorage;
 using MessageStorage.Clients;
 using MessageStorage.Clients.Imp;
 using MessageStorage.DataAccessSection;
-using Microsoft.Data.SqlClient;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -15,8 +14,6 @@ namespace IntegrationTest.MessageStorage.SqlServer
     [DotMemoryUnit(FailIfRunWithoutSupport = false)]
     public class AddMessageTest : IClassFixture<SqlServerTestFixture>
     {
-        private readonly SqlServerTestFixture _sqlServerTestFixture;
-
         private readonly IMessageStorageClient _sut;
 
 
@@ -24,10 +21,7 @@ namespace IntegrationTest.MessageStorage.SqlServer
         {
             DotMemoryUnitTestOutput.SetOutputMethod(outputHelper.WriteLine);
 
-            _sqlServerTestFixture = sqlServerTestFixture;
-
-            IMessageStorageRepositoryContext repositoryContext =
-                _sqlServerTestFixture.CreateMessageStorageSqlServerRepositoryContext();
+            IMessageStorageRepositoryContext repositoryContext = sqlServerTestFixture.CreateMessageStorageSqlServerRepositoryContext();
             IHandlerManager handlerManager = new HandlerManager();
             _sut = new MessageStorageClient(repositoryContext, handlerManager);
         }
@@ -38,7 +32,7 @@ namespace IntegrationTest.MessageStorage.SqlServer
             object myObj = "dummy-message";
             var (message, jobs) = _sut.Add(myObj);
 
-            using (IDbConnection connection = _sqlServerTestFixture.CreateDbConnection())
+            using (IDbConnection connection = SqlServerTestFixture.CreateDbConnection())
             {
                 Assert.Empty(jobs);
                 var count = connection.ExecuteScalar<int>(
@@ -55,7 +49,7 @@ namespace IntegrationTest.MessageStorage.SqlServer
         public void When_AddMessage_TransactionNotCommitted__MessageShouldNotBePersisted()
         {
             object myObj = "dummy-message";
-            using (IDbConnection connection = _sqlServerTestFixture.CreateDbConnection())
+            using (IDbConnection connection = SqlServerTestFixture.CreateDbConnection())
             {
                 connection.Open();
                 string messageId;
@@ -91,7 +85,7 @@ namespace IntegrationTest.MessageStorage.SqlServer
         public void When_AddMessage_MessageStorageTransactionCommitted__MessageShouldBePersisted()
         {
             object myObj = "dummy-message";
-            using (IDbConnection connection = _sqlServerTestFixture.CreateDbConnection())
+            using (IDbConnection connection = SqlServerTestFixture.CreateDbConnection())
             {
                 connection.Open();
                 string messageId;
@@ -129,7 +123,7 @@ namespace IntegrationTest.MessageStorage.SqlServer
             When_AddMessage_MessageStorageTransactionCommitted__MessageStorageClientShouldBeAcceptNewTransaction()
         {
             object myObj = "dummy-message";
-            using (IDbConnection connection = _sqlServerTestFixture.CreateDbConnection())
+            using (IDbConnection connection = SqlServerTestFixture.CreateDbConnection())
             {
                 connection.Open();
                 string messageId1, messageId2;

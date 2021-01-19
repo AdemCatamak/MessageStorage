@@ -129,13 +129,15 @@ namespace MessageStorage.Clients.Imp
             TimeSpan timeout = _jobProcessorConfiguration.WaitWhenJobNotFound + _jobProcessorConfiguration.JobProcessDeadline;
             _backgroundJob?.Wait(timeout);
 
-            _logger.LogDebug($"{nameof(JobProcessor)}.{nameof(StopAsync)} is completed - {DateTime.UtcNow}");
+            _logger.LogDebug($"JobProcessor.{nameof(StopAsync)} is completed - {DateTime.UtcNow}");
 
             return Task.CompletedTask;
         }
 
         public void Dispose()
         {
+            // This class created backgroundJob so it has right to dispose
+            _backgroundJob?.Dispose();
             _logger.LogDebug($"{nameof(JobProcessor)}.{nameof(Dispose)} is called - {DateTime.UtcNow}");
         }
     }

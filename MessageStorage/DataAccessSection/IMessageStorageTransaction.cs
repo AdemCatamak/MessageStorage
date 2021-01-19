@@ -44,7 +44,7 @@ namespace MessageStorage.DataAccessSection
         public void Dispose()
         {
             _dbTransaction.Dispose();
-            _dbTransaction = null;
+            _dbTransaction = null!;
             EventHandler? handler = Disposed;
             handler?.Invoke(this, EventArgs.Empty);
         }

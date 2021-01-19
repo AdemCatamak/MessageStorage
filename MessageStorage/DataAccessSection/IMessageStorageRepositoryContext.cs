@@ -1,6 +1,5 @@
 using System;
 using System.Data;
-using MessageStorage.Clients;
 using MessageStorage.Configurations;
 using MessageStorage.DataAccessSection.Repositories;
 using MessageStorage.Exceptions;
@@ -80,6 +79,7 @@ namespace MessageStorage.DataAccessSection
 
         public void Dispose()
         {
+            // This class may create _dbConnection and _ownedDbTransaction so it has right to dispose
             _dbConnection?.Dispose();
             _ownedDbTransaction?.Dispose();
             _dbConnection = null;

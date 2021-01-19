@@ -29,7 +29,7 @@ namespace IntegrationTest.MessageStorage.SqlServer
                                                                                     WaitAfterJobHandled = TimeSpan.Zero
                                                                                 };
 
-        public JobProcessorTest(SqlServerTestFixture sqlServerTestFixture,ITestOutputHelper outputHelper)
+        public JobProcessorTest(SqlServerTestFixture sqlServerTestFixture, ITestOutputHelper outputHelper)
         {
             DotMemoryUnitTestOutput.SetOutputMethod(outputHelper.WriteLine);
 
