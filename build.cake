@@ -119,13 +119,14 @@ Task(UnitTestStage)
 });
 
 Task(DotNetPackStage)
-.WithCriteria(() => !string.IsNullOrEmpty(SelectedEnvironment) )
 .IsDependentOn(UnitTestStage)
 .DoesForEach(ProjectsToBePacked , (project)=>
 {
   FilePath projFile = GetCsProjFile(project.Name);
   
-  string versionSuffix = SelectedEnvironment;
+  DateTime now = DateTime.UtcNow;
+  var ticks= now.Ticks;
+  string versionSuffix = $"{SelectedEnvironment}-{ticks}";
   if(SelectedEnvironment == MasterEnvironment)
     versionSuffix = string.Empty;
 
