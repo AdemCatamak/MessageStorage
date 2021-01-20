@@ -14,6 +14,7 @@
         <LangVersion>latest</LangVersion>
 
         <VersionPrefix>3.0.0</VersionPrefix>
+        <PackageLicenseFile>../License</PackageLicenseFile>
     </PropertyGroup>
 
     <ItemGroup>
