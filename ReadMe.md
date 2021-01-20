@@ -123,3 +123,41 @@ public IActionResult Get([FromRoute] JobStatus jobStatus)
 }
 ```
 
+__Example of multiple MessageStorageClient injection__
+
+You could create another interface and instance like code snippet like below.
+
+```
+public interface ISecondMessageStorageClient : IMessageStorageClient
+{
+}
+
+public class SecondMessageStorageClient : MessageStorageClient,
+                                          ISecondMessageStorageClient
+
+{
+    public SecondMessageStorageClient(IMessageStorageRepositoryContext messageStorageRepositoryContext,
+                                      IHandlerManager handlerManager,
+                                      MessageStorageClientConfiguration? messageStorageConfiguration = null)
+        : base(messageStorageRepositoryContext, handlerManager, messageStorageConfiguration)
+    {
+    }
+}
+```
+
+Finally you can inject your interface with `AddMessageStorage` extension method.
+
+```
+services.AddMessageStorage<ISecondMessageStorageClient, SecondMessageStorageClient>
+            (messageStorage =>
+            {
+                messageStorage.WithClientConfiguration(new MessageStorageClientConfiguration())
+                              .UseSqlServer(ConnectionStr)
+                              .UseHandlers((handlerManager, provider) =>
+                                           {
+                                              ...
+                                           })
+                              .Construct((context, manager, configuration) => new SecondMessageStorageClient(context, manager, configuration));
+            })
+        .WithJobProcessor(new JobProcessorConfiguration{WaitWhenJobNotFound = TimeSpan.FromSeconds(30)});
+```

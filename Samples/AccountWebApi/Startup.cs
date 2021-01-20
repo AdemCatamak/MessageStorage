@@ -119,7 +119,7 @@ namespace AccountWebApi
                                                      })
                                         .Construct((context, manager, configuration) => new SecondMessageStorageClient(context, manager, configuration));
                       })
-                    .WithJobProcessor(new JobProcessorConfiguration())
+                    .WithJobProcessor(new JobProcessorConfiguration {WaitWhenJobNotFound = TimeSpan.FromSeconds(30)})
                 ;
 
             services.AddDbContext<AccountDbContext>(builder => builder.UseSqlServer(ConnectionStr,
