@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace AccountWebApi
 {
@@ -15,17 +16,27 @@ namespace AccountWebApi
             {
                 using (IServiceScope scope = host.Services.CreateScope())
                 {
-                    var sampleDbContext=scope.ServiceProvider.GetService<AccountDbContext>();
+                    var sampleDbContext = scope.ServiceProvider.GetRequiredService<AccountDbContext>();
                     sampleDbContext.Database.Migrate();
                 }
-                
+
                 host.Run();
             }
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .ConfigureAppConfiguration((hostingContext, config) => { config.AddJsonFile("appsettings.json"); })
+                .ConfigureAppConfiguration((hostingContext, config) =>
+                                           {
+                                               config.AddJsonFile("appsettings.json");
+                                               if (hostingContext.HostingEnvironment.IsDevelopment())
+                                                   config.AddJsonFile("appsettings.dev.json");
+                                           })
+                .ConfigureLogging(builder =>
+                                  {
+                                      builder.ClearProviders();
+                                      builder.AddConsole();
+                                  })
                 .ConfigureWebHostDefaults(webBuilder =>
                                           {
                                               webBuilder.UseStartup<Startup>();

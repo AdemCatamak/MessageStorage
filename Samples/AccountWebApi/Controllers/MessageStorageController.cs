@@ -5,20 +5,20 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AccountWebApi.Controllers
 {
-    [Route("jobs")]
+    [Route("message-storage")]
     public class MessageStorageController : ControllerBase
     {
-        private readonly IMessageStorageMonitor _messageStorageMonitor;
+        private readonly IMessageStorageClient _messageStorageClient;
 
-        public MessageStorageController(IMessageStorageMonitor messageStorageMonitor)
+        public MessageStorageController(IMessageStorageClient messageStorageClient)
         {
-            _messageStorageMonitor = messageStorageMonitor;
+            _messageStorageClient = messageStorageClient;
         }
 
-        [HttpGet("{jobStatus}/count")]
+        [HttpGet("jobs/{jobStatus}/count")]
         public IActionResult Get([FromRoute] JobStatus jobStatus)
         {
-            int jobCount = _messageStorageMonitor.GetJobCountByStatus(jobStatus);
+            int jobCount = _messageStorageClient.GetJobCountByStatus(jobStatus);
             return StatusCode((int) HttpStatusCode.OK, jobCount);
         }
     }
