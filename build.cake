@@ -119,7 +119,6 @@ Task(UnitTestStage)
 });
 
 Task(DotNetPackStage)
-.WithCriteria(() => !string.IsNullOrEmpty(SelectedEnvironment) )
 .IsDependentOn(UnitTestStage)
 .DoesForEach(ProjectsToBePacked , (project)=>
 {

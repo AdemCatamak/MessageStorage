@@ -34,7 +34,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionFolder", "SolutionFolder", "{2E594FC6-8950-43EC-8306-EA48D4F33DBC}"
 ProjectSection(SolutionItems) = preProject
 	ReadMe.md = ReadMe.md
-	License = License
 EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageStorage.SqlServer.DI.Extension", "MessageStorage.SqlServer.DI.Extension\MessageStorage.SqlServer.DI.Extension.csproj", "{9CE3AC74-4388-4B1D-961E-747E1D879FC8}"
