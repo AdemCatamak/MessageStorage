@@ -124,7 +124,9 @@ Task(DotNetPackStage)
 {
   FilePath projFile = GetCsProjFile(project.Name);
   
-  string versionSuffix = SelectedEnvironment;
+  DateTime now = DateTime.UtcNow;
+  var ticks= now.Ticks;
+  string versionSuffix = $"{SelectedEnvironment}-{ticks}";
   if(SelectedEnvironment == MasterEnvironment)
     versionSuffix = string.Empty;
 
