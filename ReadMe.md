@@ -11,6 +11,10 @@
 
 **Nuget Versions**
 
+~~MessageStorage.Db.MsSql~~ : ![Nuget](https://img.shields.io/nuget/v/MessageStorage.Db.MsSql.svg)
+
+~~MessageStorage.Db.MsSql.DI.Extension~~ : ![Nuget](https://img.shields.io/nuget/v/MessageStorage.Db.MsSql.DI.Extension.svg)
+
 MessageStorage.SqlServer : ![Nuget](https://img.shields.io/nuget/v/MessageStorage.SqlServer.svg)
 
 MessageStorage.SqlServer.DI.Extension : ![Nuget](https://img.shields.io/nuget/v/MessageStorage.SqlServer.DI.Extension.svg)
@@ -37,22 +41,24 @@ You can access extension methods that help you with Microsoft.DependencyInjectio
 services.AddMessageStorageHostedService();
 
 services.AddMessageStorage(messageStorage =>
-                           {
-                               messageStorage.UseSqlServer(connectionStr)
-                                             .UseHandlers((handlerManager, provider) =>
-                                                          {
-                                                              handlerManager.TryAddHandler(new HandlerDescription<AccountEventHandler>
-                                                                                               (() => new AccountEventHandler()));
+{
+    messageStorage.UseSqlServer(connectionStr)
+                  .UseHandlers((handlerManager, provider) =>
+                               {
+                                   // Handler without dependency
+                                   handlerManager.TryAddHandler(new HandlerDescription<AccountEventHandler>
+                                                                    (() => new AccountEventHandler()));
 
-                                                              handlerManager.TryAddHandler(new HandlerDescription<AccountCreatedEventHandler>
-                                                                                               (() =>
-                                                                                                {
-                                                                                                    var x = provider.GetRequiredService<AccountDbContext>();
-                                                                                                    return new AccountCreatedEventHandler(x);
-                                                                                                })
-                                                                                          );
-                                                          });
-                           })
+                                   // Handler with dependency
+                                   handlerManager.TryAddHandler(new HandlerDescription<AccountCreatedEventHandler>
+                                                                    (() =>
+                                                                     {
+                                                                         var x = provider.GetRequiredService<AccountDbContext>();
+                                                                         return new AccountCreatedEventHandler(x);
+                                                                     })
+                                                               );
+                               });
+})
         .WithJobProcessor();
 
  ```
