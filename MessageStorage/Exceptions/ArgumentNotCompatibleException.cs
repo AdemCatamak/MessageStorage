@@ -2,14 +2,10 @@ using MessageStorage.Exceptions.BaseExceptions;
 
 namespace MessageStorage.Exceptions
 {
-    public class ArgumentNotCompatibleException : MessageStorageValidationException
+    public class ArgumentNotCompatibleException : MessageStorageCustomException
     {
-        public ArgumentNotCompatibleException(string argumentType, string targetType)
-            : this($"{argumentType} is not compatible with {targetType}")
-        {
-        }
-
-        public ArgumentNotCompatibleException(string friendlyMessage) : base(friendlyMessage)
+        public ArgumentNotCompatibleException(string actualType, string expectedType)
+            : base($"{actualType} is not compatible with {expectedType}")
         {
         }
     }

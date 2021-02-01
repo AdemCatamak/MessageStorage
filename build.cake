@@ -13,17 +13,14 @@ string SolutionName = "MessageStorage";
 var ProjectsToBePacked  = new Project[]
 {
   new Project("MessageStorage"),
-  new Project("MessageStorage.DI.Extension"),
-  new Project("MessageStorage.Db"),
-  new Project("MessageStorage.Db.SqlServer"),
-  new Project("MessageStorage.Db.SqlServer.DI.Extension"),
-  new Project("MessageStorage.Db.DI.Extension"),
   new Project("MessageStorage.AspNetCore"),
+  new Project("MessageStorage.DI.Extension"),
+  new Project("MessageStorage.SqlServer"),
+  new Project("MessageStorage.SqlServer.DI.Extension")
 };
 
 var TestProjectPatterns = new string[]{
-  "./**/*Test.csproj",
-  "./**/*Tests.csproj",
+  "./**/UnitTest*.csproj",
 };
 
 var BuildConfig = "Release";
@@ -122,13 +119,14 @@ Task(UnitTestStage)
 });
 
 Task(DotNetPackStage)
-.WithCriteria(() => !string.IsNullOrEmpty(SelectedEnvironment) )
 .IsDependentOn(UnitTestStage)
 .DoesForEach(ProjectsToBePacked , (project)=>
 {
   FilePath projFile = GetCsProjFile(project.Name);
   
-  string versionSuffix = SelectedEnvironment;
+  DateTime now = DateTime.UtcNow;
+  var ticks= now.Ticks;
+  string versionSuffix = $"{SelectedEnvironment}-{ticks}";
   if(SelectedEnvironment == MasterEnvironment)
     versionSuffix = string.Empty;
 

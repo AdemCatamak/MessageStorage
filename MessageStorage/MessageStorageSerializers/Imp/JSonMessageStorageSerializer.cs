@@ -2,15 +2,20 @@ using Newtonsoft.Json;
 
 namespace MessageStorage.MessageStorageSerializers.Imp
 {
-    public class JSonMessageStorageSerializer : IMessageStorageSerializer
+    internal class JSonMessageStorageSerializer : IMessageStorageSerializer
     {
-        private readonly JsonSerializerSettings _serializerSettings = new JsonSerializerSettings
-                                                                      {
-                                                                          TypeNameHandling = TypeNameHandling.All,
-                                                                          DateFormatHandling = DateFormatHandling.IsoDateFormat,
-                                                                          FloatFormatHandling = FloatFormatHandling.DefaultValue,
-                                                                          TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Full
-                                                                      };
+        private readonly JsonSerializerSettings _serializerSettings;
+
+        public JSonMessageStorageSerializer()
+        {
+            _serializerSettings = new JsonSerializerSettings
+                                  {
+                                      TypeNameHandling = TypeNameHandling.All,
+                                      DateFormatHandling = DateFormatHandling.IsoDateFormat,
+                                      FloatFormatHandling = FloatFormatHandling.DefaultValue,
+                                      TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Full
+                                  };
+        }
 
         public string Serialize(object obj)
         {
@@ -19,7 +24,8 @@ namespace MessageStorage.MessageStorageSerializers.Imp
 
         public T Deserialize<T>(string serializedObj)
         {
-            return JsonConvert.DeserializeObject<T>(serializedObj, _serializerSettings);
+            var result = JsonConvert.DeserializeObject<T>(serializedObj, _serializerSettings);
+            return result!;
         }
     }
 }

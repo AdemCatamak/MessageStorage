@@ -10,89 +10,105 @@ using Microsoft.Extensions.Logging.Abstractions;
 
 namespace MessageStorage.Clients.Imp
 {
-    public class JobProcessor : IJobProcessor
+    public class JobProcessor : IBackgroundProcessor
     {
-        private readonly Func<IRepositoryContext> _repositoryContextFactory;
+        private readonly Func<IMessageStorageRepositoryContext> _repositoryContextFactory;
         private readonly IHandlerManager _handlerManager;
         private readonly JobProcessorConfiguration _jobProcessorConfiguration;
-        private readonly ILogger<IJobProcessor> _logger;
+        private readonly ILogger<JobProcessor> _logger;
 
+        private Task? _backgroundJob;
         private readonly CancellationTokenSource _cancellationTokenSource;
 
-        private Task _executionTask;
-
-        public JobProcessor(Func<IRepositoryContext> repositoryContextFactory, IHandlerManager handlerManager, ILogger<IJobProcessor> logger, JobProcessorConfiguration jobProcessorConfiguration = null)
+        public JobProcessor(Func<IMessageStorageRepositoryContext> repositoryContextFactory, IHandlerManager handlerManager, ILogger<JobProcessor>? logger = null, JobProcessorConfiguration? jobProcessorConfiguration = null)
         {
             _repositoryContextFactory = repositoryContextFactory ?? throw new ArgumentNullException(nameof(repositoryContextFactory));
             _handlerManager = handlerManager ?? throw new ArgumentNullException(nameof(handlerManager));
             _jobProcessorConfiguration = jobProcessorConfiguration ?? new JobProcessorConfiguration();
-            _logger = logger ?? NullLogger<IJobProcessor>.Instance;
+            _logger = logger ?? NullLogger<JobProcessor>.Instance;
             _cancellationTokenSource = new CancellationTokenSource();
         }
 
         public Task StartAsync(CancellationToken cancellationToken = default)
         {
-            LogDebug($"{DateTime.UtcNow} - {nameof(IJobProcessor)}.{nameof(StartAsync)} is called");
+            _logger.LogDebug($"{nameof(JobProcessor)}.{nameof(StartAsync)} is called - {DateTime.UtcNow}");
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            _executionTask = new Task(async () => await ExecuteInfinite(_cancellationTokenSource.Token));
-            _executionTask.Start();
+            _backgroundJob = Task.Run(() => StartBackgroundJob(_cancellationTokenSource.Token), _cancellationTokenSource.Token);
 
-            LogDebug($"{DateTime.UtcNow} - {nameof(IJobProcessor)}.{nameof(StartAsync)} is completed");
+            _logger.LogDebug($"{nameof(JobProcessor)}.{nameof(StartAsync)} is completed - {DateTime.UtcNow}");
 
             return Task.CompletedTask;
         }
 
-        private async Task ExecuteInfinite(CancellationToken cancellationToken)
+        private void StartBackgroundJob(CancellationToken cancellationToken)
         {
-            LogDebug($"{DateTime.UtcNow} - {nameof(IJobProcessor)}.{nameof(ExecuteInfinite)} is called");
-
             while (!cancellationToken.IsCancellationRequested)
             {
-                await ExecuteAsync();
-            }
-
-            LogDebug($"{DateTime.UtcNow} - {nameof(IJobProcessor)}.{nameof(ExecuteInfinite)} is stopped");
-        }
-
-        public async Task ExecuteAsync()
-        {
-            LogDebug($"{DateTime.UtcNow} - {nameof(IJobProcessor)}.{nameof(ExecuteAsync)} is called");
-
-            using (IRepositoryContext repositoryContext = _repositoryContextFactory.Invoke())
-            {
-                IJobRepository jobRepository = repositoryContext.JobRepository;
+                TimeSpan sleep = _jobProcessorConfiguration.WaitWhenJobNotFound;
                 try
                 {
-                    Job job = jobRepository.SetFirstWaitingJobToInProgress();
-                    if (job == null)
-                    {
-                        _logger.LogDebug($"{DateTime.UtcNow} - {nameof(IJobProcessor)}.{nameof(ExecuteAsync)} is finished [Job not found]");
-                        Thread.Sleep(_jobProcessorConfiguration.WaitWhenMessageNotFound);
-                        return;
-                    }
-
-                    await HandleJob(job, jobRepository);
+                    bool jobHandled = StartProcessAsync().GetAwaiter().GetResult();
+                    if (jobHandled) sleep = _jobProcessorConfiguration.WaitAfterJobHandled;
                 }
-                catch (Exception e)
+                catch (Exception exception)
                 {
-                    LogError(e);
+                    _logger.LogError($"{nameof(JobProcessor)} has unexpected exception - {DateTime.UtcNow}", exception);
                 }
-
-                LogDebug($"{DateTime.UtcNow} - {nameof(IJobProcessor)}.{nameof(ExecuteAsync)} is finished");
-                Thread.Sleep(_jobProcessorConfiguration.WaitAfterMessageHandled);
+                finally
+                {
+                    Thread.Sleep(sleep);
+                }
             }
         }
 
-        private async Task HandleJob(Job job, IJobRepository jobRepository)
+        private async Task<bool> StartProcessAsync()
         {
-            LogDebug($"{DateTime.UtcNow} - {nameof(IJobProcessor)}.{nameof(HandleJob)} is called [JobId: {job.Id}]");
+            using var cancellationTokenSource = new CancellationTokenSource(_jobProcessorConfiguration.JobProcessDeadline);
+            CancellationToken cancellationToken = cancellationTokenSource.Token;
+
+            using (IMessageStorageRepositoryContext messageStorageRepositoryContext = _repositoryContextFactory.Invoke())
+            {
+                bool jobHandled = await HandleNextJobAsync(messageStorageRepositoryContext, _handlerManager, cancellationToken);
+                return jobHandled;
+            }
+        }
+
+        private async Task<bool> HandleNextJobAsync(IMessageStorageRepositoryContext messageStorageRepositoryContext, IHandlerManager handlerManager, CancellationToken cancellationToken)
+        {
+            _logger.LogDebug($"{nameof(JobProcessor)}.{nameof(HandleNextJobAsync)} is called - {DateTime.UtcNow}");
+
+            IJobRepository jobRepository = messageStorageRepositoryContext.GetJobRepository();
+            Job? job = jobRepository.SetFirstWaitingJobToInProgress();
+
+            string message = $"{nameof(JobProcessor)}.{nameof(HandleNextJobAsync)} is completed - {DateTime.UtcNow}";
+
+            if (job != null)
+            {
+                await HandleJobAsync(job, handlerManager, cancellationToken);
+                jobRepository.UpdateJobStatus(job);
+
+                message += $" - JobId : {job.Id}";
+            }
+            else
+            {
+                message += $"JobId: X";
+            }
+
+            _logger.LogDebug(message);
+
+            return job != null;
+        }
+
+        private async Task HandleJobAsync(Job job, IHandlerManager handlerManager, CancellationToken cancellationToken)
+        {
+            _logger.LogDebug($"{nameof(JobProcessor)}.{nameof(HandleJobAsync)} is called - {DateTime.UtcNow} - [JobId: {job.Id}]");
 
             try
             {
-                Handler handler = _handlerManager.GetHandler(job.AssignedHandlerName);
-                await handler.BaseHandleOperation(job.Message.GetPayload());
+                Handler handler = handlerManager.GetHandler(job.AssignedHandlerName);
+                await handler.BaseHandleOperationAsync(job.Message.GetPayload(), cancellationToken);
                 job.SetDone();
             }
             catch (Exception e)
@@ -100,49 +116,29 @@ namespace MessageStorage.Clients.Imp
                 job.SetFailed(e.ToString());
             }
 
-            jobRepository.Update(job);
-
-            LogInfo($"{DateTime.UtcNow} - {nameof(IJobProcessor)}.{nameof(HandleJob)} is completed [JobId: {job.Id}, Status: {job.JobStatus}]");
+            _logger.LogDebug($"{nameof(JobProcessor)}.{nameof(HandleJobAsync)} is completed - {DateTime.UtcNow} - [JobId: {job.Id} | JobStatus: {job.JobStatus}]");
         }
 
         public Task StopAsync(CancellationToken cancellationToken = default)
         {
-            LogDebug($"{DateTime.UtcNow} - {nameof(IJobProcessor)}.{nameof(StopAsync)} is called");
+            _logger.LogDebug($"{nameof(JobProcessor)}.{nameof(StopAsync)} is called - {DateTime.UtcNow}");
+
             cancellationToken.ThrowIfCancellationRequested();
+
             _cancellationTokenSource.Cancel();
+            TimeSpan timeout = _jobProcessorConfiguration.WaitWhenJobNotFound + _jobProcessorConfiguration.JobProcessDeadline;
+            _backgroundJob?.Wait(timeout);
 
-            bool completed = _executionTask?.Wait(_jobProcessorConfiguration.StopTaskTimeout) ?? true;
-            if (!completed)
-            {
-                _cancellationTokenSource.Cancel(throwOnFirstException: true);
-            }
+            _logger.LogDebug($"JobProcessor.{nameof(StopAsync)} is completed - {DateTime.UtcNow}");
 
-            LogDebug($"{DateTime.UtcNow} - {nameof(IJobProcessor)}.{nameof(StopAsync)} is completed");
             return Task.CompletedTask;
         }
 
         public void Dispose()
         {
-            LogDebug($"{DateTime.UtcNow} - {nameof(IJobProcessor)}.{nameof(Dispose)} is called");
-            _cancellationTokenSource?.Dispose();
-        }
-
-        private void LogDebug(string message)
-        {
-            _logger.Log(LogLevel.Debug, eventId: default, typeof(IJobProcessor), exception: null,
-                        (type, exception) => $"{nameof(IJobProcessor)} => {message}");
-        }
-
-        private void LogInfo(string message)
-        {
-            _logger.Log(LogLevel.Information, eventId: default, typeof(IJobProcessor), exception: null,
-                        (type, exception) => $"{nameof(IJobProcessor)} => {message}");
-        }
-
-        private void LogError(Exception e)
-        {
-            _logger.Log(LogLevel.Error, eventId: default, typeof(IJobProcessor), e,
-                        (type, exception) => $"{nameof(IJobProcessor)} => Unexpected error");
+            // This class created backgroundJob so it has right to dispose
+            _backgroundJob?.Dispose();
+            _logger.LogDebug($"{nameof(JobProcessor)}.{nameof(Dispose)} is called - {DateTime.UtcNow}");
         }
     }
 }

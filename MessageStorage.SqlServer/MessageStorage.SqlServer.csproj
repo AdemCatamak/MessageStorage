@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <PackageId>MessageStorage.SqlServer</PackageId>
+
+        <TargetFramework>netstandard2.0</TargetFramework>
+
+        <IsPackable>true</IsPackable>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+
+        <Authors>Adem Catamak</Authors>
+        <Description>Message and Job Storage</Description>
+        <LangVersion>latest</LangVersion>
+
+        <VersionPrefix>3.0.0</VersionPrefix>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="FluentMigrator.Extensions.SqlServer" Version="3.2.11"/>
+        <PackageReference Include="FluentMigrator.Runner" Version="3.2.11"/>
+        <PackageReference Include="FluentMigrator.Runner.Core" Version="3.2.11"/>
+        <PackageReference Include="FluentMigrator.Runner.SqlServer" Version="3.2.11"/>
+        <PackageReference Include="Microsoft.Data.SqlClient" Version="2.1.1"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\MessageStorage\MessageStorage.csproj"/>
+    </ItemGroup>
+
+</Project>

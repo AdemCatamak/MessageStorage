@@ -1,52 +1,49 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageStorage", "MessageStorage\MessageStorage.csproj", "{5489F47E-616B-45D6-81BF-ECBEEF059F44}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageStorage", "MessageStorage\MessageStorage.csproj", "{8F08E535-F431-4383-A6B9-D0AF8168BD49}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{1BFFE5B9-F6B5-4B3A-98CF-37A8E97397BD}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{E04ABF64-B3EE-4DFB-B7EC-2422CDA930EE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageStorage.DI.Extension", "MessageStorage.DI.Extension\MessageStorage.DI.Extension.csproj", "{1C8ACCE3-D9D8-4336-A76B-6D75C7BE504E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageStorage.SqlServer", "MessageStorage.SqlServer\MessageStorage.SqlServer.csproj", "{A43DD7C6-3E4F-4A8E-A874-A353BE264636}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageStorage.Db", "MessageStorage.Db\MessageStorage.Db.csproj", "{9E76246A-263A-4845-8693-15312E4D286A}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageStorage.Db.SqlServer", "MessageStorage.Db.SqlServer\MessageStorage.Db.SqlServer.csproj", "{66A3085C-F1A4-45F7-A7F9-C5401E2CF4A0}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageStorage.Db.SqlServer.DI.Extension", "MessageStorage.Db.SqlServer.DI.Extension\MessageStorage.Db.SqlServer.DI.Extension.csproj", "{42156179-1A9E-4CBE-8DC8-E0DFE17AA6A5}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BuildFiles", "BuildFiles", "{B3A21962-DD2F-46C8-B999-E14C7DEAF05A}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ConfigFiles", "ConfigFiles", "{77D0789B-878F-4B9C-AF28-13C471A7B0FB}"
 ProjectSection(SolutionItems) = preProject
+	Directory.Build.props = Directory.Build.props
+	.gitattributes = .gitattributes
+	.gitignore = .gitignore
+	NuGet.config = NuGet.config
+EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageStorage.DI.Extension", "MessageStorage.DI.Extension\MessageStorage.DI.Extension.csproj", "{F576D9D8-BCDA-4FAD-9208-7C8C911DFDCE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AccountWebApi", "Samples\AccountWebApi\AccountWebApi.csproj", "{FF0A4C46-8809-4A18-9547-DD44BC2AA8ED}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{F55E2E17-DCE6-4DD7-B7F9-9811D392BFF8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BuildFiles", "BuildFiles", "{000421DC-3427-4488-B07E-149962978801}"
+ProjectSection(SolutionItems) = preProject
+	.github\workflows\github.yml = .github\workflows\github.yml
 	appveyor.yml = appveyor.yml
 	bitbucket-pipelines.yml = bitbucket-pipelines.yml
 	build.cake = build.cake
 	build.config = build.config
 	build.ps1 = build.ps1
 	build.sh = build.sh
-	.travis.yml = .travis.yml
-	.github\workflows\github.yml = .github\workflows\github.yml
 EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionFolder", "SolutionFolder", "{7FFD5E3C-5A2C-4C57-A5BA-C1EB1FDE195A}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionFolder", "SolutionFolder", "{2E594FC6-8950-43EC-8306-EA48D4F33DBC}"
 ProjectSection(SolutionItems) = preProject
-	NuGet.config = NuGet.config
 	ReadMe.md = ReadMe.md
+	License = License
 EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{D3A02853-0E08-486C-B0CA-0289A06B7EB5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageStorage.SqlServer.DI.Extension", "MessageStorage.SqlServer.DI.Extension\MessageStorage.SqlServer.DI.Extension.csproj", "{9CE3AC74-4388-4B1D-961E-747E1D879FC8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AccountWebApi", "Samples\AccountWebApi\AccountWebApi.csproj", "{5EFD3FF5-DE11-4B2D-B18C-7E36149E5C7D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationTest.MessageStorage.SqlServer", "Tests\IntegrationTest.MessageStorage.SqlServer\IntegrationTest.MessageStorage.SqlServer.csproj", "{629A1799-4E0B-4CCD-B6B3-7742E67D7F02}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageStorage.AspNetCore", "MessageStorage.AspNetCore\MessageStorage.AspNetCore.csproj", "{568A1ACA-FFEC-4E7C-9AE0-0A2DB77800DE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageStorage.AspNetCore", "MessageStorage.AspNetCore\MessageStorage.AspNetCore.csproj", "{21374F50-AC22-40B8-A6D7-ECFB21D32418}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageStorage.Db.UnitTests", "Tests\MessageStorage.Db.UnitTests\MessageStorage.Db.UnitTests.csproj", "{A9E8E95A-6BEA-4B51-9446-3F39B8EEA005}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageStorage.DI.Extensions.Tests", "Tests\MessageStorage.DI.Extensions.Tests\MessageStorage.DI.Extensions.Tests.csproj", "{25A28483-7091-4666-AD0A-DACAE3529193}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageStorage.UnitTests", "Tests\MessageStorage.UnitTests\MessageStorage.UnitTests.csproj", "{D6931C48-BC48-4294-92FC-9C022EE1EE3D}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageStorage.Db.SqlServer.DI.Extension.Tests", "Tests\MessageStorage.Db.SqlServer.DI.Extension.Tests\MessageStorage.Db.SqlServer.DI.Extension.Tests.csproj", "{56B48B6A-B306-4275-89D6-624187787DF0}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageStorage.Db.DI.Extension", "MessageStorage.Db.DI.Extension\MessageStorage.Db.DI.Extension.csproj", "{9433E005-68AA-434D-ADC8-E036C0264665}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageStorage.AspNetCore.Tests", "Tests\MessageStorage.AspNetCore.Tests\MessageStorage.AspNetCore.Tests.csproj", "{1DE98348-1D60-474C-94FC-64660D47BA59}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationTest.MessageStorage.SqlServer.DI.Extension", "Tests\IntegrationTest.MessageStorage.SqlServer.DI.Extension\IntegrationTest.MessageStorage.SqlServer.DI.Extension.csproj", "{7161F3EF-4C2D-47BD-8E53-31048ED3A5AA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -54,65 +51,42 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{5489F47E-616B-45D6-81BF-ECBEEF059F44}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5489F47E-616B-45D6-81BF-ECBEEF059F44}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5489F47E-616B-45D6-81BF-ECBEEF059F44}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5489F47E-616B-45D6-81BF-ECBEEF059F44}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1C8ACCE3-D9D8-4336-A76B-6D75C7BE504E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1C8ACCE3-D9D8-4336-A76B-6D75C7BE504E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1C8ACCE3-D9D8-4336-A76B-6D75C7BE504E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1C8ACCE3-D9D8-4336-A76B-6D75C7BE504E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9E76246A-263A-4845-8693-15312E4D286A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9E76246A-263A-4845-8693-15312E4D286A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9E76246A-263A-4845-8693-15312E4D286A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9E76246A-263A-4845-8693-15312E4D286A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{66A3085C-F1A4-45F7-A7F9-C5401E2CF4A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{66A3085C-F1A4-45F7-A7F9-C5401E2CF4A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{66A3085C-F1A4-45F7-A7F9-C5401E2CF4A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{66A3085C-F1A4-45F7-A7F9-C5401E2CF4A0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{42156179-1A9E-4CBE-8DC8-E0DFE17AA6A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{42156179-1A9E-4CBE-8DC8-E0DFE17AA6A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{42156179-1A9E-4CBE-8DC8-E0DFE17AA6A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{42156179-1A9E-4CBE-8DC8-E0DFE17AA6A5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5EFD3FF5-DE11-4B2D-B18C-7E36149E5C7D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5EFD3FF5-DE11-4B2D-B18C-7E36149E5C7D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5EFD3FF5-DE11-4B2D-B18C-7E36149E5C7D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5EFD3FF5-DE11-4B2D-B18C-7E36149E5C7D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{568A1ACA-FFEC-4E7C-9AE0-0A2DB77800DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{568A1ACA-FFEC-4E7C-9AE0-0A2DB77800DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{568A1ACA-FFEC-4E7C-9AE0-0A2DB77800DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{568A1ACA-FFEC-4E7C-9AE0-0A2DB77800DE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A9E8E95A-6BEA-4B51-9446-3F39B8EEA005}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A9E8E95A-6BEA-4B51-9446-3F39B8EEA005}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A9E8E95A-6BEA-4B51-9446-3F39B8EEA005}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A9E8E95A-6BEA-4B51-9446-3F39B8EEA005}.Release|Any CPU.Build.0 = Release|Any CPU
-		{25A28483-7091-4666-AD0A-DACAE3529193}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{25A28483-7091-4666-AD0A-DACAE3529193}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{25A28483-7091-4666-AD0A-DACAE3529193}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{25A28483-7091-4666-AD0A-DACAE3529193}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D6931C48-BC48-4294-92FC-9C022EE1EE3D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D6931C48-BC48-4294-92FC-9C022EE1EE3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D6931C48-BC48-4294-92FC-9C022EE1EE3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D6931C48-BC48-4294-92FC-9C022EE1EE3D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{56B48B6A-B306-4275-89D6-624187787DF0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{56B48B6A-B306-4275-89D6-624187787DF0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{56B48B6A-B306-4275-89D6-624187787DF0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{56B48B6A-B306-4275-89D6-624187787DF0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9433E005-68AA-434D-ADC8-E036C0264665}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9433E005-68AA-434D-ADC8-E036C0264665}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9433E005-68AA-434D-ADC8-E036C0264665}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9433E005-68AA-434D-ADC8-E036C0264665}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1DE98348-1D60-474C-94FC-64660D47BA59}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1DE98348-1D60-474C-94FC-64660D47BA59}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1DE98348-1D60-474C-94FC-64660D47BA59}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1DE98348-1D60-474C-94FC-64660D47BA59}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8F08E535-F431-4383-A6B9-D0AF8168BD49}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F08E535-F431-4383-A6B9-D0AF8168BD49}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F08E535-F431-4383-A6B9-D0AF8168BD49}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F08E535-F431-4383-A6B9-D0AF8168BD49}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A43DD7C6-3E4F-4A8E-A874-A353BE264636}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A43DD7C6-3E4F-4A8E-A874-A353BE264636}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A43DD7C6-3E4F-4A8E-A874-A353BE264636}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A43DD7C6-3E4F-4A8E-A874-A353BE264636}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F576D9D8-BCDA-4FAD-9208-7C8C911DFDCE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F576D9D8-BCDA-4FAD-9208-7C8C911DFDCE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F576D9D8-BCDA-4FAD-9208-7C8C911DFDCE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F576D9D8-BCDA-4FAD-9208-7C8C911DFDCE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FF0A4C46-8809-4A18-9547-DD44BC2AA8ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FF0A4C46-8809-4A18-9547-DD44BC2AA8ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FF0A4C46-8809-4A18-9547-DD44BC2AA8ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FF0A4C46-8809-4A18-9547-DD44BC2AA8ED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9CE3AC74-4388-4B1D-961E-747E1D879FC8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9CE3AC74-4388-4B1D-961E-747E1D879FC8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9CE3AC74-4388-4B1D-961E-747E1D879FC8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9CE3AC74-4388-4B1D-961E-747E1D879FC8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{629A1799-4E0B-4CCD-B6B3-7742E67D7F02}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{629A1799-4E0B-4CCD-B6B3-7742E67D7F02}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{629A1799-4E0B-4CCD-B6B3-7742E67D7F02}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{629A1799-4E0B-4CCD-B6B3-7742E67D7F02}.Release|Any CPU.Build.0 = Release|Any CPU
+		{21374F50-AC22-40B8-A6D7-ECFB21D32418}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{21374F50-AC22-40B8-A6D7-ECFB21D32418}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{21374F50-AC22-40B8-A6D7-ECFB21D32418}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{21374F50-AC22-40B8-A6D7-ECFB21D32418}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7161F3EF-4C2D-47BD-8E53-31048ED3A5AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7161F3EF-4C2D-47BD-8E53-31048ED3A5AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7161F3EF-4C2D-47BD-8E53-31048ED3A5AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7161F3EF-4C2D-47BD-8E53-31048ED3A5AA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{5EFD3FF5-DE11-4B2D-B18C-7E36149E5C7D} = {D3A02853-0E08-486C-B0CA-0289A06B7EB5}
-		{A9E8E95A-6BEA-4B51-9446-3F39B8EEA005} = {1BFFE5B9-F6B5-4B3A-98CF-37A8E97397BD}
-		{25A28483-7091-4666-AD0A-DACAE3529193} = {1BFFE5B9-F6B5-4B3A-98CF-37A8E97397BD}
-		{D6931C48-BC48-4294-92FC-9C022EE1EE3D} = {1BFFE5B9-F6B5-4B3A-98CF-37A8E97397BD}
-		{56B48B6A-B306-4275-89D6-624187787DF0} = {1BFFE5B9-F6B5-4B3A-98CF-37A8E97397BD}
-		{1DE98348-1D60-474C-94FC-64660D47BA59} = {1BFFE5B9-F6B5-4B3A-98CF-37A8E97397BD}
+		{FF0A4C46-8809-4A18-9547-DD44BC2AA8ED} = {E04ABF64-B3EE-4DFB-B7EC-2422CDA930EE}
+		{629A1799-4E0B-4CCD-B6B3-7742E67D7F02} = {F55E2E17-DCE6-4DD7-B7F9-9811D392BFF8}
+		{7161F3EF-4C2D-47BD-8E53-31048ED3A5AA} = {F55E2E17-DCE6-4DD7-B7F9-9811D392BFF8}
 	EndGlobalSection
 EndGlobal

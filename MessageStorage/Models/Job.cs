@@ -6,21 +6,21 @@ namespace MessageStorage.Models
 {
     public class Job : Entity
     {
-        public DateTime CreatedOn { get; }
-        public string AssignedHandlerName { get; }
+        public DateTime CreatedOn { get; private set; }
+        public string AssignedHandlerName { get; private set; }
         public JobStatus JobStatus { get; private set; }
         public DateTime LastOperationTime { get; private set; }
-        public string LastOperationInfo { get; private set; }
+        public string? LastOperationInfo { get; private set; }
         public Message Message { get; }
 
         public Job(string assignedHandlerName, Message message)
-            : this(id: default, DateTime.UtcNow, assignedHandlerName, JobStatus.Waiting, DateTime.UtcNow, lastOperationInfo: default, message)
+            : this(NewId.Next().ToString(), DateTime.UtcNow, assignedHandlerName, JobStatus.Waiting, DateTime.UtcNow, lastOperationInfo: null, message)
         {
         }
 
-        public Job(string id, DateTime createdOn, string assignedHandlerName, JobStatus jobStatus, DateTime lastOperationTime, string lastOperationInfo, Message message)
+        public Job(string id, DateTime createdOn, string assignedHandlerName, JobStatus jobStatus, DateTime lastOperationTime, string? lastOperationInfo, Message message)
+            : base(id)
         {
-            Id = id ?? NewId.Next().ToString();
             CreatedOn = createdOn;
             AssignedHandlerName = assignedHandlerName;
             JobStatus = jobStatus;
