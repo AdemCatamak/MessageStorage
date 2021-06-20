@@ -1,7 +1,7 @@
 using FluentMigrator.Runner.VersionTableInfo;
 using MessageStorage.DataAccessLayer;
 
-namespace Forgetty.Postgres.Migrations
+namespace MessageStorage.Postgres.Migrations
 {
     public class _0001_VersionTable : IVersionTableMetaData
     {

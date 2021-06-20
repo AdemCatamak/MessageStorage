@@ -29,7 +29,7 @@ namespace SampleWebApi_UseTransaction
             services.AddSingleton<IConnectionFactory>(provider => new SqlServerConnectionFactory(provider.GetRequiredService<IConfiguration>()
                                                                                                          .GetConnectionString("SqlServerConnectionString")));
 
-            services.AddForgetty(configurator =>
+            services.AddMessageStorage(configurator =>
                      {
                          configurator.UseSqlServer(provider => provider.GetRequiredService<IConfiguration>()
                                                                        .GetConnectionString("SqlServerConnectionString"),
@@ -42,7 +42,7 @@ namespace SampleWebApi_UseTransaction
                          });
                      })
                     .AddMessageStoragePrerequisiteExecutor()
-                    .AddMessageStorageJobDispatcherHostedService(waitAfterJobNotHandled: TimeSpan.FromSeconds(10));
+                    .AddMessageStorageJobDispatcher(waitAfterJobNotHandled: TimeSpan.FromSeconds(10));
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

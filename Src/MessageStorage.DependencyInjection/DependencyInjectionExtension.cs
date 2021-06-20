@@ -7,7 +7,7 @@ namespace MessageStorage.DependencyInjection
 {
     public static class DependencyInjectionExtension
     {
-        public static IServiceCollection AddForgetty(this IServiceCollection serviceCollection,
+        public static IServiceCollection AddMessageStorage(this IServiceCollection serviceCollection,
                                                      Action<IMessageStorageDependencyConfigurator> configurationAction)
         {
             serviceCollection.AddScoped<IMonitorClient, MonitorClient>();

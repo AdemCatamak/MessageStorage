@@ -1,7 +1,7 @@
 using FluentMigrator;
 using MessageStorage.DataAccessLayer;
 
-namespace Forgetty.SqlServer.Migrations
+namespace MessageStorage.SqlServer.Migrations
 {
     [Migration(version: 3)]
     public class _0003_InsertInto__JobStatuses : Migration

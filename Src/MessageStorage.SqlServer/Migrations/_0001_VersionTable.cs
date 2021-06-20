@@ -1,7 +1,7 @@
 using FluentMigrator.Runner.VersionTableInfo;
 using MessageStorage.DataAccessLayer;
 
-namespace Forgetty.SqlServer.Migrations
+namespace MessageStorage.SqlServer.Migrations
 {
     public class _0001_VersionTable : IVersionTableMetaData
     {

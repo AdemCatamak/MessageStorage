@@ -1,7 +1,7 @@
 using FluentMigrator;
 using MessageStorage.DataAccessLayer;
 
-namespace Forgetty.Postgres.Migrations
+namespace MessageStorage.Postgres.Migrations
 {
     [Migration(version: 2)]
     public class _0002_CreateTable__JobStatuses : Migration

@@ -59,14 +59,14 @@ namespace MessageStorage.Integration.MassTransit.FunctionalTest.Fixtures
                                 services.AddMassTransitHostedService(true);
                                 EndpointConvention.Map<PublishIntegrationCommandTest.UpdateSameEntityCommand>(new Uri($"rabbitmq://{RabbitMqInfraFixture.Host}:{RabbitMqInfraFixture.Port}/{PublishIntegrationCommandTest.UpdateSomeEntityCommand_ConsumerDefinition.QueueName}"));
 
-                                services.AddForgetty(configurator =>
+                                services.AddMessageStorage(configurator =>
                                          {
                                              configurator.UsePostgres(postgresConnectionStr);
                                              configurator.Register(GetType().Assembly);
                                              configurator.RegisterMassTransitMessageHandlers();
                                          })
                                         .AddMessageStoragePrerequisiteExecutor()
-                                        .AddMessageStorageJobDispatcherHostedService(waitAfterJobNotHandled: WaitAfterJobNotHandled);
+                                        .AddMessageStorageJobDispatcher(waitAfterJobNotHandled: WaitAfterJobNotHandled);
                             });
                             builder.Configure(applicationBuilder => { });
                             builder.ConfigureLogging(loggingBuilder =>

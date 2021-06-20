@@ -61,7 +61,7 @@ if not exists (select * from sys.tables t join sys.schemas s on (t.schema_id = s
         }
 
         [Fact]
-        public async Task When_ForgettyTransactionCommitted__JobIsPersistedInDb()
+        public async Task When_MessageStorageTransactionCommitted__JobIsPersistedInDb()
         {
             Message message;
             IEnumerable<Job> jobs;

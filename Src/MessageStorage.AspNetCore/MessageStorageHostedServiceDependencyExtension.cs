@@ -6,12 +6,12 @@ namespace MessageStorage.AspNetCore
 {
     public static class MessageStorageHostedServiceDependencyExtension
     {
-        public static IServiceCollection AddMessageStorageJobDispatcherHostedService(this IServiceCollection serviceCollection,
-                                                                                     TimeSpan? waitAfterJobHandled = null,
-                                                                                     TimeSpan? waitAfterJobNotHandled = null,
-                                                                                     int concurrentJobDispatchCount = 1,
-                                                                                     TimeSpan? retryJobExecutionPeriod = null,
-                                                                                     TimeSpan? rescueJobExecutionPeriod = null)
+        public static IServiceCollection AddMessageStorageJobDispatcher(this IServiceCollection serviceCollection,
+                                                                        TimeSpan? waitAfterJobHandled = null,
+                                                                        TimeSpan? waitAfterJobNotHandled = null,
+                                                                        int concurrentJobDispatchCount = 1,
+                                                                        TimeSpan? retryJobExecutionPeriod = null,
+                                                                        TimeSpan? rescueJobExecutionPeriod = null)
         {
             serviceCollection.AddHostedService(provider =>
                                                    new JobDispatcherHostedService(provider,

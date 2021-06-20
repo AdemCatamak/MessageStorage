@@ -1,7 +1,7 @@
 using FluentMigrator;
 using MessageStorage.DataAccessLayer;
 
-namespace Forgetty.SqlServer.Migrations
+namespace MessageStorage.SqlServer.Migrations
 {
     [Migration(version: 5)]
     public class _0005_CreateTable__JobTable : Migration

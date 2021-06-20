@@ -33,7 +33,7 @@ namespace SampleWebApi
             services.AddScoped<IEmailSender, ConsoleEmailSender>();
 
             var selectedDb = Configuration.GetValue<string>("SelectedDb");
-            services.AddForgetty(configurator =>
+            services.AddMessageStorage(configurator =>
                      {
                          switch (selectedDb)
                          {
@@ -53,7 +53,7 @@ namespace SampleWebApi
                      })
                      // order is important
                     .AddMessageStoragePrerequisiteExecutor()
-                    .AddMessageStorageJobDispatcherHostedService(waitAfterJobNotHandled: TimeSpan.FromSeconds(10), concurrentJobDispatchCount: 2);
+                    .AddMessageStorageJobDispatcher(waitAfterJobNotHandled: TimeSpan.FromSeconds(10), concurrentJobDispatchCount: 2);
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

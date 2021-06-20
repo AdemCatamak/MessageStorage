@@ -2,7 +2,6 @@
 using System.Net;
 using System.Threading.Tasks;
 using Dapper;
-using Forgetty;
 using MessageStorage;
 using MessageStorage.SqlServer.Extension;
 using Microsoft.AspNetCore.Mvc;

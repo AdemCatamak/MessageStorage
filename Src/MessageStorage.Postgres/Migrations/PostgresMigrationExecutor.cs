@@ -1,7 +1,6 @@
 using System;
 using FluentMigrator.Runner;
 using FluentMigrator.Runner.VersionTableInfo;
-using Forgetty.Postgres.Migrations;
 using MessageStorage.DataAccessLayer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;

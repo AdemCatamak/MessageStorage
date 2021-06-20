@@ -2,7 +2,7 @@ using System;
 using FluentMigrator;
 using MessageStorage.DataAccessLayer;
 
-namespace Forgetty.SqlServer.Migrations
+namespace MessageStorage.SqlServer.Migrations
 {
     [Migration(version: 4)]
     public class _0004_CreateTable__MessageTable : Migration

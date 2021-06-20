@@ -12,7 +12,7 @@ namespace MessageStorage.Postgres.DependencyInjection.UnitTest
         {
             ServiceCollection serviceCollection = new ServiceCollection();
 
-            serviceCollection.AddForgetty(configurator => configurator.UsePostgres("connectionStr"));
+            serviceCollection.AddMessageStorage(configurator => configurator.UsePostgres("connectionStr"));
 
             ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
             var repositoryFactory = serviceProvider.GetService<IRepositoryFactory>();
@@ -27,7 +27,7 @@ namespace MessageStorage.Postgres.DependencyInjection.UnitTest
         {
             ServiceCollection serviceCollection = new ServiceCollection();
 
-            serviceCollection.AddForgetty(configurator => configurator.UsePostgres("connection-str", "schema"));
+            serviceCollection.AddMessageStorage(configurator => configurator.UsePostgres("connection-str", "schema"));
 
             ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
             var repositoryFactory = serviceProvider.GetService<IRepositoryFactory>();

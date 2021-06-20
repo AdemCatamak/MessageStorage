@@ -36,13 +36,13 @@ namespace MessageStorage.Postgres.FunctionalTest.Fixtures
                             builder.UseTestServer();
                             builder.ConfigureServices(collection =>
                             {
-                                collection.AddForgetty(configurator =>
+                                collection.AddMessageStorage(configurator =>
                                            {
                                                configurator.Register(this.GetType().Assembly);
                                                configurator.UsePostgres(postgresConnectionStr);
                                            })
                                           .AddMessageStoragePrerequisiteExecutor()
-                                          .AddMessageStorageJobDispatcherHostedService(waitAfterJobNotHandled: WaitAfterJobNotHandled);
+                                          .AddMessageStorageJobDispatcher(waitAfterJobNotHandled: WaitAfterJobNotHandled);
                             });
                             builder.Configure(applicationBuilder => { });
                             builder.ConfigureLogging(loggingBuilder =>
