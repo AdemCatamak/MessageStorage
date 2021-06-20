@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\Src\MessageStorage.DependencyInjection\MessageStorage.DependencyInjection.csproj" />
+      <ProjectReference Include="..\..\Src\MessageStorage.AspNetCore\MessageStorage.AspNetCore.csproj" />
+      <ProjectReference Include="..\..\Src\MessageStorage.Postgres.DependencyInjection\MessageStorage.Postgres.DependencyInjection.csproj" />
+      <ProjectReference Include="..\..\Src\MessageStorage.SqlServer.DependencyInjection\MessageStorage.SqlServer.DependencyInjection.csproj" />
+    </ItemGroup>
+
+</Project>

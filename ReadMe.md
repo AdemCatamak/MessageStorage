@@ -1,163 +1,69 @@
-# MessageStorage
+# Message Storage
 
-**Appveyor**
-![AppVeyor](https://img.shields.io/appveyor/ci/ademcatamak/messagestorage/master.svg)
+MessageStorage is a library prepared to be used in projects that want to apply the **Outbox** design pattern.
 
-**Travis**
-![Travis (.com)](https://travis-ci.com/AdemCatamak/MessageStorage.svg?branch=master)
+| Platform | Status |
+| ------- | ----- |
+| `Appveyor` | ![AppVeyor](https://img.shields.io/appveyor/ci/ademcatamak/messagestorage/master.svg) |
+| `Travis` | ![Travis (.com)](https://travis-ci.com/AdemCatamak/MessageStorage.svg?branch=master) |
+| `GitHub` | ![.github/workflows/github.yml](https://github.com/AdemCatamak/MessageStorage/workflows/.github/workflows/github.yml/badge.svg?branch=master) |
 
-**GitHub**
-![.github/workflows/github.yml](https://github.com/AdemCatamak/MessageStorage/workflows/.github/workflows/github.yml/badge.svg?branch=master)
+| NuGet Package Name | Version |
+| ------- | ----- |
+| MessageStorage.AspNetCore | ![Nuget](https://img.shields.io/nuget/v/MessageStorage.AspNetCore.svg) | 
+| MessageStorage.SqlServer | ![Nuget](https://img.shields.io/nuget/v/MessageStorage.SqlServer.svg) |
+| MessageStorage.SqlServer.DependencyInjection | ![Nuget](https://img.shields.io/nuget/v/MessageStorage.SqlServer.DependencyInjection.svg) |
+| MessageStorage.Postgres | ![Nuget](https://img.shields.io/nuget/v/MessageStorage.Postgres.svg) |
+| MessageStorage.Postgres.DependencyInjection | ![Nuget](https://img.shields.io/nuget/v/MessageStorage.Postgres.DependencyInjection.svg) |
+| MessageStorage.Integration.MassTransit | ![Nuget](https://img.shields.io/nuget/v/MessageStorage.Integration.MassTransit.svg) |
 
-**Nuget Versions**
+## Structure Overview
 
-~~MessageStorage.Db.MsSql~~ : ![Nuget](https://img.shields.io/nuget/v/MessageStorage.Db.MsSql.svg)
+<img src="./Doc/MessageStorage.png" alt="message-storage structure overview">
 
-~~MessageStorage.Db.MsSql.DI.Extension~~ : ![Nuget](https://img.shields.io/nuget/v/MessageStorage.Db.MsSql.DI.Extension.svg)
+## Getting Started
 
-MessageStorage.SqlServer : ![Nuget](https://img.shields.io/nuget/v/MessageStorage.SqlServer.svg)
+You can download the _MessageStorage.SqlServer.DependencyInjection_ or _MessageStorage.Postgres.DependencyInjection_ package
+according to the storage environment you will use.
 
-MessageStorage.SqlServer.DI.Extension : ![Nuget](https://img.shields.io/nuget/v/MessageStorage.SqlServer.DI.Extension.svg)
+`UseSqlServer` / `UsePostgres` method lets you introduce SqlServer or Postgres is used for system's data storage.
 
-MessageStorage.AspNetCore : ![Nuget](https://img.shields.io/nuget/v/MessageStorage.AspNetCore.svg)
+`Register` method lets you introduce MessageHandlers that is used. When the message is recorded, the tasks that will be
+executed in the background will be introduced through these classes.
 
-**MessageStorage**
+`AddMessageStoragePrerequisiteExecutor` method lets you execute a predefined prerequisites like db migrations.
 
-MessageStorage registers messages that are created on the system such as Event and Command. If there are any jobs that are wished to be handled after the creation of these messages, it is possible to define those jobs on the system as well.
+`AddMessageStorageJobProcessorHostedService` method lets you introduce a predefined background service to the system. This
+service fetches tasks from db and executes.
 
-Defined jobs are registered into the system along with a message being registered. Therefore, jobs to be handled are not lost and they are executed at least once.
-
- **Usage**
- 
-You have the required dependencies to register your messages and jobs on SqlServer by downloading MessageStorage.SqlServer nuget package.
- 
-You can access extension methods that help you with Microsoft.DependencyInjection by using MessageStorage.SqlServer.DI.Extension nuget package. By using this nuget package, you can manage MessageStorage.SqlServer dependencies.
- 
- **Sample Startup** 
- 
-
- ```
-
-services.AddMessageStorageHostedService();
-
-services.AddMessageStorage(messageStorage =>
-{
-    messageStorage.UseSqlServer(connectionStr)
-                  .UseHandlers((handlerManager, provider) =>
-                               {
-                                   // Handler without dependency
-                                   handlerManager.TryAddHandler(new HandlerDescription<AccountEventHandler>
-                                                                    (() => new AccountEventHandler()));
-
-                                   // Handler with dependency
-                                   handlerManager.TryAddHandler(new HandlerDescription<AccountCreatedEventHandler>
-                                                                    (() =>
-                                                                     {
-                                                                         var x = provider.GetRequiredService<AccountDbContext>();
-                                                                         return new AccountCreatedEventHandler(x);
-                                                                     })
-                                                               );
-                               });
-})
-        .WithJobProcessor();
+### Sample Startup
 
  ```
-
-
-`UseSqlServer` method lets you introduce SqlServer is used for system's data storage.
-
-`UseHandlers` method lets you introduce Handlers that is used.
-
-`WithJobProcessor` method lets you introduce a predefined background service to the system. This service fetches tasks from db and executes.
-
-`AddMessageStorageHostedService` method inject one hosted service which execute all injected background services.
-
+ services.AddMessageStorage(configurator =>
+ {
+    configurator.UseSqlServer("SqlServerConnectionString");
+    configurator.Register(messageHandlerAssemblies);
+ })
+ // order is important
+ .AddMessageStoragePrerequisiteExecutor()
+ .AddMessageStorageJobDispatcherHostedService();
+ ```
 
 After these steps, you can use the object that is an implementation of `IMessageStorageClient` interface.
 
-__Example of registering user (with entity-framework) and saving AccountCreatedEvent message in the same transaction.__
+### Sample Service
+
+Example of registering Account and saving AccountCreatedEvent message in the same transaction.
 
 ```
-public AccountController(IMessageStorageClient messageStorageClient, AccountDbContext accountDbContext)
+using (IDbConnection connection = _connectionFactory.CreateConnection())
 {
-    _messageStorageClient = messageStorageClient;
-    _accountDbContext = accountDbContext;
+    using IDbTransaction dbTransaction = connection.BeginTransaction(IsolationLevel.ReadCommitted);
+    await connection.ExecuteAsync( sqlCommandText, sqlCommandParameters, dbTransaction);
+
+    AccountCreated accountCreated = new AccountCreated(account.AccountId, account.Email, account.CreatedOn); 
+    await _messageStorageClient.AddMessageAsync(accountCreated, dbTransaction);
+
+    dbTransaction.Commit();
 }
-
-...
-
-[HttpPost("")]
-public IActionResult PostAccount([FromBody] string email)
-{
-    var accountModel = new AccountModel(email);
-    using (DbTransaction transaction = _accountDbContext.Database.BeginTransaction(IsolationLevel.ReadCommitted).GetDbTransaction())
-    {
-        IMessageStorageTransaction messageStorageTransaction = _messageStorageClient.UseTransaction(transaction);
-
-        _accountDbContext.Accounts.Add(accountModel);
-        _accountDbContext.SaveChanges();
-
-        var accountCreatedEvent = new AccountCreatedEvent(accountModel.Id, accountModel.Email);
-        _messageStorageClient.Add(accountCreatedEvent);
-
-        messageStorageTransaction.Commit();
-    }
-
-    return StatusCode((int) HttpStatusCode.Created);
-}
-```
-
-__Example of returning job count__
-
-```
-public MessageStorageController(IMessageStorageClient messageStorageClient)
-{
-    _messageStorageClient = messageStorageClient;
-}
-
-[HttpGet("{jobStatus}/count")]
-public IActionResult Get([FromRoute] JobStatus jobStatus)
-{
-    int jobCount = _messageStorageClient.GetJobCount(jobStatus);
-    return StatusCode((int) HttpStatusCode.OK, jobCount);
-}
-```
-
-__Example of multiple MessageStorageClient injection__
-
-You could create another interface and instance like code snippet like below.
-
-```
-public interface ISecondMessageStorageClient : IMessageStorageClient
-{
-}
-
-public class SecondMessageStorageClient : MessageStorageClient,
-                                          ISecondMessageStorageClient
-
-{
-    public SecondMessageStorageClient(IMessageStorageRepositoryContext messageStorageRepositoryContext,
-                                      IHandlerManager handlerManager,
-                                      MessageStorageClientConfiguration? messageStorageConfiguration = null)
-        : base(messageStorageRepositoryContext, handlerManager, messageStorageConfiguration)
-    {
-    }
-}
-```
-
-Finally you can inject your interface with `AddMessageStorage` extension method.
-
-```
-services.AddMessageStorage<ISecondMessageStorageClient, SecondMessageStorageClient>
-            (messageStorage =>
-            {
-                messageStorage.WithClientConfiguration(new MessageStorageClientConfiguration())
-                              .UseSqlServer(ConnectionStr)
-                              .UseHandlers((handlerManager, provider) =>
-                                           {
-                                              ...
-                                           })
-                              .Construct((context, manager, configuration) => new SecondMessageStorageClient(context, manager, configuration));
-            })
-        .WithJobProcessor(new JobProcessorConfiguration{WaitWhenJobNotFound = TimeSpan.FromSeconds(30)});
 ```

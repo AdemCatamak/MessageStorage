@@ -1,6 +1,3 @@
-#tool "nuget:?package=Cake.CoreCLR&version=0.36.0"
-
-
 string BranchName = Argument("branchName", string.Empty);
 string NugetServer = Argument("nugetServer", string.Empty);
 string NugetApiKey = Argument("nugetApiKey", string.Empty);
@@ -14,13 +11,21 @@ var ProjectsToBePacked  = new Project[]
 {
   new Project("MessageStorage"),
   new Project("MessageStorage.AspNetCore"),
-  new Project("MessageStorage.DI.Extension"),
   new Project("MessageStorage.SqlServer"),
-  new Project("MessageStorage.SqlServer.DI.Extension")
+  new Project("MessageStorage.SqlServer.DependencyInjection"),
+  new Project("MessageStorage.Postgres"),
+  new Project("MessageStorage.Postgres.DependencyInjection"),
+  new Project("MessageStorage.Integration.MassTransit"),  
 };
 
-var TestProjectPatterns = new string[]{
-  "./**/UnitTest*.csproj",
+var FunctionalTestProjectPatterns = new string[]{
+  "./**/*UnitTest.csproj",
+  "./**/*FunctionalTest.csproj",
+  "./**/*IntegrationTest.csproj",
+};
+
+var NonFunctionalTestProjectPatterns = new string[]{
+  "./**/*BenchmarkTest.csproj",
 };
 
 var BuildConfig = "Release";
@@ -29,8 +34,7 @@ var DotNetPackedPath = "./dotnet-packed/";
 string MasterEnvironment = "prod";
 var BranchEnvironmentPairs = new Dictionary<string, string>()
 {
-  {"master", MasterEnvironment },
-  {"dev", "develop" },
+  {"main", MasterEnvironment },
   {"develop", "develop" }
 };
 
@@ -44,7 +48,8 @@ string[] DirectoriesToBeRemoved  = new string[]{
 string CheckEnvVariableStage = "Check Env Variable";
 string RemoveDirectoriesStage = "Remove Directories";
 string DotNetCleanStage = "DotNet Clean";
-string UnitTestStage = "Unit Test";
+string FunctionalTestStage = "Functional Tests";
+string NonFunctionalTestStage = "Non-Functional Tests";
 string DotNetPackStage = "DotNet Pack";
 string PushNugetStage = "Push Nuget";
 string FinalStage = "Final";
@@ -105,9 +110,22 @@ Task(DotNetCleanStage)
   DotNetCoreClean($"{SolutionName}.sln");
 });
 
-Task(UnitTestStage)
+Task(FunctionalTestStage)
 .IsDependentOn(DotNetCleanStage)
-.DoesForEach(TestProjectPatterns, (testProjectPattern)=>
+.DoesForEach(FunctionalTestProjectPatterns, (testProjectPattern)=>
+{
+  FilePathCollection testProjects = GetFiles(testProjectPattern);
+  foreach (var testProject in testProjects)
+  {
+    Console.WriteLine($"Tests are running : {testProject.ToString()}" );
+    var testSettings = new DotNetCoreTestSettings{Configuration = BuildConfig};
+    DotNetCoreTest(testProject.FullPath, testSettings);
+  }
+});
+
+Task(NonFunctionalTestStage)
+.IsDependentOn(FunctionalTestStage)
+.DoesForEach(NonFunctionalTestProjectPatterns, (testProjectPattern)=>
 {
   FilePathCollection testProjects = GetFiles(testProjectPattern);
   foreach (var testProject in testProjects)
@@ -119,7 +137,7 @@ Task(UnitTestStage)
 });
 
 Task(DotNetPackStage)
-.IsDependentOn(UnitTestStage)
+.IsDependentOn(NonFunctionalTestStage)
 .DoesForEach(ProjectsToBePacked , (project)=>
 {
   FilePath projFile = GetCsProjFile(project.Name);
