@@ -23,13 +23,11 @@ namespace MessageStorage.Integration.MassTransit.FunctionalTest.Fixtures
         public const string FIXTURE_KEY = "TestServerFixtureKey";
         public TimeSpan WaitAfterJobNotHandled { get; } = TimeSpan.FromSeconds(1);
         public readonly PostgresInfraFixture PostgresInfraFixture;
-        public readonly RabbitMqInfraFixture RabbitMqInfraFixture;
 
         private readonly IHost _testServer;
 
         public TestServerFixture()
         {
-            RabbitMqInfraFixture = new RabbitMqInfraFixture();
             PostgresInfraFixture = new PostgresInfraFixture();
             string postgresConnectionStr = PostgresInfraFixture.ConnectionString;
 
@@ -44,20 +42,14 @@ namespace MessageStorage.Integration.MassTransit.FunctionalTest.Fixtures
                                 {
                                     x.SetKebabCaseEndpointNameFormatter();
                                     x.AddConsumers(this.GetType().Assembly);
-                                    x.UsingRabbitMq((context, cfg) =>
+                                    x.UsingInMemory((context, cfg) =>
                                     {
-                                        cfg.Host(RabbitMqInfraFixture.Host, "/", h =>
-                                        {
-                                            h.Username(RabbitMqInfraFixture.Username);
-                                            h.Password(RabbitMqInfraFixture.Password);
-                                            h.UseCluster(clusterConfigurator => { clusterConfigurator.Node($"{RabbitMqInfraFixture.Host}:{RabbitMqInfraFixture.Port}"); });
-                                        });
-
+                                        cfg.Host();
                                         cfg.ConfigureEndpoints(context);
                                     });
                                 });
                                 services.AddMassTransitHostedService(true);
-                                EndpointConvention.Map<PublishIntegrationCommandTest.UpdateSameEntityCommand>(new Uri($"rabbitmq://{RabbitMqInfraFixture.Host}:{RabbitMqInfraFixture.Port}/{PublishIntegrationCommandTest.UpdateSomeEntityCommand_ConsumerDefinition.QueueName}"));
+                                EndpointConvention.Map<PublishIntegrationCommandTest.UpdateSameEntityCommand>(new Uri($"queue:{PublishIntegrationCommandTest.UpdateSomeEntityCommand_ConsumerDefinition.QueueName}"));
 
                                 services.AddMessageStorage(configurator =>
                                          {
@@ -89,7 +81,6 @@ namespace MessageStorage.Integration.MassTransit.FunctionalTest.Fixtures
         public void Dispose()
         {
             PostgresInfraFixture?.Dispose();
-            RabbitMqInfraFixture?.Dispose();
             _testServer?.Dispose();
         }
     }
