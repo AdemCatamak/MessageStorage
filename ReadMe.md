@@ -9,7 +9,6 @@ MessageStorage is a library prepared to be used in projects that want to apply t
 | `GitHub` | ![.github/workflows/github.yml](https://github.com/AdemCatamak/MessageStorage/workflows/.github/workflows/github.yml/badge.svg?branch=master) |
 
 
-
 | NuGet Package Name | Version |
 | ------- | ----- |
 | MessageStorage.AspNetCore | ![Nuget](https://img.shields.io/nuget/v/MessageStorage.AspNetCore.svg) | 
