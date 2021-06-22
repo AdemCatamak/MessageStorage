@@ -4,7 +4,6 @@ MessageStorage is a library prepared to be used in projects that want to apply t
 
 | Platform | Status |
 | ------- | ----- |
-| `Appveyor` | ![Appveyor](https://img.shields.io/appveyor/tests/AdemCatamak/MessageStorage&compact_message) |
 | `Travis` | ![Travis](https://travis-ci.com/AdemCatamak/MessageStorage.svg?branch=master) |
 | `GitHub` | ![.github/workflows/github.yml](https://github.com/AdemCatamak/MessageStorage/workflows/.github/workflows/github.yml/badge.svg?branch=master) |
 

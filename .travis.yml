@@ -7,5 +7,7 @@ branches:
   - master
   - develop
 
+os: windows
+
 notifications:
   email: false
