@@ -4,9 +4,11 @@ MessageStorage is a library prepared to be used in projects that want to apply t
 
 | Platform | Status |
 | ------- | ----- |
-| `Appveyor` | ![AppVeyor](https://img.shields.io/appveyor/ci/ademcatamak/messagestorage/master.svg) |
-| `Travis` | ![Travis (.com)](https://travis-ci.com/AdemCatamak/MessageStorage.svg?branch=master) |
+| `Appveyor` | ![Appveyor]https://img.shields.io/appveyor/tests/AdemCatamak/MessageStorage |
+| `Travis` | ![Travis](https://travis-ci.com/AdemCatamak/MessageStorage.svg?branch=master) |
 | `GitHub` | ![.github/workflows/github.yml](https://github.com/AdemCatamak/MessageStorage/workflows/.github/workflows/github.yml/badge.svg?branch=master) |
+
+
 
 | NuGet Package Name | Version |
 | ------- | ----- |
