@@ -1,5 +1,5 @@
 string BranchName = Argument("branchName", string.Empty);
-string NugetServer = Argument("nugetServer", string.Empty);
+string NugetServer = Argument("nugetServer", "https://api.nuget.org/v3/index.json");
 string NugetApiKey = Argument("nugetApiKey", string.Empty);
 string CIPlatform = Argument("ciPlatform", string.Empty);
 
