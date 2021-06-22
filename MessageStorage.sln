@@ -6,7 +6,6 @@ ProjectSection(SolutionItems) = preProject
 	build.sh = build.sh
 	.github\workflows\github.yml = .github\workflows\github.yml
 	.travis.yml = .travis.yml
-	appveyor.yml = appveyor.yml
 EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ConfigurationFolder", "ConfigurationFolder", "{13713C5A-D08E-4E82-A266-807B26013DF9}"
