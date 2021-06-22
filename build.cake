@@ -33,8 +33,7 @@ var DotNetPackedPath = "./dotnet-packed/";
 string MasterEnvironment = "prod";
 var BranchEnvironmentPairs = new Dictionary<string, string>()
 {
-  {"main", MasterEnvironment },
-  {"develop", "develop" }
+  {"master", MasterEnvironment },
 };
 
 string[] DirectoriesToBeRemoved  = new string[]{
