@@ -52,7 +52,7 @@ namespace MessageStorage.Integration.MassTransit.FunctionalTest
         {
             public Task Consume(ConsumeContext<EntityCreatedEvent> context)
             {
-                var payload = context.Message;
+                EntityCreatedEvent payload = context.Message;
                 if (Guid.Empty == payload.Id) throw new ArgumentNullException(nameof(payload.Id));
                 if (default == payload.CreatedOn) throw new ArgumentNullException(nameof(payload.CreatedOn));
 
