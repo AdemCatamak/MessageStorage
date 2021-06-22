@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using TestUtility;
 using Xunit;
 
@@ -7,7 +8,7 @@ namespace MessageStorage.UnitTest
     public class Job_SetQueued_Test
     {
         [Fact]
-        public void When_SetQueued__LastOperationTime_and_LastOperationInfo_ShouldChanged()
+        public async Task When_SetQueued__LastOperationTime_and_LastOperationInfo_ShouldChanged()
         {
             var job = new Job(Guid.NewGuid(),
                               new Message("some-message"),
@@ -19,7 +20,7 @@ namespace MessageStorage.UnitTest
                               5,
                               DateTime.UtcNow);
 
-            AsyncHelper.WaitFor(TimeSpan.FromMilliseconds(10));
+            await AsyncHelper.WaitFor(TimeSpan.FromMilliseconds(10));
 
             string expectedLastOperationInfo = JobStatus.Queued.ToString();
             DateTime expectedLastOperationTimeGreaterThan = DateTime.UtcNow;
@@ -27,7 +28,7 @@ namespace MessageStorage.UnitTest
             Assert.NotEqual(JobStatus.Queued, job.JobStatus);
             AssertThat.LessThan(expectedLastOperationTimeGreaterThan, job.LastOperationTime);
 
-            AsyncHelper.WaitFor(TimeSpan.FromMilliseconds(10));
+            await AsyncHelper.WaitFor(TimeSpan.FromMilliseconds(10));
             job.SetQueued();
 
 
