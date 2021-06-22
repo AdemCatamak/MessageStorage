@@ -1,6 +1,13 @@
-dotnet: 3.1
+dotnet: 5.0
 script:
   - ./build.sh --branchName=$TRAVIS_BRANCH --ciPlatform='travis' --nugetServer=$NugetServer --nugetApiKey=$NugetApiKey
+
+branches:
+  only:
+  - master
+  - develop
+
+os: windows
 
 notifications:
   email: false

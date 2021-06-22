@@ -1,0 +1,25 @@
+version: "3.4"
+
+services:
+
+  forgetty-sample-web-api-sqlserver:
+    image: mcr.microsoft.com/mssql/server:2017-CU14-ubuntu
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "Passw0rd"
+    expose:
+      - 6137
+    ports:
+      - 6137:1433
+
+
+  forgetty-sample-web-api-postgres:
+    image: postgres:9.5.25-alpine
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    expose:
+      - 6138
+    ports:
+      - 6138:5432
