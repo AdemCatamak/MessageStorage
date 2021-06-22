@@ -46,7 +46,7 @@ service fetches tasks from db and executes.
  })
  // order is important
  .AddMessageStoragePrerequisiteExecutor()
- .AddMessageStorageJobDispatcherHostedService();
+ .AddMessageStorageJobDispatcher();
  ```
 
 After these steps, you can use the object that is an implementation of `IMessageStorageClient` interface.
