@@ -1,3 +1,4 @@
+language: csharp
 dotnet: 5.0
 script:
   - ./build.sh --branchName=$TRAVIS_BRANCH --ciPlatform='travis' --nugetServer=$NugetServer --nugetApiKey=$NugetApiKey
