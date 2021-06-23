@@ -114,6 +114,7 @@ namespace MessageStorage.SqlServer.IntegrationTest
             {
                 _sut.UseTransaction(transaction.GetMessageStorageTransaction());
                 (message, jobs) = await _sut.AddMessageAsync("some-payload");
+                await transaction.CommitAsync();
             }
 
             var jobList = jobs.ToList();
