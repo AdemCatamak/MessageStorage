@@ -80,7 +80,62 @@ namespace MessageStorage.Postgres.IntegrationTest
             await connection.OpenAsync();
             await using (NpgsqlTransaction transaction = await connection.BeginTransactionAsync(IsolationLevel.ReadCommitted))
             {
-                (message, jobs) = await _sut.AddMessageAsync("some-payload", transaction.GetMessageStorageTransaction());
+                (message, jobs) = await _sut.AddMessageAsync("some-payload", transaction);
+            }
+
+            var jobList = jobs.ToList();
+
+            Assert.NotNull(message);
+            Assert.NotEmpty(jobList);
+
+            bool doesMessageExist = await _dbChecks.DoesMessageIsExistAsync(message.Id);
+            Assert.False(doesMessageExist);
+
+            foreach (Job job in jobList)
+            {
+                bool doesJobExist = await _dbChecks.DoesJobIsExistAsync(job.Id);
+                Assert.False(doesJobExist);
+            }
+        }
+
+        [Fact]
+        public async Task When_UseTransaction_AddMessageAsync__Message_and_Jobs_ShouldPersistedInDb()
+        {
+            await using var connection = new NpgsqlConnection(_postgresInfraFixture.ConnectionString);
+            await connection.OpenAsync();
+            Message message;
+            IEnumerable<Job> jobs;
+            await using (NpgsqlTransaction transaction = await connection.BeginTransactionAsync(IsolationLevel.ReadCommitted))
+            {
+                _sut.UseTransaction(transaction);
+                (message, jobs) = await _sut.AddMessageAsync("some-payload");
+                await transaction.CommitAsync();
+            }
+
+            var jobList = jobs.ToList();
+            Assert.Equal(2, jobList.Count);
+
+            bool doesMessageExist = await _dbChecks.DoesMessageIsExistAsync(message.Id);
+            Assert.True(doesMessageExist);
+
+            foreach (Job job in jobList)
+            {
+                bool doesJobExist = await _dbChecks.DoesJobIsExistAsync(job.Id);
+                Assert.True(doesJobExist);
+            }
+        }
+
+        [Fact]
+        public async Task When_UseTransaction_AddMessageAsync_TransactionNoCommitted__Message_and_Jobs_ShouldNotPersistedInDb()
+        {
+            Message message;
+            IEnumerable<Job> jobs;
+            await using var connection = new NpgsqlConnection(_postgresInfraFixture.ConnectionString);
+            await connection.OpenAsync();
+            await using (NpgsqlTransaction transaction = await connection.BeginTransactionAsync(IsolationLevel.ReadCommitted))
+            {
+                _sut.UseTransaction(transaction);
+                (message, jobs) = await _sut.AddMessageAsync("some-payload");
             }
 
             var jobList = jobs.ToList();

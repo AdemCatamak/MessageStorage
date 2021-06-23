@@ -83,7 +83,7 @@ namespace MessageStorage.SqlServer.IntegrationTest
             await connection.OpenAsync();
             await using (DbTransaction transaction = await connection.BeginTransactionAsync(IsolationLevel.ReadCommitted))
             {
-                (message, jobs) = await _sut.AddMessageAsync("some-payload", transaction.GetMessageStorageTransaction());
+                (message, jobs) = await _sut.AddMessageAsync("some-payload", transaction);
             }
 
             var jobList = jobs.ToList();
@@ -100,6 +100,64 @@ namespace MessageStorage.SqlServer.IntegrationTest
                 Assert.False(doesJobExist);
             }
         }
+
+
+        [Fact]
+        public async Task When_UseTransaction_AddMessageAsync__MessageAndJobsShouldPersistedInDb()
+        {
+            Message message;
+            IEnumerable<Job> jobs;
+
+            await using var connection = new SqlConnection(_sqlServerInfraFixture.ConnectionString);
+            await connection.OpenAsync();
+            await using (DbTransaction transaction = await connection.BeginTransactionAsync(IsolationLevel.ReadCommitted))
+            {
+                _sut.UseTransaction(transaction.GetMessageStorageTransaction());
+                (message, jobs) = await _sut.AddMessageAsync("some-payload");
+                await transaction.CommitAsync();
+            }
+
+            var jobList = jobs.ToList();
+            Assert.Equal(2, jobList.Count);
+
+            bool isMessageExist = await _dbChecks.CheckMessageIsExistAsync(message.Id);
+            Assert.True(isMessageExist);
+
+            foreach (Job job in jobList)
+            {
+                bool doesJobExist = await _dbChecks.CheckJobIsExistAsync(job.Id);
+                Assert.True(doesJobExist);
+            }
+        }
+
+        [Fact]
+        public async Task When_UseTransaction_AddMessageAsync_TransactionNoCommitted___Message_and_Jobs_ShouldPersistedInDb()
+        {
+            Message message;
+            IEnumerable<Job> jobs;
+            await using var connection = new SqlConnection(_sqlServerInfraFixture.ConnectionString);
+            await connection.OpenAsync();
+            await using (DbTransaction transaction = await connection.BeginTransactionAsync(IsolationLevel.ReadCommitted))
+            {
+                _sut.UseTransaction(transaction.GetMessageStorageTransaction());
+                (message, jobs) = await _sut.AddMessageAsync("some-payload");
+            }
+
+            var jobList = jobs.ToList();
+
+            Assert.NotNull(message);
+            Assert.NotEmpty(jobList);
+
+            bool doesMessageExist = await _dbChecks.CheckMessageIsExistAsync(message.Id);
+            Assert.False(doesMessageExist);
+
+            foreach (Job job in jobList)
+            {
+                bool doesJobExist = await _dbChecks.CheckJobIsExistAsync(job.Id);
+                Assert.False(doesJobExist);
+            }
+        }
+
 
         private class StringMessageHandler : BaseMessageHandler<string>
         {
