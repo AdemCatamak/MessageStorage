@@ -10,6 +10,18 @@ namespace MessageStorage.SqlServer.Extension
 {
     public static class MessageStorageClientExtension
     {
+        public static void UseTransaction(this IMessageStorageClient messageStorageClient, IDbTransaction dbTransaction)
+        {
+            using IMessageStorageTransaction messageStorageTransaction = dbTransaction.GetMessageStorageTransaction();
+            messageStorageClient.UseTransaction(messageStorageTransaction);
+        }
+
+        public static void UseTransaction(this IMessageStorageClient messageStorageClient, SqlTransaction sqlTransaction)
+        {
+            ISqlServerMessageStorageTransaction sqlServerMessageStorageTransaction = sqlTransaction.GetMessageStorageTransaction();
+            messageStorageClient.UseTransaction(sqlServerMessageStorageTransaction);
+        }
+
         public static async Task<(Message, IEnumerable<Job>)> AddMessageAsync(this IMessageStorageClient messageStorageClient, object payload, IDbTransaction dbTransaction, CancellationToken cancellationToken = default)
         {
             using IMessageStorageTransaction messageStorageTransaction = dbTransaction.GetMessageStorageTransaction();

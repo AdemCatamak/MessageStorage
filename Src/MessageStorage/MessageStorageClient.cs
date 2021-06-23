@@ -12,6 +12,7 @@ namespace MessageStorage
     {
         private readonly IMessageHandlerProvider _messageHandlerProvider;
         private readonly IRepositoryFactory _repositoryFactory;
+        private IMessageStorageTransaction? _borrowedTransaction;
 
         public MessageStorageClient(IMessageHandlerProvider messageHandlerProvider, IRepositoryFactory repositoryFactory)
         {
@@ -19,16 +20,29 @@ namespace MessageStorage
             _repositoryFactory = repositoryFactory;
         }
 
+        public void UseTransaction(IMessageStorageTransaction messageStorageTransaction)
+        {
+            _borrowedTransaction = messageStorageTransaction;
+        }
+
         public async Task<(Message, IEnumerable<Job>)> AddMessageAsync(object payload, CancellationToken cancellationToken = default)
         {
-            using IMessageStorageConnection connection = _repositoryFactory.CreateConnection();
-            using IMessageStorageTransaction transaction = connection.BeginTransaction();
+            if (_borrowedTransaction == null)
+            {
+                using IMessageStorageConnection connection = _repositoryFactory.CreateConnection();
+                using IMessageStorageTransaction transaction = connection.BeginTransaction();
 
-            var (message, jobs) = await AddMessageAsync(payload, transaction, cancellationToken);
+                var (message, jobs) = await AddMessageAsync(payload, transaction, cancellationToken);
 
-            transaction.Commit();
+                transaction.Commit();
 
-            return (message, jobs);
+                return (message, jobs);
+            }
+            else
+            {
+                var result = await AddMessageAsync(payload, _borrowedTransaction, cancellationToken);
+                return result;
+            }
         }
 
         public async Task<(Message, IEnumerable<Job>)> AddMessageAsync(object payload, IMessageStorageTransaction messageStorageTransaction, CancellationToken cancellationToken = default)

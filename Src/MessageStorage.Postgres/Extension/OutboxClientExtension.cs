@@ -10,6 +10,18 @@ namespace MessageStorage.Postgres.Extension
 {
     public static class OutboxClientExtension
     {
+        public static void UseTransaction(this IMessageStorageClient messageStorageClient, IDbTransaction dbTransaction)
+        {
+            IMessageStorageTransaction messageStorageTransaction = dbTransaction.GetMessageStorageTransaction();
+            messageStorageClient.UseTransaction(messageStorageTransaction);
+        }
+
+        public static void UseTransaction(this IMessageStorageClient messageStorageClient, NpgsqlTransaction npgsqlTransaction)
+        {
+            IPostgresMessageStorageTransaction postgresMessageStorageTransaction = npgsqlTransaction.GetMessageStorageTransaction();
+            messageStorageClient.UseTransaction(postgresMessageStorageTransaction);
+        }
+
         public static async Task<(Message, IEnumerable<Job>)> AddMessageAsync(this IMessageStorageClient messageStorageClient, object payload, IDbTransaction dbTransaction, CancellationToken cancellationToken = default)
         {
             IMessageStorageTransaction messageStorageTransaction = dbTransaction.GetMessageStorageTransaction();
