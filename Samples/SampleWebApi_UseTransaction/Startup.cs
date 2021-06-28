@@ -22,8 +22,7 @@ namespace SampleWebApi_UseTransaction
         {
             services.AddControllers();
             services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "SampleWebApi", Version = "v1"}); });
-
-            services.AddLogging(builder => builder.AddConsole());
+            
             services.AddScoped<IEmailSender, ConsoleEmailSender>();
 
             services.AddSingleton<IConnectionFactory>(provider => new SqlServerConnectionFactory(provider.GetRequiredService<IConfiguration>()
