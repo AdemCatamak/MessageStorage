@@ -1,8 +1,8 @@
 using System.Threading;
 using System.Threading.Tasks;
+using MessageStorage.BackgroundTasks.Options;
 using MessageStorage.DataAccessLayer;
 using MessageStorage.DataAccessLayer.Repositories;
-using MessageStorage.MessageHandlers.Options;
 
 namespace MessageStorage.BackgroundTasks
 {

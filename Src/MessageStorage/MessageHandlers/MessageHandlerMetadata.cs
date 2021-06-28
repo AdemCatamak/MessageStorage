@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using MessageStorage.MessageHandlers.Options;
+using MessageStorage.BackgroundTasks.Options;
 
 namespace MessageStorage.MessageHandlers
 {

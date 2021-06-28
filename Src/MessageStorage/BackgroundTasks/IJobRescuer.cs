@@ -1,6 +1,6 @@
 using System.Threading;
 using System.Threading.Tasks;
-using MessageStorage.MessageHandlers.Options;
+using MessageStorage.BackgroundTasks.Options;
 
 namespace MessageStorage.BackgroundTasks
 {

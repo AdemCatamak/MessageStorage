@@ -1,7 +1,7 @@
 using System;
 using MessageStorage.AspNetCore;
+using MessageStorage.BackgroundTasks.Options;
 using MessageStorage.DependencyInjection;
-using MessageStorage.MessageHandlers.Options;
 using MessageStorage.SqlServer.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;

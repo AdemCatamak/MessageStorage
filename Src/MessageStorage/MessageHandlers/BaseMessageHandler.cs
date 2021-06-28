@@ -57,7 +57,7 @@ namespace MessageStorage.MessageHandlers
                 // ignore
             }
 
-            if (!(val is T t))
+            if (val is not T t)
             {
                 throw new ArgumentNotCompatibleException(payload.GetType().Name, nameof(T));
             }
