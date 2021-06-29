@@ -18,14 +18,14 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\MessageStorage\MessageStorage.csproj"/>
+        <ProjectReference Include="..\MessageStorage\MessageStorage.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Dapper" Version="2.0.90" PrivateAssets="All"/>
-        <PackageReference Include="FluentMigrator" Version="3.2.16" PrivateAssets="All"/>
-        <PackageReference Include="FluentMigrator.Runner" Version="3.2.16" PrivateAssets="All"/>
-        <PackageReference Include="Npgsql" Version="5.0.5" PrivateAssets="All"/>
+        <PackageReference Include="Dapper" Version="2.0.90" />
+        <PackageReference Include="FluentMigrator" Version="3.2.17" />
+        <PackageReference Include="FluentMigrator.Runner" Version="3.2.17" />
+        <PackageReference Include="Npgsql" Version="5.0.7" />
     </ItemGroup>
 
 </Project>
