@@ -1,6 +1,7 @@
 using System;
+using MessageStorage.MessageHandlers;
 
-namespace MessageStorage.MessageHandlers.Options
+namespace MessageStorage.BackgroundTasks.Options
 {
     public static class RescueOptionExtension
     {

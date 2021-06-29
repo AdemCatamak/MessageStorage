@@ -1,7 +1,7 @@
 using System;
 using MessageStorage.AspNetCore;
+using MessageStorage.BackgroundTasks.Options;
 using MessageStorage.DependencyInjection;
-using MessageStorage.MessageHandlers.Options;
 using MessageStorage.SqlServer.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -22,8 +22,7 @@ namespace SampleWebApi_UseTransaction
         {
             services.AddControllers();
             services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "SampleWebApi", Version = "v1"}); });
-
-            services.AddLogging(builder => builder.AddConsole());
+            
             services.AddScoped<IEmailSender, ConsoleEmailSender>();
 
             services.AddSingleton<IConnectionFactory>(provider => new SqlServerConnectionFactory(provider.GetRequiredService<IConfiguration>()

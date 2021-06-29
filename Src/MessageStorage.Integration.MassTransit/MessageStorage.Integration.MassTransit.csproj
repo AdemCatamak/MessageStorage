@@ -13,12 +13,12 @@
         <Description>Message and Job Storage</Description>
         <LangVersion>latest</LangVersion>
 
-        <VersionPrefix>4.0.1</VersionPrefix>
+        <VersionPrefix>4.0.4</VersionPrefix>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="MassTransit" Version="7.0.0" />
+        <PackageReference Include="MassTransit" Version="7.2.1" />
     </ItemGroup>
 
     <ItemGroup>

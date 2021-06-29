@@ -19,8 +19,8 @@ namespace MessageStorage.DependencyInjection
             serviceCollection.AddTransient<IMessageHandlerProvider, DependencyInjectionMessageHandlerProvider>();
 
             IMessageHandlerContainer messageHandlerContainer = new DependencyInjectionMessageHandlerContainer(serviceCollection);
-            var messageHandlerRegistrar = new MessageStorageDependencyConfigurator(messageHandlerContainer, serviceCollection);
-            configurationAction.Invoke(messageHandlerRegistrar);
+            var dependencyConfigurator = new MessageStorageDependencyConfigurator(messageHandlerContainer, serviceCollection);
+            configurationAction.Invoke(dependencyConfigurator);
 
             return serviceCollection;
         }
