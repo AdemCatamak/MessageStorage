@@ -13,12 +13,12 @@
         <Description>Message and Job Storage</Description>
         <LangVersion>latest</LangVersion>
 
-        <VersionPrefix>4.0.4</VersionPrefix>
+        <VersionPrefix>4.0.5</VersionPrefix>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="fasterflect" Version="3.0.0"/>
+        <PackageReference Include="fasterflect" Version="3.0.0" PrivateAssets="All"/>
         <PackageReference Include="NewId" Version="3.0.3"/>
         <PackageReference Include="Newtonsoft.Json" Version="13.0.1"/>
     </ItemGroup>
