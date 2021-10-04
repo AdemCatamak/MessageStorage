@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <PackageId>MessageStorage.MySql</PackageId>
+
+        <TargetFramework>netstandard2.0</TargetFramework>
+
+        <IsPackable>true</IsPackable>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+
+        <Authors>Adem Catamak</Authors>
+        <Description>Message and Job Storage</Description>
+        <LangVersion>latest</LangVersion>
+
+        <VersionPrefix>4.0.5</VersionPrefix>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\MessageStorage\MessageStorage.csproj" />
+    </ItemGroup>
+    
+    <ItemGroup>
+      <PackageReference Include="Dapper" Version="2.0.90" />
+      <PackageReference Include="FluentMigrator" Version="3.3.0" />
+      <PackageReference Include="FluentMigrator.Runner" Version="3.3.0" />
+      <PackageReference Include="FluentMigrator.Runner.Core" Version="3.3.0" />
+      <PackageReference Include="MySql.Data" Version="8.0.26" />
+    </ItemGroup>
+
+</Project>
