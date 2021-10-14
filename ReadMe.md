@@ -53,7 +53,7 @@ After these steps, you can use the object that is an implementation of `IMessage
 
 ### Sample Service
 
-Example of registering Account and saving AccountCreatedEvent message in the same transaction.
+Example of registering SomeEntity and saving SomeEntityCreatedEvent message in the same transaction.
 
 ```
 using (IDbConnection connection = _connectionFactory.CreateConnection())
@@ -61,8 +61,8 @@ using (IDbConnection connection = _connectionFactory.CreateConnection())
     using IDbTransaction dbTransaction = connection.BeginTransaction(IsolationLevel.ReadCommitted);
     await connection.ExecuteAsync( sqlCommandText, sqlCommandParameters, dbTransaction);
 
-    AccountCreated accountCreated = new AccountCreated(account.AccountId, account.Email, account.CreatedOn); 
-    await _messageStorageClient.AddMessageAsync(accountCreated, dbTransaction);
+    SomeEntityCreated someEntityCreated = new (someEntity.Id, someEntity.SomeProperty, someEntity.CreatedOn); 
+    await _messageStorageClient.AddMessageAsync(someEntityCreated, dbTransaction);
 
     dbTransaction.Commit();
 }
