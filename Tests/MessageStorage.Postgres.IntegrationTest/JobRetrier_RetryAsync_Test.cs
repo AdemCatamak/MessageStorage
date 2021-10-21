@@ -36,7 +36,7 @@ namespace MessageStorage.Postgres.IntegrationTest
             var executor = new PostgresMigrationExecutor(repositoryConfiguration);
             executor.Execute();
 
-            _messageHandlerMetadata = new MessageHandlerMetadata(typeof(IMessageHandler<string>), new List<Type>() {typeof(string)});
+            _messageHandlerMetadata = new MessageHandlerMetadata(typeof(IMessageHandler<string>), new List<Type> {typeof(string)});
 
             _sut = new JobRetrier(_repositoryFactory);
         }

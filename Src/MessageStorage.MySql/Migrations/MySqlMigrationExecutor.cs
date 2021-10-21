@@ -38,7 +38,7 @@ namespace MessageStorage.MySql.Migrations
                                                   .AddSingleton(repositoryConfiguration)
                                                   .ConfigureRunner(builder =>
                                                    {
-                                                       builder.AddMySql4()
+                                                       builder.AddMySql5()
                                                               .WithGlobalConnectionString(repositoryConfiguration.ConnectionString)
                                                               .ScanIn(typeof(_0001_VersionTable).Assembly).For.Migrations();
                                                    });

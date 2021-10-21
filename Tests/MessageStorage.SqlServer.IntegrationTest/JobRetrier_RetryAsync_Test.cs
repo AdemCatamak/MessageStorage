@@ -35,7 +35,7 @@ namespace MessageStorage.SqlServer.IntegrationTest
             var executor = new SqlServerMigrationExecutor(repositoryConfiguration);
             executor.Execute();
 
-            _messageHandlerMetadata = new MessageHandlerMetadata(typeof(IMessageHandler<string>), new List<Type>() {typeof(string)});
+            _messageHandlerMetadata = new MessageHandlerMetadata(typeof(IMessageHandler<string>), new List<Type> {typeof(string)});
 
             _sut = new JobRetrier(_repositoryFactory);
         }

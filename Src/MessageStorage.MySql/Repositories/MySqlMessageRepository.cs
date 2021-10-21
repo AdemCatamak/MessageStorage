@@ -21,7 +21,7 @@ namespace MessageStorage.MySql.Repositories
         {
             string payloadStr = PayloadSerializer.Serialize(message.Payload);
 
-            string script = $"insert into \"{_creator.RepositoryConfiguration.Schema}\".\"messages\" (id, created_on, payload_type_name, payload) VALUES (@id, @created_on, @payload_type_name, @payload)";
+            string script = $"insert into {_creator.RepositoryConfiguration.Schema}.messages (id, created_on, payload_type_name, payload) VALUES (@id, @created_on, @payload_type_name, @payload)";
             var parameters = new
                              {
                                  id = message.Id,

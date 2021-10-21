@@ -19,7 +19,7 @@ namespace MessageStorage.MySql.Migrations
             Create.Table("messages")
                   .InSchema(_repositoryConfiguration.Schema)
                   .WithColumn("id").AsGuid().PrimaryKey("PK_Messages_Id")
-                  .WithColumn("created_on").AsDateTime2().NotNullable().WithDefault(SystemMethods.CurrentUTCDateTime)
+                  .WithColumn("created_on").AsDateTime2().NotNullable()//.WithDefault(SystemMethods.CurrentUTCDateTime)
                   .WithColumn("payload_type_name").AsString(Int32.MaxValue).Nullable()
                   .WithColumn("payload").AsString(int.MaxValue).NotNullable()
                    ;

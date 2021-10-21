@@ -51,8 +51,8 @@ namespace MessageStorage.SqlServer.BenchmarkTest
             List<Task> tasks = new List<Task>();
             for (int i = 0; i < times; i++)
             {
-                DummyMessage dummyMessage = new DummyMessage()
-                {
+                DummyMessage dummyMessage = new DummyMessage
+                                            {
                     Guid = Guid.NewGuid()
                 };
                 var task = _messageStorageClient.AddMessageAsync(dummyMessage);

@@ -47,8 +47,8 @@ namespace MessageStorage.SqlServer.IntegrationTest
         {
             private bool _initialized;
 
-            public readonly IReadOnlyCollection<Job> Jobs = new List<Job>()
-            {
+            public readonly IReadOnlyCollection<Job> Jobs = new List<Job>
+                                                            {
                 new Job(Guid.NewGuid(), new Message("dummy-payload"), "dummy-handler", JobStatus.Queued, DateTime.UtcNow, DateTime.UtcNow, null, 5, DateTime.UtcNow),
                 new Job(Guid.NewGuid(), new Message("dummy-payload"), "dummy-handler", JobStatus.Queued, DateTime.UtcNow, DateTime.UtcNow, null, 5, DateTime.UtcNow),
                 new Job(Guid.NewGuid(), new Message("dummy-payload"), "dummy-handler", JobStatus.Queued, DateTime.UtcNow, DateTime.UtcNow, null, 5, DateTime.UtcNow),

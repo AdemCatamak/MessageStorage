@@ -23,7 +23,7 @@ namespace MessageStorage.MySql.Repositories
         public Task AddAsync(Job job, CancellationToken cancellationToken = default)
         {
             string script =
-                $"insert into \"{_creator.RepositoryConfiguration.Schema}\".\"jobs\" " +
+                $"insert into {_creator.RepositoryConfiguration.Schema}.jobs " +
                 $"(id, created_on, message_id, message_handler_type_name, job_status, " +
                 $"last_operation_time, last_operation_info," +
                 $"current_execution_attempt_count, execute_later_than) " +
@@ -49,7 +49,7 @@ namespace MessageStorage.MySql.Repositories
 
         public Task UpdateJobStatusAsync(Job job, CancellationToken cancellationToken = default)
         {
-            string script = $"update \"{_creator.RepositoryConfiguration.Schema}\".jobs set " +
+            string script = $"update {_creator.RepositoryConfiguration.Schema}.jobs set " +
                             $"job_status = @job_status, last_operation_time = @last_operation_time, last_operation_info = @last_operation_info, execute_later_than = @execute_later_than " +
                             $"Where id = @id";
             var parameters = new
@@ -66,17 +66,17 @@ namespace MessageStorage.MySql.Repositories
         public async Task<Job?> SetFirstQueuedJobToInProgressAsync(CancellationToken cancellationToken = default)
         {
             string script = $@"
-UPDATE ""{_creator.RepositoryConfiguration.Schema}"".jobs j
+UPDATE {_creator.RepositoryConfiguration.Schema}.jobs j
 SET     job_status = @target_status,
         last_operation_time = @target_last_operation_time,
         last_operation_info = @target_last_operation_info,
         current_execution_attempt_count = current_execution_attempt_count + 1
-FROM ""{_creator.RepositoryConfiguration.Schema}"".messages as m
+FROM {_creator.RepositoryConfiguration.Schema}.messages as m
 WHERE m.id = j.message_id and
       j.id =
        (SELECT jo.id
-        FROM   ""{_creator.RepositoryConfiguration.Schema}"".jobs jo
-        INNER JOIN ""{_creator.RepositoryConfiguration.Schema}"".messages me on me.id = jo.message_id
+        FROM   {_creator.RepositoryConfiguration.Schema}.jobs jo
+        INNER JOIN {_creator.RepositoryConfiguration.Schema}.messages me on me.id = jo.message_id
         WHERE  jo.job_status = @source_job_status and jo.execute_later_than < @source_execute_later_than
         ORDER BY jo.id
         LIMIT  1
@@ -114,7 +114,7 @@ RETURNING   j.id, j.message_handler_type_name, j.created_on as job_created_on, j
         public async Task SetInQueued(string messageHandlerTypeName, int maxExecutionAttemptCount, TimeSpan deferTime, CancellationToken cancellationToken = default)
         {
             string script = $@"
-UPDATE ""{_creator.RepositoryConfiguration.Schema}"".jobs
+UPDATE {_creator.RepositoryConfiguration.Schema}.jobs
 SET     job_status = @target_job_status,
         last_operation_time = @target_last_operation_time,
         last_operation_info = @target_last_operation_info,
@@ -141,7 +141,7 @@ WHERE   job_status = @source_job_status
         public async Task SetInQueued(string messageHandlerTypeName, TimeSpan maxExecutionTime, CancellationToken cancellationToken = default)
         {
             string script = $@"
-UPDATE ""{_creator.RepositoryConfiguration.Schema}"".jobs
+UPDATE {_creator.RepositoryConfiguration.Schema}.jobs
 SET     job_status = @target_job_status,
         last_operation_time = @target_last_operation_time,
         last_operation_info = @target_last_operation_info
@@ -165,7 +165,7 @@ WHERE   message_handler_type_name = @source_handler_type
 
         public async Task<int> GetJobCountAsync(JobStatus jobStatus, CancellationToken cancellationToken = default)
         {
-            string script = $"SELECT count(id) as job_count FROM \"{_creator.RepositoryConfiguration.Schema}\".jobs WHERE job_status = @job_status";
+            string script = $"SELECT count(id) as job_count FROM {_creator.RepositoryConfiguration.Schema}.jobs WHERE job_status = @job_status";
 
             using IMySqlMessageStorageConnection connection = _creator.CreateConnection();
             var jobCount

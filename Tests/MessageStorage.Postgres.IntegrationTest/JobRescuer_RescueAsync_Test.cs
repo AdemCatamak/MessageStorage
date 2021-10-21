@@ -36,7 +36,7 @@ namespace MessageStorage.Postgres.IntegrationTest
             var executor = new PostgresMigrationExecutor(repositoryConfiguration);
             executor.Execute();
 
-            _messageHandlerMetadata = new MessageHandlerMetadata(typeof(IMessageHandler<string>), new List<Type>() {typeof(string)});
+            _messageHandlerMetadata = new MessageHandlerMetadata(typeof(IMessageHandler<string>), new List<Type> {typeof(string)});
 
             _sut = new JobRescuer(_repositoryFactory);
         }
@@ -91,8 +91,8 @@ namespace MessageStorage.Postgres.IntegrationTest
 
             var lastOperationTime = new DateTime(2020, 06, 10, 20, 10, 15);
 
-            var jobList = new List<Job>()
-            {
+            var jobList = new List<Job>
+                          {
                 new Job(Guid.NewGuid(), new Message("payload"), _messageHandlerMetadata.MessageHandlerTypeName, JobStatus.InProgress, DateTime.UtcNow, lastOperationTime, "", 0, DateTime.UtcNow),
                 new Job(Guid.NewGuid(), new Message("payload"), _messageHandlerMetadata.MessageHandlerTypeName, JobStatus.InProgress, DateTime.UtcNow, lastOperationTime, "", 5, DateTime.UtcNow),
             };

@@ -38,7 +38,7 @@ namespace MessageStorage.MySql.FunctionalTest.Fixtures
                             {
                                 collection.AddMessageStorage(configurator =>
                                            {
-                                               configurator.Register(this.GetType().Assembly);
+                                               configurator.Register(GetType().Assembly);
                                                configurator.UseMySql(connectionString);
                                            })
                                           .AddMessageStoragePrerequisiteExecutor()
