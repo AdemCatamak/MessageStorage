@@ -4,13 +4,19 @@ using Ductus.FluentDocker.Builders;
 using Ductus.FluentDocker.Services;
 using MySqlConnector;
 using TestUtility;
+using Xunit;
 
 namespace MessageStorage.MySql.BenchmarkTest.Fixtures
 {
+    [CollectionDefinition(MySqlInfraFixture.FIXTURE_KEY)]
+    public class MySqlInfraFixtureDefinition : ICollectionFixture<MySqlInfraFixture>
+    {
+    }
+
     public class MySqlInfraFixture : IDisposable
     {
         public const string FIXTURE_KEY = "MySqlInfraFixture";
-        
+
         private readonly IContainerService _mySqlContainer;
         public string Host { get; private set; }
         public string Database { get; private set; }
@@ -66,6 +72,7 @@ namespace MessageStorage.MySql.BenchmarkTest.Fixtures
                     Thread.Sleep(TimeSpan.FromSeconds(5));
                     goto again;
                 }
+
                 throw;
             }
             finally
