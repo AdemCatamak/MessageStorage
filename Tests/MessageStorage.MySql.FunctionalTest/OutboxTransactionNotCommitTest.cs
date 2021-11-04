@@ -14,7 +14,7 @@ using MessageStorage.MySql.FunctionalTest.Fixtures;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
-using MySql.Data.MySqlClient;
+using MySqlConnector;
 using TestUtility;
 using Xunit;
 
@@ -230,7 +230,7 @@ CREATE TABLE IF NOT EXISTS not_committed.shipments (
         public class ShipmentDbContext : DbContext
         {
             public ShipmentDbContext(string connectionStr) :
-                base(new DbContextOptionsBuilder().UseMySql(connectionStr, new MySqlServerVersion("5")).Options)
+                base(new DbContextOptionsBuilder().UseMySql(connectionStr, ServerVersion.AutoDetect(connectionStr)).Options)
             {
             }
 

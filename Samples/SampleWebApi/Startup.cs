@@ -1,6 +1,7 @@
 using System;
 using MessageStorage.AspNetCore;
 using MessageStorage.DependencyInjection;
+using MessageStorage.MySql.DependencyInjection;
 using MessageStorage.Postgres.DependencyInjection;
 using MessageStorage.SqlServer.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
@@ -45,6 +46,11 @@ namespace SampleWebApi
                                  configurator.UsePostgres(provider => provider.GetRequiredService<IConfiguration>()
                                                                               .GetConnectionString("PostgresConnectionString"));
                                  break;
+                             case "MySql":
+                                 configurator.UseMySql(provider => provider.GetRequiredService<IConfiguration>()
+                                                                              .GetConnectionString("MySqlConnectionString"));
+
+                                 break;
                              default:
                                  throw new ArgumentOutOfRangeException(nameof(selectedDb));
                          }
@@ -62,7 +68,11 @@ namespace SampleWebApi
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "SampleWebApi v1"));
+                app.UseSwaggerUI(c =>
+                {
+                    c.RoutePrefix = "";
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "SampleWebApi v1");
+                });
             }
 
             app.UseRouting();

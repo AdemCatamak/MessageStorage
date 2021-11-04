@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Dapper;
 using MessageStorage.DataAccessLayer;
 using MessageStorage.Exceptions;
-using MySql.Data.MySqlClient;
+using MySqlConnector;
 
 namespace MessageStorage.MySql.DbClient
 {

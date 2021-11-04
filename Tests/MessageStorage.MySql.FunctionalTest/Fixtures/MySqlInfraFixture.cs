@@ -1,9 +1,8 @@
 using System;
-using System.Net.NetworkInformation;
 using System.Threading;
 using Ductus.FluentDocker.Builders;
 using Ductus.FluentDocker.Services;
-using MySql.Data.MySqlClient;
+using MySqlConnector;
 using TestUtility;
 
 namespace MessageStorage.MySql.FunctionalTest.Fixtures
@@ -35,7 +34,8 @@ namespace MessageStorage.MySql.FunctionalTest.Fixtures
                       Database = Database,
                       Port = (uint)Port,
                       UserID = Username,
-                      Password = Password
+                      Password = Password,
+                      AllowUserVariables = true
                   };
             ConnectionString = connectionStringBuilder.ConnectionString;
 

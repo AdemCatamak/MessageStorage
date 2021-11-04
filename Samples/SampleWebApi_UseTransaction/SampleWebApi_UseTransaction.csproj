@@ -5,9 +5,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Dapper" Version="2.0.90" />
+        <PackageReference Include="Dapper" Version="2.0.123" />
         <PackageReference Include="Microsoft.Data.SqlClient" Version="3.0.1" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.2" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
     </ItemGroup>
 
     <ItemGroup>

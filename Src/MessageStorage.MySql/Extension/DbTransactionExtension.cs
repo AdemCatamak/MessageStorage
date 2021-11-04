@@ -3,7 +3,7 @@ using System.Data;
 using MessageStorage.DataAccessLayer;
 using MessageStorage.Exceptions;
 using MessageStorage.MySql.DbClient;
-using MySql.Data.MySqlClient;
+using MySqlConnector;
 
 namespace MessageStorage.MySql.Extension
 {

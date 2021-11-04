@@ -5,12 +5,13 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.2" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\..\Src\MessageStorage.DependencyInjection\MessageStorage.DependencyInjection.csproj" />
       <ProjectReference Include="..\..\Src\MessageStorage.AspNetCore\MessageStorage.AspNetCore.csproj" />
+      <ProjectReference Include="..\..\Src\MessageStorage.MySql.DependencyInjection\MessageStorage.MySql.DependencyInjection.csproj" />
       <ProjectReference Include="..\..\Src\MessageStorage.Postgres.DependencyInjection\MessageStorage.Postgres.DependencyInjection.csproj" />
       <ProjectReference Include="..\..\Src\MessageStorage.SqlServer.DependencyInjection\MessageStorage.SqlServer.DependencyInjection.csproj" />
     </ItemGroup>

@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MessageStorage.DataAccessLayer;
 using MessageStorage.MySql.DbClient;
-using MySql.Data.MySqlClient;
+using MySqlConnector;
 
 namespace MessageStorage.MySql.Extension
 {

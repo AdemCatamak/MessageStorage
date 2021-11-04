@@ -17,7 +17,7 @@ using Microsoft.Extensions.DependencyInjection;
 using MySqlConnector;
 using TestUtility;
 using Xunit;
-using MySqlTransaction = MySql.Data.MySqlClient.MySqlTransaction;
+using IsolationLevel = System.Data.IsolationLevel;
 
 namespace MessageStorage.MySql.FunctionalTest
 {
@@ -66,7 +66,7 @@ CREATE TABLE IF NOT EXISTS shipments (
             Message message;
             IEnumerable<Job> jobs;
             ShipmentEntity shipmentEntity;
-            await using (DbTransaction transaction = (await _shipmentDbContext.Database.BeginTransactionAsync()).GetDbTransaction())
+            await using (DbTransaction transaction = (await _shipmentDbContext.Database.BeginTransactionAsync(IsolationLevel.ReadCommitted)).GetDbTransaction())
             {
                 shipmentEntity = new ShipmentEntity("buyer-name");
                 _shipmentDbContext.ShipmentEntities.Add(shipmentEntity);
@@ -88,12 +88,12 @@ CREATE TABLE IF NOT EXISTS shipments (
             await using var connection = new MySqlConnection(_repositoryConfiguration.ConnectionString);
 
             string messageScript = $"select id from {_repositoryConfiguration.Schema}.messages where id = @id";
-            dynamic? messageIdResult = await connection.QueryFirstAsync(messageScript, new {id = message.Id});
-            var messageIdStr = ((Guid) messageIdResult.id).ToString();
+            dynamic? messageIdResult = await connection.QueryFirstAsync(messageScript, new { id = message.Id });
+            var messageIdStr = ((Guid)messageIdResult.id).ToString();
             Assert.NotEmpty(messageIdStr);
 
             string script = $"select id as job_id ,message_id from {_repositoryConfiguration.Schema}.jobs where id = @id";
-            dynamic? jobMessageResult = await connection.QueryFirstAsync(script, new {id = job.Id});
+            dynamic? jobMessageResult = await connection.QueryFirstAsync(script, new { id = job.Id });
             Assert.Equal(message.Id, jobMessageResult.message_id);
             Assert.Equal(job.Id, jobMessageResult.job_id);
 
@@ -130,12 +130,12 @@ CREATE TABLE IF NOT EXISTS shipments (
             await using var connection = new MySqlConnection(_repositoryConfiguration.ConnectionString);
 
             string messageScript = $"select id from {_repositoryConfiguration.Schema}.messages where id = @id";
-            dynamic? messageIdResult = await connection.QueryFirstAsync(messageScript, new {id = message.Id});
-            var messageIdStr = ((Guid) messageIdResult.id).ToString();
+            dynamic? messageIdResult = await connection.QueryFirstAsync(messageScript, new { id = message.Id });
+            var messageIdStr = ((Guid)messageIdResult.id).ToString();
             Assert.NotEmpty(messageIdStr);
 
             string script = $"select id as job_id ,message_id from {_repositoryConfiguration.Schema}.jobs where id = @id";
-            dynamic? jobMessageResult = await connection.QueryFirstAsync(script, new {id = job.Id});
+            dynamic? jobMessageResult = await connection.QueryFirstAsync(script, new { id = job.Id });
             Assert.Equal(message.Id, jobMessageResult.message_id);
             Assert.Equal(job.Id, jobMessageResult.job_id);
 
@@ -172,12 +172,12 @@ CREATE TABLE IF NOT EXISTS shipments (
             await using var connection = new MySqlConnection(_repositoryConfiguration.ConnectionString);
 
             string messageScript = $"select id from {_repositoryConfiguration.Schema}.messages where id = @id";
-            dynamic? messageIdResult = await connection.QueryFirstAsync(messageScript, new {id = message.Id});
-            var messageIdStr = ((Guid) messageIdResult.id).ToString();
+            dynamic? messageIdResult = await connection.QueryFirstAsync(messageScript, new { id = message.Id });
+            var messageIdStr = ((Guid)messageIdResult.id).ToString();
             Assert.NotEmpty(messageIdStr);
 
             string script = $"select id as job_id ,message_id from {_repositoryConfiguration.Schema}.jobs where id = @id";
-            dynamic? jobMessageResult = await connection.QueryFirstAsync(script, new {id = job.Id});
+            dynamic? jobMessageResult = await connection.QueryFirstAsync(script, new { id = job.Id });
             Assert.Equal(message.Id, jobMessageResult.message_id);
             Assert.Equal(job.Id, jobMessageResult.job_id);
 
@@ -193,7 +193,7 @@ CREATE TABLE IF NOT EXISTS shipments (
             Message message;
             IEnumerable<Job> jobs;
             ShipmentEntity shipmentEntity;
-            await using (MySqlTransaction transaction = (MySqlTransaction) (await _shipmentDbContext.Database.BeginTransactionAsync()).GetDbTransaction())
+            await using (MySqlTransaction transaction = (MySqlTransaction)(await _shipmentDbContext.Database.BeginTransactionAsync()).GetDbTransaction())
             {
                 shipmentEntity = new ShipmentEntity("buyer-name");
                 _shipmentDbContext.ShipmentEntities.Add(shipmentEntity);
@@ -216,12 +216,12 @@ CREATE TABLE IF NOT EXISTS shipments (
             await using var connection = new MySqlConnection(_repositoryConfiguration.ConnectionString);
 
             string messageScript = $"select id from {_repositoryConfiguration.Schema}.messages where id = @id";
-            dynamic? messageIdResult = await connection.QueryFirstOrDefaultAsync(messageScript, new {id = message.Id});
+            dynamic? messageIdResult = await connection.QueryFirstOrDefaultAsync(messageScript, new { id = message.Id });
             Assert.Null(messageIdResult);
 
 
             string script = $"select id as job_id ,message_id from {_repositoryConfiguration.Schema}.jobs where id = @id";
-            dynamic? jobMessageResult = await connection.QueryFirstOrDefaultAsync(script, new {id = job.Id});
+            dynamic? jobMessageResult = await connection.QueryFirstOrDefaultAsync(script, new { id = job.Id });
             Assert.Null(jobMessageResult);
 
             await using ShipmentDbContext checkDbContext = new ShipmentDbContext(_repositoryConfiguration.ConnectionString);
@@ -245,7 +245,7 @@ CREATE TABLE IF NOT EXISTS shipments (
         public class ShipmentDbContext : DbContext
         {
             public ShipmentDbContext(string connectionStr) :
-                base(new DbContextOptionsBuilder().UseMySql(connectionStr, new MySqlServerVersion("5")).Options)
+                base(new DbContextOptionsBuilder().UseMySql(connectionStr, ServerVersion.AutoDetect(connectionStr)).Options)
             {
             }
 

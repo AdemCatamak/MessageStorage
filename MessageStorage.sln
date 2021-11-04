@@ -77,6 +77,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageStorage.MySql.Functi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageStorage.MySql.DependencyInjection", "Src\MessageStorage.MySql.DependencyInjection\MessageStorage.MySql.DependencyInjection.csproj", "{E6C837B4-DA2B-4537-85CA-AA545D6F4B87}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples_SolutionFolder", "Samples_SolutionFolder", "{97092D9D-5B02-4907-BC39-05ACA9F01E54}"
+ProjectSection(SolutionItems) = preProject
+	Samples\docker-compose-test.yml = Samples\docker-compose-test.yml
+EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -205,5 +210,6 @@ Global
 		{57AAF3BC-DA0C-4194-A997-E53FE9C434B1} = {7F0B98FC-0C28-41D8-9FB1-8D25F507D05F}
 		{0EB9D653-F514-476D-AB80-F015951386C9} = {2E2B0DF5-D4D6-43D7-AB7A-F51B52DBD4C3}
 		{E6C837B4-DA2B-4537-85CA-AA545D6F4B87} = {7F0B98FC-0C28-41D8-9FB1-8D25F507D05F}
+		{97092D9D-5B02-4907-BC39-05ACA9F01E54} = {033D0F1F-CF23-46CF-90CE-C53CFA85FB8C}
 	EndGlobalSection
 EndGlobal

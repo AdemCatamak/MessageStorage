@@ -1,15 +1,15 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Dapper;
 using MessageStorage.DataAccessLayer;
 using MessageStorage.MessageHandlers;
 using MessageStorage.MySql.FunctionalTest.Fixtures;
 using Microsoft.Extensions.DependencyInjection;
-using MySql.Data.MySqlClient;
 using TestUtility;
 using Xunit;
 using System.Linq;
+using Dapper;
+using MySqlConnector;
 
 namespace MessageStorage.MySql.FunctionalTest
 {
