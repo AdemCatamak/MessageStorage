@@ -82,6 +82,10 @@ ProjectSection(SolutionItems) = preProject
 	Samples\docker-compose-test.yml = Samples\docker-compose-test.yml
 EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageStorage.MySql.DependencyInjection.UnitTest", "Tests\MessageStorage.MySql.DependencyInjection.UnitTest\MessageStorage.MySql.DependencyInjection.UnitTest.csproj", "{FD211A44-0CAC-4E4B-890A-95EF102387DB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageStorage.MySql.BenchmarkTest", "Tests\MessageStorage.MySql.BenchmarkTest\MessageStorage.MySql.BenchmarkTest.csproj", "{5288A807-786F-446F-B9D4-136EA128E642}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -184,6 +188,14 @@ Global
 		{E6C837B4-DA2B-4537-85CA-AA545D6F4B87}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E6C837B4-DA2B-4537-85CA-AA545D6F4B87}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E6C837B4-DA2B-4537-85CA-AA545D6F4B87}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FD211A44-0CAC-4E4B-890A-95EF102387DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD211A44-0CAC-4E4B-890A-95EF102387DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD211A44-0CAC-4E4B-890A-95EF102387DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD211A44-0CAC-4E4B-890A-95EF102387DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5288A807-786F-446F-B9D4-136EA128E642}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5288A807-786F-446F-B9D4-136EA128E642}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5288A807-786F-446F-B9D4-136EA128E642}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5288A807-786F-446F-B9D4-136EA128E642}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{03F780EF-4AEE-4832-9CD8-1C3CF6EB99D2} = {033D0F1F-CF23-46CF-90CE-C53CFA85FB8C}
@@ -211,5 +223,7 @@ Global
 		{0EB9D653-F514-476D-AB80-F015951386C9} = {2E2B0DF5-D4D6-43D7-AB7A-F51B52DBD4C3}
 		{E6C837B4-DA2B-4537-85CA-AA545D6F4B87} = {7F0B98FC-0C28-41D8-9FB1-8D25F507D05F}
 		{97092D9D-5B02-4907-BC39-05ACA9F01E54} = {033D0F1F-CF23-46CF-90CE-C53CFA85FB8C}
+		{FD211A44-0CAC-4E4B-890A-95EF102387DB} = {2E2B0DF5-D4D6-43D7-AB7A-F51B52DBD4C3}
+		{5288A807-786F-446F-B9D4-136EA128E642} = {2E2B0DF5-D4D6-43D7-AB7A-F51B52DBD4C3}
 	EndGlobalSection
 EndGlobal
