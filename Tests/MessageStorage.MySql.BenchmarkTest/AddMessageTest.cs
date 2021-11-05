@@ -18,7 +18,7 @@ namespace MessageStorage.MySql.BenchmarkTest
     public class AddMessageTest
     {
         private readonly IMessageStorageClient _messageStorageClient;
-        private const string SCHEMA = "message_storage";
+        private const string SCHEMA = "message_storage_add_message_test";
 
         private readonly ITestOutputHelper _output;
 

@@ -30,7 +30,6 @@ namespace MessageStorage.MySql.BenchmarkTest.Fixtures
         public MySqlInfraFixture()
         {
             Host = "localhost";
-            Database = "message_storage";
             Username = "root";
             Password = "example";
             Port = NetworkUtility.GetAvailablePort();
@@ -39,7 +38,6 @@ namespace MessageStorage.MySql.BenchmarkTest.Fixtures
                 = new MySqlConnectionStringBuilder
                   {
                       Server = Host,
-                      Database = Database,
                       Port = (uint)Port,
                       UserID = Username,
                       Password = Password,
@@ -51,7 +49,7 @@ namespace MessageStorage.MySql.BenchmarkTest.Fixtures
                 new Builder().UseContainer()
                              .UseImage("mysql:5.7")
                              .ExposePort(Port, 3306)
-                             .WithEnvironment($"MYSQL_ROOT_PASSWORD={Password}", $"MYSQL_DATABASE={Database}")
+                             .WithEnvironment($"MYSQL_ROOT_PASSWORD={Password}")
                              .WaitForPort($"{3306}/tcp", 30000 /*30s*/)
                              .Build()
                              .Start();
