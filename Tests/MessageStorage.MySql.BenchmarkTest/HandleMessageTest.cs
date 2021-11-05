@@ -78,7 +78,14 @@ namespace MessageStorage.MySql.BenchmarkTest
                                          bool jobHandled;
                                          do
                                          {
-                                             jobHandled = await _jobDispatcher.HandleNextJobAsync();
+                                             try
+                                             {
+                                                 jobHandled = await _jobDispatcher.HandleNextJobAsync();
+                                             }
+                                             catch (Exception)
+                                             {
+                                                 jobHandled = true;
+                                             }
                                          } while (jobHandled);
                                      }
                                     );
