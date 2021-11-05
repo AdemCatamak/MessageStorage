@@ -8,6 +8,7 @@ using MessageStorage.Containers;
 using MessageStorage.DataAccessLayer;
 using MessageStorage.MessageHandlers;
 using MessageStorage.MySql.BenchmarkTest.Fixtures;
+using MessageStorage.MySql.DbClient;
 using MessageStorage.MySql.Migrations;
 using TestUtility;
 using Xunit;
@@ -21,8 +22,6 @@ namespace MessageStorage.MySql.BenchmarkTest
         private readonly IMessageStorageClient _messageStorageClient;
         private readonly JobDispatcher _jobDispatcher;
 
-        private const string SCHEMA = "message_storage_handle_test";
-
         private readonly ITestOutputHelper _output;
 
 
@@ -34,17 +33,21 @@ namespace MessageStorage.MySql.BenchmarkTest
             messageHandlerContainer.Register<DummyMessageHandler>();
             IMessageHandlerProvider messageHandlerProvider = messageHandlerContainer.BuildMessageHandlerProvider();
 
-            var repositoryConfiguration = new RepositoryConfiguration(mySqlInfraFixture.ConnectionString, SCHEMA);
-            var sqlServerRepositoryFactory = new MySqlRepositoryFactory(repositoryConfiguration);
+            var repositoryConfiguration = new RepositoryConfiguration(mySqlInfraFixture.ConnectionString, mySqlInfraFixture.Database);
+            var mySqlRepositoryFactory = new MySqlRepositoryFactory(repositoryConfiguration);
 
             var executor = new MySqlMigrationExecutor(repositoryConfiguration);
             executor.Execute();
 
-            _messageStorageClient = new MessageStorageClient(messageHandlerProvider, sqlServerRepositoryFactory);
-            _jobDispatcher = new JobDispatcher(messageHandlerProvider, sqlServerRepositoryFactory);
+            using IMySqlMessageStorageConnection? connection = mySqlRepositoryFactory.CreateConnection();
+            connection.ExecuteAsync($"DELETE FROM {repositoryConfiguration.Schema}.jobs", null, CancellationToken.None).GetAwaiter().GetResult();
+
+            _messageStorageClient = new MessageStorageClient(messageHandlerProvider, mySqlRepositoryFactory);
+            _jobDispatcher = new JobDispatcher(messageHandlerProvider, mySqlRepositoryFactory);
         }
 
-        [ReleaseModeTheory]
+        // [ReleaseModeTheory]
+        [Theory]
         [InlineData(1, 1000, 10000)]
         [InlineData(2, 1000, 7500)]
         [InlineData(4, 1000, 5000)]
@@ -57,9 +60,9 @@ namespace MessageStorage.MySql.BenchmarkTest
             for (var i = 0; i < times; i++)
             {
                 DummyMessage dummyMessage = new DummyMessage
-                {
-                    Guid = Guid.NewGuid()
-                };
+                                            {
+                                                Guid = Guid.NewGuid()
+                                            };
                 var task = _messageStorageClient.AddMessageAsync(dummyMessage);
                 tasks.Add(task);
             }

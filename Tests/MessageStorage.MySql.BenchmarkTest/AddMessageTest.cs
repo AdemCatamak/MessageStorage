@@ -18,8 +18,6 @@ namespace MessageStorage.MySql.BenchmarkTest
     public class AddMessageTest
     {
         private readonly IMessageStorageClient _messageStorageClient;
-        private const string SCHEMA = "message_storage_add_message_test";
-
         private readonly ITestOutputHelper _output;
 
 
@@ -31,16 +29,20 @@ namespace MessageStorage.MySql.BenchmarkTest
             messageHandlerContainer.Register<DummyMessageHandler>();
             IMessageHandlerProvider messageHandlerProvider = messageHandlerContainer.BuildMessageHandlerProvider();
 
-            var repositoryConfiguration = new RepositoryConfiguration(mySqlInfraFixture.ConnectionString, SCHEMA);
-            var sqlServerRepositoryFactory = new MySqlRepositoryFactory(repositoryConfiguration);
+            var repositoryConfiguration = new RepositoryConfiguration(mySqlInfraFixture.ConnectionString, mySqlInfraFixture.Database);
+            var mySqlRepositoryFactory = new MySqlRepositoryFactory(repositoryConfiguration);
 
             var executor = new MySqlMigrationExecutor(repositoryConfiguration);
             executor.Execute();
 
-            _messageStorageClient = new MessageStorageClient(messageHandlerProvider, sqlServerRepositoryFactory);
+            using var connection = mySqlRepositoryFactory.CreateConnection();
+            connection.ExecuteAsync($"DELETE FROM {repositoryConfiguration.Schema}.jobs", null, CancellationToken.None).GetAwaiter().GetResult();
+
+            _messageStorageClient = new MessageStorageClient(messageHandlerProvider, mySqlRepositoryFactory);
         }
 
-        [ReleaseModeTheory]
+        //[ReleaseModeTheory]
+        [Theory]
         [InlineData(2000, 20000)]
         [InlineData(1000, 10000)]
         [InlineData(100, 1000)]
