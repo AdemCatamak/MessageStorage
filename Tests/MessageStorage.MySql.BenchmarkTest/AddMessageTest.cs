@@ -41,8 +41,7 @@ namespace MessageStorage.MySql.BenchmarkTest
             _messageStorageClient = new MessageStorageClient(messageHandlerProvider, mySqlRepositoryFactory);
         }
 
-        //[ReleaseModeTheory]
-        [Theory]
+        [ReleaseModeTheory]
         [InlineData(2000, 20000)]
         [InlineData(1000, 10000)]
         [InlineData(100, 1000)]

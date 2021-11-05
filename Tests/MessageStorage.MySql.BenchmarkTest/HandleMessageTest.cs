@@ -46,8 +46,7 @@ namespace MessageStorage.MySql.BenchmarkTest
             _jobDispatcher = new JobDispatcher(messageHandlerProvider, mySqlRepositoryFactory);
         }
 
-        // [ReleaseModeTheory]
-        [Theory]
+        [ReleaseModeTheory]
         [InlineData(1, 1000, 10000)]
         [InlineData(2, 1000, 7500)]
         [InlineData(4, 1000, 5000)]
