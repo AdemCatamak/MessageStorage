@@ -40,7 +40,7 @@ namespace MessageStorage
             }
             else
             {
-                var result = await AddMessageAsync(payload, _borrowedTransaction, cancellationToken);
+                (Message, IEnumerable<Job>) result = await AddMessageAsync(payload, _borrowedTransaction, cancellationToken);
                 return result;
             }
         }

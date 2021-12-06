@@ -86,6 +86,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageStorage.MySql.Depend
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageStorage.MySql.BenchmarkTest", "Tests\MessageStorage.MySql.BenchmarkTest\MessageStorage.MySql.BenchmarkTest.csproj", "{5288A807-786F-446F-B9D4-136EA128E642}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageStorage.MySql.IntegrationTest", "Tests\MessageStorage.MySql.IntegrationTest\MessageStorage.MySql.IntegrationTest.csproj", "{F80F0E78-5D28-47A5-89E1-5BB7A5B0CC0C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -196,6 +198,10 @@ Global
 		{5288A807-786F-446F-B9D4-136EA128E642}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5288A807-786F-446F-B9D4-136EA128E642}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5288A807-786F-446F-B9D4-136EA128E642}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F80F0E78-5D28-47A5-89E1-5BB7A5B0CC0C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F80F0E78-5D28-47A5-89E1-5BB7A5B0CC0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F80F0E78-5D28-47A5-89E1-5BB7A5B0CC0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F80F0E78-5D28-47A5-89E1-5BB7A5B0CC0C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{03F780EF-4AEE-4832-9CD8-1C3CF6EB99D2} = {033D0F1F-CF23-46CF-90CE-C53CFA85FB8C}
@@ -225,5 +231,6 @@ Global
 		{97092D9D-5B02-4907-BC39-05ACA9F01E54} = {033D0F1F-CF23-46CF-90CE-C53CFA85FB8C}
 		{FD211A44-0CAC-4E4B-890A-95EF102387DB} = {2E2B0DF5-D4D6-43D7-AB7A-F51B52DBD4C3}
 		{5288A807-786F-446F-B9D4-136EA128E642} = {2E2B0DF5-D4D6-43D7-AB7A-F51B52DBD4C3}
+		{F80F0E78-5D28-47A5-89E1-5BB7A5B0CC0C} = {2E2B0DF5-D4D6-43D7-AB7A-F51B52DBD4C3}
 	EndGlobalSection
 EndGlobal

@@ -25,14 +25,14 @@ namespace MessageStorage.SqlServer.Extension
         public static async Task<(Message, IEnumerable<Job>)> AddMessageAsync(this IMessageStorageClient messageStorageClient, object payload, IDbTransaction dbTransaction, CancellationToken cancellationToken = default)
         {
             using IMessageStorageTransaction messageStorageTransaction = dbTransaction.GetMessageStorageTransaction();
-            var result = await messageStorageClient.AddMessageAsync(payload, messageStorageTransaction, cancellationToken);
+            (Message, IEnumerable<Job>) result = await messageStorageClient.AddMessageAsync(payload, messageStorageTransaction, cancellationToken);
             return result;
         }
 
         public static async Task<(Message, IEnumerable<Job>)> AddMessageAsync(this IMessageStorageClient messageStorageClient, object payload, SqlTransaction sqlTransaction, CancellationToken cancellationToken = default)
         {
             ISqlServerMessageStorageTransaction sqlServerMessageStorageTransaction = sqlTransaction.GetMessageStorageTransaction();
-            var result = await messageStorageClient.AddMessageAsync(payload, sqlServerMessageStorageTransaction, cancellationToken);
+            (Message, IEnumerable<Job>) result = await messageStorageClient.AddMessageAsync(payload, sqlServerMessageStorageTransaction, cancellationToken);
             return result;
         }
     }

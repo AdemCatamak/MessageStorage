@@ -15,6 +15,8 @@ MessageStorage is a library prepared to be used in projects that want to apply t
 | MessageStorage.SqlServer.DependencyInjection | ![Nuget](https://img.shields.io/nuget/v/MessageStorage.SqlServer.DependencyInjection.svg) |
 | MessageStorage.Postgres | ![Nuget](https://img.shields.io/nuget/v/MessageStorage.Postgres.svg) |
 | MessageStorage.Postgres.DependencyInjection | ![Nuget](https://img.shields.io/nuget/v/MessageStorage.Postgres.DependencyInjection.svg) |
+| MessageStorage.MySql | ![Nuget](https://img.shields.io/nuget/v/MessageStorage.MySql.svg) |
+| MessageStorage.MySql.DependencyInjection | ![Nuget](https://img.shields.io/nuget/v/MessageStorage.MySql.DependencyInjection.svg) |
 | MessageStorage.Integration.MassTransit | ![Nuget](https://img.shields.io/nuget/v/MessageStorage.Integration.MassTransit.svg) |
 
 ## Structure Overview
@@ -26,7 +28,7 @@ MessageStorage is a library prepared to be used in projects that want to apply t
 You can download the _MessageStorage.SqlServer.DependencyInjection_ or _MessageStorage.Postgres.DependencyInjection_ package
 according to the storage environment you will use.
 
-`UseSqlServer` / `UsePostgres` method lets you introduce SqlServer or Postgres is used for system's data storage.
+`UseSqlServer` / `UsePostgres`/  `UseMySql` method lets you introduce SqlServer, Postgres, or MySql is used for system's data storage.
 
 `Register` method lets you introduce MessageHandlers that is used. When the message is recorded, the tasks that will be
 executed in the background will be introduced through these classes.

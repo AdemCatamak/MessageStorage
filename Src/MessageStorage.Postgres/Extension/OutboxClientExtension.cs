@@ -25,14 +25,14 @@ namespace MessageStorage.Postgres.Extension
         public static async Task<(Message, IEnumerable<Job>)> AddMessageAsync(this IMessageStorageClient messageStorageClient, object payload, IDbTransaction dbTransaction, CancellationToken cancellationToken = default)
         {
             IMessageStorageTransaction messageStorageTransaction = dbTransaction.GetMessageStorageTransaction();
-            var result = await messageStorageClient.AddMessageAsync(payload, messageStorageTransaction, cancellationToken);
+            (Message, IEnumerable<Job>) result = await messageStorageClient.AddMessageAsync(payload, messageStorageTransaction, cancellationToken);
             return result;
         }
 
         public static async Task<(Message, IEnumerable<Job>)> AddMessageAsync(this IMessageStorageClient messageStorageClient, object payload, NpgsqlTransaction npgsqlTransaction, CancellationToken cancellationToken = default)
         {
             IPostgresMessageStorageTransaction postgresMessageStorageTransaction = npgsqlTransaction.GetMessageStorageTransaction();
-            var result = await messageStorageClient.AddMessageAsync(payload, postgresMessageStorageTransaction, cancellationToken);
+            (Message, IEnumerable<Job>) result = await messageStorageClient.AddMessageAsync(payload, postgresMessageStorageTransaction, cancellationToken);
             return result;
         }
     }
