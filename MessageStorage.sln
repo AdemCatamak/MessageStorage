@@ -15,6 +15,7 @@ ProjectSection(SolutionItems) = preProject
 	Directory.Build.props = Directory.Build.props
 	MessageStorage.sln.DotSettings = MessageStorage.sln.DotSettings
 	.config\dotnet-tools.json = .config\dotnet-tools.json
+	nuget.config = nuget.config
 EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Doc", "Doc", "{72D6DED2-9CF3-4E1B-A337-73A7D1E3EF7C}"
