@@ -1,60 +1,55 @@
-using System;
-using MessageStorage.AspNetCore;
-using MessageStorage.BackgroundTasks.Options;
-using MessageStorage.DependencyInjection;
-using MessageStorage.SqlServer.DependencyInjection;
+using MessageStorage.Extensions;
+using MessageStorage.SqlServer.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using SampleWebApi_UseTransaction.BackgroundJobs;
 using SampleWebApi_UseTransaction.DataAccess;
 using SampleWebApi_UseTransaction.EmailService;
 
-namespace SampleWebApi_UseTransaction
+namespace SampleWebApi_UseTransaction;
+
+public class Startup
 {
-    public class Startup
+    private readonly IConfiguration _configuration;
+
+    public Startup(IConfiguration configuration)
     {
-        public void ConfigureServices(IServiceCollection services)
+        _configuration = configuration;
+    }
+
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services.AddControllers();
+        services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo { Title = "SampleWebApi", Version = "v1" }); });
+
+        services.AddScoped<IEmailSender, ConsoleEmailSender>();
+
+        services.AddSingleton<IConnectionFactory>(provider => new SqlServerConnectionFactory(provider.GetRequiredService<IConfiguration>()
+                                                                                                     .GetConnectionString("SqlServerConnectionString")));
+
+        services.AddMessageStorage(configurator =>
         {
-            services.AddControllers();
-            services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "SampleWebApi", Version = "v1"}); });
-            
-            services.AddScoped<IEmailSender, ConsoleEmailSender>();
+            var sqlConnectionStr = _configuration.GetConnectionString("SqlServerConnectionString");
+            configurator.UseSqlServer(sqlConnectionStr, "use_transaction_schema");
 
-            services.AddSingleton<IConnectionFactory>(provider => new SqlServerConnectionFactory(provider.GetRequiredService<IConfiguration>()
-                                                                                                         .GetConnectionString("SqlServerConnectionString")));
+            configurator.RegisterHandler<AccountCreated_SendWelcomeEmail, AccountCreated>(20);
+        });
+    }
 
-            services.AddMessageStorage(configurator =>
-                     {
-                         configurator.UseSqlServer(provider => provider.GetRequiredService<IConfiguration>()
-                                                                       .GetConnectionString("SqlServerConnectionString"),
-                                                   "use_transaction_schema");
-
-                         configurator.Register<AccountCreated_SendWelcomeEmail>(metaData =>
-                         {
-                             metaData.UseRetry(5, TimeSpan.FromMinutes(5));
-                             metaData.UseRescue(TimeSpan.FromMinutes(30));
-                         });
-                     })
-                    .AddMessageStoragePrerequisiteExecutor()
-                    .AddMessageStorageJobDispatcher(waitAfterJobNotHandled: TimeSpan.FromSeconds(10));
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    {
+        if (env.IsDevelopment())
+        {
+            app.UseDeveloperExceptionPage();
+            app.UseSwagger();
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "SampleWebApi v1"));
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-        {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "SampleWebApi v1"));
-            }
-
-            app.UseRouting();
-            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
-        }
+        app.UseRouting();
+        app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
     }
 }

@@ -1,8 +1,7 @@
-namespace MessageStorage.PayloadSerializers
+namespace MessageStorage.PayloadSerializers;
+
+public interface IPayloadSerializer
 {
-    public interface IPayloadSerializer
-    {
-        string Serialize(object payload);
-        object? Deserialize(string payloadStr);
-    }
+    string Serialize(object payload);
+    object? Deserialize(string payloadStr);
 }

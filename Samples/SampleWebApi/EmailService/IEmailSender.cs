@@ -1,10 +1,9 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SampleWebApi.EmailService
+namespace SampleWebApi.EmailService;
+
+public interface IEmailSender
 {
-    public interface IEmailSender
-    {
-        Task SendAsync(Email email, CancellationToken cancellationToken = default);
-    }
+    Task SendAsync(Email email, CancellationToken cancellationToken = default);
 }

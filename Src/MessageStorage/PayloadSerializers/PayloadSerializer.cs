@@ -1,22 +1,21 @@
-namespace MessageStorage.PayloadSerializers
+namespace MessageStorage.PayloadSerializers;
+
+public static class PayloadSerializer
 {
-    public static class PayloadSerializer
+    public static IPayloadSerializer Serializer { get; private set; } = new PayloadJsonSerializer();
+
+    public static void SetSerializer(IPayloadSerializer serializer)
     {
-        public static IPayloadSerializer Serializer { get; private set; } = new PayloadJsonSerializer();
+        Serializer = serializer;
+    }
 
-        public static void SetSerializer(IPayloadSerializer serializer)
-        {
-            Serializer = serializer;
-        }
+    public static string Serialize(object payload)
+    {
+        return Serializer.Serialize(payload);
+    }
 
-        public static string Serialize(object payload)
-        {
-            return Serializer.Serialize(payload);
-        }
-
-        public static object? Deserialize(string payloadStr)
-        {
-            return Serializer.Deserialize(payloadStr);
-        }
+    public static object? Deserialize(string payloadStr)
+    {
+        return Serializer.Deserialize(payloadStr);
     }
 }
