@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using TestUtility;
 using Xunit;
 
@@ -53,6 +54,8 @@ public class TestServerFixture : IDisposable
                             });
                         });
                         builder.Configure(_ => { });
+                        builder.ConfigureLogging(loggingBuilder => loggingBuilder.AddConsole()
+                                                                                 .SetMinimumLevel(LogLevel.Debug));
                     });
         _testServer = hostBuilder.Build();
         _testServer.Start();

@@ -1,34 +1,27 @@
 using System;
 using MessageStorage.Extensions;
-using MessageStorage.Postgres.Extensions;
+using MessageStorage.SqlServer.Extensions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using TestUtility;
-using Xunit;
 
-namespace MessageStorage.Postgres.IntegrationTest.Fixtures;
-
-[CollectionDefinition(TestServerFixture.FIXTURE_KEY)]
-public class TestServerFixtureDefinition : ICollectionFixture<TestServerFixture>
-{
-}
+namespace MessageStorage.SqlServer.MemoryTest.Fixtures;
 
 public class TestServerFixture : IDisposable
 {
-    public const string FIXTURE_KEY = "PostgresIntegrationTest.TestServerFixtureKey";
-    public string ConnectionStr => _postgresFixture.ConnectionStr;
+    public const string FIXTURE_KEY = "SqlServerIntegrationTest.TestServerFixtureKey";
+    public string ConnectionStr => _sqlServerFixture.ConnectionStr;
 
-    private readonly PostgresFixture _postgresFixture;
+    private readonly SqlServerFixture _sqlServerFixture;
     private readonly IHost _testServer;
 
     public TestServerFixture()
     {
-        _postgresFixture = new PostgresFixture();
-        Fetch.SetPostgresConnectionStr(_postgresFixture.ConnectionStr);
-
+        _sqlServerFixture = new SqlServerFixture();
+        Fetch.SetSqlServerConnectionStr(_sqlServerFixture.ConnectionStr);
 
         IHostBuilder hostBuilder = Host.CreateDefaultBuilder();
         hostBuilder.UseEnvironment("Test")
@@ -40,7 +33,7 @@ public class TestServerFixture : IDisposable
                             collection.AddMessageStorage(optionBuilder =>
                             {
                                 optionBuilder.RegisterHandlers(GetType().Assembly);
-                                optionBuilder.UsePostgres(_postgresFixture.ConnectionStr);
+                                optionBuilder.UseSqlServer(_sqlServerFixture.ConnectionStr);
                             });
                         });
                         builder.Configure(_ => { });
@@ -60,6 +53,6 @@ public class TestServerFixture : IDisposable
     public void Dispose()
     {
         _testServer?.Dispose();
-        _postgresFixture?.Dispose();
+        _sqlServerFixture?.Dispose();
     }
 }

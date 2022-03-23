@@ -17,8 +17,8 @@ public class AccountCreated_SendWelcomeEmail
 
     protected override async Task HandleAsync(IMessageContext<AccountCreated> messageContext, CancellationToken cancellationToken)
     {
-        var payload = messageContext.Message;
-        Email email = new Email(payload.Email, "Welcome", $"Your account created on : {payload.CreatedOn} with Id : {payload.AccountId}");
+        AccountCreated? payload = messageContext.Message;
+        var email = new Email(payload.Email, "Welcome", $"Your account created on : {payload.CreatedOn} with Id : {payload.AccountId}");
         await _emailSender.SendAsync(email, cancellationToken);
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,6 +15,8 @@ internal class SqlServerMessageRepository : IMessageRepository
     private readonly SqlConnection _sqlConnection;
     private readonly SqlServerMessageStorageTransaction? _messageStorageTransaction;
 
+    private string SchemaPlaceHolder => _repositoryContextConfiguration.Schema == null ? "" : $"[{_repositoryContextConfiguration.Schema}].";
+
     public SqlServerMessageRepository(SqlServerRepositoryContextConfiguration repositoryContextConfiguration, SqlConnection sqlConnection, SqlServerMessageStorageTransaction? messageStorageTransaction)
     {
         _repositoryContextConfiguration = repositoryContextConfiguration;
@@ -26,11 +29,7 @@ internal class SqlServerMessageRepository : IMessageRepository
         string payloadStr = PayloadSerializer.Serialize(message.Payload);
 
         var scriptBuilder = new StringBuilder("INSERT INTO ");
-        if (_repositoryContextConfiguration.Schema != null)
-        {
-            scriptBuilder.Append($"[{_repositoryContextConfiguration.Schema}].");
-        }
-
+        scriptBuilder.Append(SchemaPlaceHolder);
         scriptBuilder.Append("[Messages] (Id, CreatedOn, PayloadTypeName,Payload) VALUES (@Id, @CreatedOn, @PayloadTypeName, @Payload)");
         var script = scriptBuilder.ToString();
 
@@ -43,6 +42,25 @@ internal class SqlServerMessageRepository : IMessageRepository
                          };
 
         var commandDefinition = new CommandDefinition(script, parameters, _messageStorageTransaction?.SqlTransaction, cancellationToken: cancellationToken);
+        await ExecuteAsync(commandDefinition);
+    }
+
+    public async Task CleanAsync(DateTime createdBeforeThen, CancellationToken cancellationToken)
+    {
+        var scriptBuilder = new StringBuilder($"DELETE FROM ");
+        scriptBuilder.Append(SchemaPlaceHolder);
+        scriptBuilder.Append("Messages m ");
+        scriptBuilder.Append($"LEFT JOIN ");
+        scriptBuilder.Append(SchemaPlaceHolder);
+        scriptBuilder.Append("Jobs j ON j.MessageId = m.Id ");
+        scriptBuilder.Append("WHERE m.CreatedOn < @CreatedBeforeThen AND j.Id IS NULL");
+        var script = scriptBuilder.ToString();
+
+        var parameters = new
+                         {
+                             CreatedBeforeThen = createdBeforeThen
+                         };
+        var commandDefinition = new CommandDefinition(script, parameters, cancellationToken: cancellationToken);
         await ExecuteAsync(commandDefinition);
     }
 

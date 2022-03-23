@@ -17,6 +17,8 @@ public class SqlServerJobRepository : IJobRepository
     private readonly SqlConnection _sqlConnection;
     private readonly SqlServerMessageStorageTransaction? _sqlServerMessageStorageTransaction;
 
+    private string SchemaPlaceHolder => _repositoryContextConfiguration.Schema == null ? "" : $"[{_repositoryContextConfiguration.Schema}].";
+
     public SqlServerJobRepository(SqlServerRepositoryContextConfiguration repositoryContextConfiguration, SqlConnection sqlConnection, SqlServerMessageStorageTransaction? sqlServerMessageStorageTransaction)
     {
         _repositoryContextConfiguration = repositoryContextConfiguration;
@@ -27,11 +29,7 @@ public class SqlServerJobRepository : IJobRepository
     public async Task AddAsync(List<Job> jobs, CancellationToken cancellationToken)
     {
         var scriptBuilder = new StringBuilder("INSERT INTO ");
-        if (_repositoryContextConfiguration.Schema != null)
-        {
-            scriptBuilder.Append($"[{_repositoryContextConfiguration.Schema}].");
-        }
-
+        scriptBuilder.Append(SchemaPlaceHolder);
         scriptBuilder.Append("[Jobs] (Id, CreatedOn, MessageId, MessageHandlerTypeName, JobStatus, ");
         scriptBuilder.Append("LastOperationTime, LastOperationInfo, ");
         scriptBuilder.Append("MaxRetryCount, CurrentRetryCount) ");
@@ -68,11 +66,7 @@ public class SqlServerJobRepository : IJobRepository
     public async Task UpdateStatusAsync(Job job, CancellationToken cancellationToken)
     {
         var scriptBuilder = new StringBuilder("UPDATE ");
-        if (_repositoryContextConfiguration.Schema != null)
-        {
-            scriptBuilder.Append($"[{_repositoryContextConfiguration.Schema}].");
-        }
-
+        scriptBuilder.Append(SchemaPlaceHolder);
         scriptBuilder.Append("[Jobs] SET JobStatus = @JobStatus, LastOperationTime = @LastOperationTime, LastOperationInfo = @LastOperationInfo ");
         scriptBuilder.Append("WHERE Id = @Id");
         var script = scriptBuilder.ToString();
@@ -91,13 +85,9 @@ public class SqlServerJobRepository : IJobRepository
     public async Task RescueJobsAsync(DateTime lastOperationTimeBeforeThen, CancellationToken cancellationToken)
     {
         var scriptBuilder = new StringBuilder("UPDATE ");
-        if (_repositoryContextConfiguration.Schema != null)
-        {
-            scriptBuilder.Append($"[{_repositoryContextConfiguration.Schema}].");
-        }
-
+        scriptBuilder.Append(SchemaPlaceHolder);
         scriptBuilder.Append("[Jobs] SET JobStatus = @JobStatus, LastOperationTime = @LastOperationTime, LastOperationInfo = @LastOperationInfo ");
-        scriptBuilder.Append("WHERE LastOperationTime < @LastOperationTimeBeforeThen and JobStatus = @SourceJobStatus");
+        scriptBuilder.Append("WHERE LastOperationTime < @LastOperationTimeBeforeThen AND JobStatus = @SourceJobStatus");
         var script = scriptBuilder.ToString();
         var parameters = new
                          {
@@ -114,16 +104,10 @@ public class SqlServerJobRepository : IJobRepository
 
     public async Task<List<Job>> SetInProgressAsync(DateTime lastOperationTimeBeforeThen, int fetchCount, CancellationToken cancellationToken)
     {
-        var schemaPlaceHolder = string.Empty;
-        if (_repositoryContextConfiguration.Schema != null)
-        {
-            schemaPlaceHolder = $"[{_repositoryContextConfiguration.Schema}].";
-        }
-
         var script = $@"
 DECLARE @Updated table( [Id] nvarchar(255))
 
-UPDATE {schemaPlaceHolder}[Jobs]
+UPDATE {SchemaPlaceHolder}[Jobs]
     SET     JobStatus = @TargetStatus,
             LastOperationTime = @TargetLastOperationTime,
             LastOperationInfo = @TargetLastOperationInfo, 
@@ -133,8 +117,8 @@ INTO @Updated
 WHERE  Id = 
 (
     SELECT TOP 1 j.Id 
-    FROM {schemaPlaceHolder}[Jobs] j WITH (UPDLOCK, READPAST)
-    INNER JOIN {schemaPlaceHolder}[Messages] m on j.MessageId = m.Id
+    FROM {SchemaPlaceHolder}[Jobs] j WITH (UPDLOCK, READPAST)
+    INNER JOIN {SchemaPlaceHolder}[Messages] m on j.MessageId = m.Id
     WHERE JobStatus = @SourceJobStatus and LastOperationTime < @LastOperationTimeBeforeThen
     ORDER BY j.Id
 )
@@ -144,8 +128,8 @@ SELECT  j.Id, j.MessageHandlerTypeName, j.CreatedOn as JobCreatedOn, j.JobStatus
         j.CurrentRetryCount, j.MaxRetryCount, 
         j.MessageId, m.Payload, m.CreatedOn as MessageCreatedOn
     FROM  @Updated u
-    INNER JOIN {schemaPlaceHolder}[Jobs] j on j.Id = u.Id
-    INNER JOIN {schemaPlaceHolder}[Messages] m on j.MessageId = m.Id
+    INNER JOIN {SchemaPlaceHolder}[Jobs] j on j.Id = u.Id
+    INNER JOIN {SchemaPlaceHolder}[Messages] m on j.MessageId = m.Id
 ";
         var parameters = new
                          {
@@ -183,15 +167,31 @@ SELECT  j.Id, j.MessageHandlerTypeName, j.CreatedOn as JobCreatedOn, j.JobStatus
         return jobList;
     }
 
-    public async Task<int> GetJobCountAsync(JobStatus jobStatus, CancellationToken cancellationToken)
+    public async Task CleanAsync(DateTime lastOperationTimeBeforeThen, bool removeOnlySucceeded, CancellationToken cancellationToken)
     {
-        var schemaPlaceHolder = "";
-        if (_repositoryContextConfiguration.Schema != null)
+        var scriptBuilder = new StringBuilder("DELETE FROM ");
+        scriptBuilder.Append(SchemaPlaceHolder);
+        scriptBuilder.Append("Jobs WHERE LastOperationTime < @LastOperationTimeBeforeThen AND JobStatus in @JobStatusList");
+        var script = scriptBuilder.ToString();
+
+        var jobStatusList = new List<JobStatus> { JobStatus.Succeeded };
+        if (!removeOnlySucceeded)
         {
-            schemaPlaceHolder = $"[{_repositoryContextConfiguration.Schema}].";
+            jobStatusList.Add(JobStatus.Failed);
         }
 
-        var script = $"SELECT count(id) as JobCount FROM {schemaPlaceHolder}jobs (nolock) WHERE JobStatus = @jobStatus";
+        var parameters = new
+                         {
+                             LastOperationTimeBeforeThen = lastOperationTimeBeforeThen,
+                             JobStatusList = jobStatusList
+                         };
+        var commandDefinition = new CommandDefinition(script, parameters, cancellationToken: cancellationToken);
+        await ExecuteAsync(commandDefinition);
+    }
+
+    public async Task<int> GetJobCountAsync(JobStatus jobStatus, CancellationToken cancellationToken)
+    {
+        var script = $"SELECT count(id) as JobCount FROM {SchemaPlaceHolder}Jobs (nolock) WHERE JobStatus = @jobStatus";
         var parameters = new
                          {
                              jobStatus = (int)jobStatus

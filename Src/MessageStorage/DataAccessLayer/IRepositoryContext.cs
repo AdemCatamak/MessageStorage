@@ -1,8 +1,9 @@
+using System;
 using MessageStorage.Processor;
 
 namespace MessageStorage.DataAccessLayer;
 
-public interface IRepositoryContext
+public interface IRepositoryContext : IDisposable
 {
     internal IJobQueue JobQueue { get; }
 

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using MessageStorage.DataAccessLayer;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace MessageStorage.Processor;
 
@@ -16,42 +15,40 @@ public interface IJobRetrierFor<TMessageStorageClient>
 internal class JobRetrierFor<TMessageStorageClient> : IJobRetrierFor<TMessageStorageClient>
     where TMessageStorageClient : IMessageStorageClient
 {
-    private readonly IServiceProvider _serviceProvider;
+    private readonly IRepositoryContextFor<TMessageStorageClient> _repositoryContext;
+    private readonly IJobExecutorFor<TMessageStorageClient> _jobExecutor;
+    private readonly JobRetrierOptionsFor<TMessageStorageClient> _options;
 
-    public JobRetrierFor(IServiceProvider serviceProvider)
+    public JobRetrierFor(IRepositoryContextFor<TMessageStorageClient> repositoryContext, IJobExecutorFor<TMessageStorageClient> jobExecutor, JobRetrierOptionsFor<TMessageStorageClient> options)
     {
-        _serviceProvider = serviceProvider;
+        _repositoryContext = repositoryContext;
+        _jobExecutor = jobExecutor;
+        _options = options;
     }
 
     public async Task RetryAsync()
     {
-        using IServiceScope scope = _serviceProvider.CreateScope();
-        IServiceProvider serviceProvider = scope.ServiceProvider;
-        var repositoryContext = serviceProvider.GetRequiredService<IRepositoryContextFor<TMessageStorageClient>>();
-        var jobExecutorFor = serviceProvider.GetRequiredService<IJobExecutorFor<TMessageStorageClient>>();
-        var jobRetrierOptions = serviceProvider.GetRequiredService<JobRetrierOptionsFor<TMessageStorageClient>>();
-
         DateTime lastOperationTimeBeforeThen = DateTime.UtcNow.AddSeconds(-30);
 
-        bool isUnderFetch;
+        var isUnderFetch = true;
         do
         {
-            using var cancellationTokenSourceForSetInProgress = new CancellationTokenSource(TimeSpan.FromSeconds(30));
-            List<Job> jobList = await repositoryContext.GetJobRepository()
-                                                       .SetInProgressAsync(lastOperationTimeBeforeThen, jobRetrierOptions.FetchCount, cancellationTokenSourceForSetInProgress.Token);
+            if (!isUnderFetch)
+            {
+                await Task.Delay(_options.WaitAfterFullFetch);
+            }
 
-            isUnderFetch = jobList.Count < jobRetrierOptions.FetchCount;
+            using var cancellationTokenSourceForSetInProgress = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+            List<Job> jobList = await _repositoryContext.GetJobRepository()
+                                                        .SetInProgressAsync(lastOperationTimeBeforeThen, _options.FetchCount, cancellationTokenSourceForSetInProgress.Token);
+
+            isUnderFetch = jobList.Count < _options.FetchCount;
             Parallel.ForEach(jobList,
                              new ParallelOptions
                              {
-                                 MaxDegreeOfParallelism = jobRetrierOptions.Concurrency,
+                                 MaxDegreeOfParallelism = _options.Concurrency,
                              },
-                             job => { jobExecutorFor.ExecuteAsync(job).GetAwaiter().GetResult(); });
-
-            if (!isUnderFetch)
-            {
-                await Task.Delay(jobRetrierOptions.WaitAfterFullFetch);
-            }
+                             job => { _jobExecutor.ExecuteAsync(job).GetAwaiter().GetResult(); });
         } while (!isUnderFetch);
     }
 }

@@ -59,6 +59,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageStorage.MultiClient.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageStorage.Integration.MassTransit.IntegrationTest", "Tests\MessageStorage.Integration.MassTransit.IntegrationTest\MessageStorage.Integration.MassTransit.IntegrationTest.csproj", "{54DDB447-A20D-4572-A089-EFBB20B42D73}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageStorage.SqlServer.MemoryTest", "Tests\MessageStorage.SqlServer.MemoryTest\MessageStorage.SqlServer.MemoryTest.csproj", "{6FE98519-6A53-4F84-923B-4536ADA0466D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageStorage.Postgres.MemoryTest", "Tests\MessageStorage.Postgres.MemoryTest\MessageStorage.Postgres.MemoryTest.csproj", "{90C558A2-992E-487D-AF0B-EC614D26659E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -125,6 +129,14 @@ Global
 		{54DDB447-A20D-4572-A089-EFBB20B42D73}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{54DDB447-A20D-4572-A089-EFBB20B42D73}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{54DDB447-A20D-4572-A089-EFBB20B42D73}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6FE98519-6A53-4F84-923B-4536ADA0466D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6FE98519-6A53-4F84-923B-4536ADA0466D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6FE98519-6A53-4F84-923B-4536ADA0466D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6FE98519-6A53-4F84-923B-4536ADA0466D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{90C558A2-992E-487D-AF0B-EC614D26659E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{90C558A2-992E-487D-AF0B-EC614D26659E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{90C558A2-992E-487D-AF0B-EC614D26659E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{90C558A2-992E-487D-AF0B-EC614D26659E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{03F780EF-4AEE-4832-9CD8-1C3CF6EB99D2} = {033D0F1F-CF23-46CF-90CE-C53CFA85FB8C}
@@ -142,5 +154,7 @@ Global
 		{D74A24A5-7367-4CEC-B474-C03E4AAD92FC} = {2E2B0DF5-D4D6-43D7-AB7A-F51B52DBD4C3}
 		{AB6E61B6-6FCF-4711-89EF-415CB97B3043} = {2E2B0DF5-D4D6-43D7-AB7A-F51B52DBD4C3}
 		{54DDB447-A20D-4572-A089-EFBB20B42D73} = {2E2B0DF5-D4D6-43D7-AB7A-F51B52DBD4C3}
+		{6FE98519-6A53-4F84-923B-4536ADA0466D} = {2E2B0DF5-D4D6-43D7-AB7A-F51B52DBD4C3}
+		{90C558A2-992E-487D-AF0B-EC614D26659E} = {2E2B0DF5-D4D6-43D7-AB7A-F51B52DBD4C3}
 	EndGlobalSection
 EndGlobal

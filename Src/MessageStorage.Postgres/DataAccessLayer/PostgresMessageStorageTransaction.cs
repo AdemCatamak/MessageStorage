@@ -47,7 +47,6 @@ public class PostgresMessageStorageTransaction : IMessageStorageTransaction
         IsDisposed = true;
         if (!_isBorrowed)
         {
-            NpgsqlTransaction?.Connection?.Dispose();
             NpgsqlTransaction?.Dispose();
         }
     }

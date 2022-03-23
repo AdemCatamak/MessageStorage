@@ -1,3 +1,4 @@
+using System;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,6 +15,8 @@ internal class PostgresMessageRepository : IMessageRepository
     private readonly NpgsqlConnection _npgsqlConnection;
     private readonly PostgresMessageStorageTransaction? _postgresMessageStorageTransaction;
 
+    private string SchemaPlaceHolder => _repositoryContextConfiguration.Schema == null ? "" : $"\"{_repositoryContextConfiguration.Schema}\".";
+
     public PostgresMessageRepository(PostgresRepositoryContextConfiguration repositoryContextConfiguration, NpgsqlConnection npgsqlConnection, PostgresMessageStorageTransaction? postgresMessageStorageTransaction)
     {
         _repositoryContextConfiguration = repositoryContextConfiguration;
@@ -26,11 +29,7 @@ internal class PostgresMessageRepository : IMessageRepository
         string payloadStr = PayloadSerializer.Serialize(message.Payload);
 
         var scriptBuilder = new StringBuilder("INSERT INTO ");
-        if (_repositoryContextConfiguration.Schema != null)
-        {
-            scriptBuilder.Append($"\"{_repositoryContextConfiguration.Schema}\".");
-        }
-
+        scriptBuilder.Append(SchemaPlaceHolder);
         scriptBuilder.Append("messages (id, created_on, payload_type_name, payload) VALUES (@id, @created_on, @payload_type_name, @payload)");
         var script = scriptBuilder.ToString();
 
@@ -43,6 +42,25 @@ internal class PostgresMessageRepository : IMessageRepository
                          };
 
         var commandDefinition = new CommandDefinition(script, parameters, _postgresMessageStorageTransaction?.NpgsqlTransaction, cancellationToken: cancellationToken);
+        await ExecuteAsync(commandDefinition);
+    }
+
+    public async Task CleanAsync(DateTime createdBeforeThen, CancellationToken cancellationToken)
+    {
+        var scriptBuilder = new StringBuilder($"DELETE FROM ");
+        scriptBuilder.Append(SchemaPlaceHolder);
+        scriptBuilder.Append("messages m ");
+        scriptBuilder.Append($"LEFT JOIN ");
+        scriptBuilder.Append(SchemaPlaceHolder);
+        scriptBuilder.Append("jobs j ON j.message_id = m.id ");
+        scriptBuilder.Append("WHERE m.created_on < @created_before_then AND j.id IS NULL");
+        var script = scriptBuilder.ToString();
+
+        var parameters = new
+                         {
+                             created_before_then = createdBeforeThen
+                         };
+        var commandDefinition = new CommandDefinition(script, parameters, cancellationToken: cancellationToken);
         await ExecuteAsync(commandDefinition);
     }
 

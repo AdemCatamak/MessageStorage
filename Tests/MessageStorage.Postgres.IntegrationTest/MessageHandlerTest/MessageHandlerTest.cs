@@ -39,7 +39,7 @@ public class MessageHandlerTest : IDisposable
 
         dynamic? jobFromDb = await Fetch.JobFromPostgresAsync(job.Id);
         Assert.NotNull(jobFromDb);
-        Assert.Equal((int)JobStatus.Completed, jobFromDb!.job_status);
+        Assert.Equal((int)JobStatus.Succeeded, jobFromDb!.job_status);
     }
 
     [Fact(Timeout = 3000)]

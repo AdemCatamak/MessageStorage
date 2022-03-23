@@ -62,6 +62,7 @@ public class AddMessageTest : IDisposable
 
     public void Dispose()
     {
+        _messageStorageClient?.Dispose();
         _serviceScope?.Dispose();
     }
 }

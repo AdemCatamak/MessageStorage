@@ -67,7 +67,7 @@ public class SqlServerRepositoryContextFor<TMessageStorageClient> : IRepositoryC
 
     public IMessageRepository GetMessageRepository()
     {
-        var connection = IsMessageStorageTransactionUsable() ? _sqlServerMessageStorageTransaction!.SqlTransaction.Connection : GetConnection();
+        SqlConnection? connection = IsMessageStorageTransactionUsable() ? _sqlServerMessageStorageTransaction!.SqlTransaction.Connection : GetConnection();
         var sqlServerMessageRepository = new SqlServerMessageRepository(_repositoryContextConfiguration,
                                                                         connection,
                                                                         _sqlServerMessageStorageTransaction);
@@ -76,7 +76,7 @@ public class SqlServerRepositoryContextFor<TMessageStorageClient> : IRepositoryC
 
     public IJobRepository GetJobRepository()
     {
-        var connection = IsMessageStorageTransactionUsable() ? _sqlServerMessageStorageTransaction!.SqlTransaction.Connection : GetConnection();
+        SqlConnection? connection = IsMessageStorageTransactionUsable() ? _sqlServerMessageStorageTransaction!.SqlTransaction.Connection : GetConnection();
         var sqlServerJobRepository = new SqlServerJobRepository(_repositoryContextConfiguration,
                                                                 connection,
                                                                 _sqlServerMessageStorageTransaction);
@@ -106,4 +106,9 @@ public class SqlServerRepositoryContextFor<TMessageStorageClient> : IRepositoryC
         return false;
     }
 
+    public void Dispose()
+    {
+        _sqlServerMessageStorageTransaction?.Dispose();
+        _sqlConnection?.Dispose();
+    }
 }

@@ -41,7 +41,7 @@ public class Job
 
     public void SetCompleted()
     {
-        ChangeJobStatus(JobStatus.Completed, JobStatus.Completed.ToString());
+        ChangeJobStatus(JobStatus.Succeeded, JobStatus.Succeeded.ToString());
     }
 
     public void SetFailed(string errorMessage)
@@ -61,6 +61,6 @@ public enum JobStatus
 {
     Queued = 1,
     InProgress = 2,
-    Completed = 3,
+    Succeeded = 3,
     Failed = 4,
 }

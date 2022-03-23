@@ -16,7 +16,7 @@ public class SqlServerConnectionFactory : IConnectionFactory
 
     private void InitializeDb()
     {
-        string script = @"
+        var script = @"
 if not exists (select * from sys.tables t join sys.schemas s on (t.schema_id = s.schema_id) where s.name = 'use_transaction_schema' and t.name = 'accounts')
     create table use_transaction_schema.accounts (
         account_id uniqueidentifier not null primary key,

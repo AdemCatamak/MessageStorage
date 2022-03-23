@@ -20,4 +20,9 @@ public class BasicMonitorClientFor<TMessageStorageClient> : IMonitorClientFor<TM
         int result = await jobRepository.GetJobCountAsync(jobStatus, cancellationToken);
         return result;
     }
+
+    public void Dispose()
+    {
+        _repositoryContext.Dispose();
+    }
 }

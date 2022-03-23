@@ -40,13 +40,15 @@ public static class MessageStorageClientExtension
             return new JobQueueFor<TMessageStorageClient>(channel.Writer, channel.Reader, provider.GetRequiredService<IJobExecutorFor<TMessageStorageClient>>());
         });
         serviceCollection.AddSingleton<IJobExecutorFor<TMessageStorageClient>, JobExecutorFor<TMessageStorageClient>>();
-        serviceCollection.AddSingleton<IJobRescuerFor<TMessageStorageClient>, JobRescuerFor<TMessageStorageClient>>();
-        serviceCollection.AddSingleton<IJobRetrierFor<TMessageStorageClient>, JobRetrierFor<TMessageStorageClient>>();
+        serviceCollection.AddScoped<IJobRescuerFor<TMessageStorageClient>, JobRescuerFor<TMessageStorageClient>>();
+        serviceCollection.AddScoped<IJobRetrierFor<TMessageStorageClient>, JobRetrierFor<TMessageStorageClient>>();
+        serviceCollection.AddScoped<IStorageCleanerFor<TMessageStorageClient>, StorageCleanerFor<TMessageStorageClient>>();
 
         serviceCollection.AddHostedService<StorageInitializerHostedService>();
         serviceCollection.AddHostedService<JobQueueConsumeTriggerHostedServiceFor<TMessageStorageClient>>();
         serviceCollection.AddHostedService<JobRescuerHostedServiceFor<TMessageStorageClient>>();
         serviceCollection.AddHostedService<JobRetrierHostedServiceFor<TMessageStorageClient>>();
+        serviceCollection.AddHostedService<StorageCleanerHostedServiceFor<TMessageStorageClient>>();
 
         return serviceCollection;
     }
@@ -63,6 +65,13 @@ public static class MessageStorageClientExtension
                                             {
                                                 Interval = messageStorageOptions.JobRetrierInterval
                                             };
+        var storageCleanerHostedServiceOption = new StorageCleanerHostedServiceOptionsFor<TMessageStorageClient>
+                                                {
+                                                    Interval = messageStorageOptions.StorageCleanerInterval,
+                                                    FinalizedEntityRemovedAfter = messageStorageOptions.FinalizedEntityRemovedAfter,
+                                                    RemoveMessages = messageStorageOptions.RemoveMessages,
+                                                    RemoveOnlySucceedJobs = messageStorageOptions.RemoveOnlySucceededJobs
+                                                };
 
         var jobExecutorOptions = new JobExecutorOptionsFor<TMessageStorageClient>()
                                  {
@@ -77,6 +86,7 @@ public static class MessageStorageClientExtension
 
         serviceCollection.AddSingleton(jobRescuerHostedServiceOption);
         serviceCollection.AddSingleton(jobRetrierHostedServiceOption);
+        serviceCollection.AddSingleton(storageCleanerHostedServiceOption);
         serviceCollection.AddSingleton(jobExecutorOptions);
         serviceCollection.AddSingleton(jobRetrierOptions);
     }

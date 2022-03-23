@@ -7,14 +7,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using TestUtility;
-using Xunit;
 
-namespace MessageStorage.Postgres.IntegrationTest.Fixtures;
-
-[CollectionDefinition(TestServerFixture.FIXTURE_KEY)]
-public class TestServerFixtureDefinition : ICollectionFixture<TestServerFixture>
-{
-}
+namespace MessageStorage.Postgres.MemoryTest.Fixtures;
 
 public class TestServerFixture : IDisposable
 {

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Timers;
 using MessageStorage.Exceptions;
 using MessageStorage.Processor;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Timer = System.Timers.Timer;
@@ -14,16 +15,16 @@ internal class JobRetrierHostedServiceFor<TMessageStorageClient> : IHostedServic
                                                                    IDisposable
     where TMessageStorageClient : IMessageStorageClient
 {
-    private readonly IJobRetrierFor<TMessageStorageClient> _jobRetrier;
+    private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<JobRetrierHostedServiceFor<TMessageStorageClient>> _logger;
 
     private readonly Timer _timer;
 
-    public JobRetrierHostedServiceFor(JobRetrierHostedServiceOptionFor<TMessageStorageClient> options,
-                                      IJobRetrierFor<TMessageStorageClient> jobRetrier,
+    public JobRetrierHostedServiceFor(IServiceProvider serviceProvider,
+                                      JobRetrierHostedServiceOptionFor<TMessageStorageClient> options,
                                       ILogger<JobRetrierHostedServiceFor<TMessageStorageClient>> logger)
     {
-        _jobRetrier = jobRetrier;
+        _serviceProvider = serviceProvider;
         _logger = logger;
 
         _timer = new Timer(options.Interval.TotalMilliseconds);
@@ -44,7 +45,11 @@ internal class JobRetrierHostedServiceFor<TMessageStorageClient> : IHostedServic
         _logger.LogInformation("{ServiceName} is started", nameof(JobRetrierHostedServiceFor<TMessageStorageClient>));
         try
         {
-            _jobRetrier.RetryAsync().GetAwaiter().GetResult();
+            using IServiceScope scope = _serviceProvider.CreateScope();
+            IServiceProvider serviceProvider = scope.ServiceProvider;
+            var jobRetrier = serviceProvider.GetRequiredService<IJobRetrierFor<TMessageStorageClient>>();
+            jobRetrier.RetryAsync().GetAwaiter().GetResult();
+
             _logger.LogInformation("{ServiceName} is completed", nameof(JobRetrierHostedServiceFor<TMessageStorageClient>));
         }
         catch (Exception ex)

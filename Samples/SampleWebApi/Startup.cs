@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using SampleWebApi.BackgroundJobs;
@@ -37,11 +36,11 @@ public class Startup
             switch (selectedDb)
             {
                 case "SqlServer":
-                    var sqlServerConnectionStr = Configuration.GetConnectionString("SqlServerConnectionString");
+                    string? sqlServerConnectionStr = Configuration.GetConnectionString("SqlServerConnectionString");
                     configurator.UseSqlServer(sqlServerConnectionStr);
                     break;
                 case "Postgres":
-                    var postgresConnectionStr = Configuration.GetConnectionString("PostgresConnectionString");
+                    string? postgresConnectionStr = Configuration.GetConnectionString("PostgresConnectionString");
                     configurator.UsePostgres(postgresConnectionStr);
                     break;
                 default:
@@ -54,12 +53,13 @@ public class Startup
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
-        if (env.IsDevelopment())
+        app.UseDeveloperExceptionPage();
+        app.UseSwagger();
+        app.UseSwaggerUI(c =>
         {
-            app.UseDeveloperExceptionPage();
-            app.UseSwagger();
-            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "SampleWebApi v1"));
-        }
+            c.RoutePrefix = "";
+            c.SwaggerEndpoint("/swagger/v1/swagger.json", "SampleWebApi v1");
+        });
 
         app.UseRouting();
         app.UseEndpoints(endpoints => { endpoints.MapControllers(); });

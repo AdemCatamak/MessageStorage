@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MessageStorage.Exceptions;
 using MessageStorage.Processor;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -12,18 +13,18 @@ internal class JobRescuerHostedServiceFor<TMessageClient> : IHostedService,
                                                             IDisposable
     where TMessageClient : IMessageStorageClient
 {
+    private readonly IServiceProvider _serviceProvider;
     private readonly JobRescuerHostedServiceOptionFor<TMessageClient> _options;
-    private readonly IJobRescuerFor<TMessageClient> _jobRescuer;
     private readonly ILogger<JobRescuerHostedServiceFor<TMessageClient>> _logger;
 
     private Timer? _timer;
 
-    public JobRescuerHostedServiceFor(JobRescuerHostedServiceOptionFor<TMessageClient> options,
-                                      IJobRescuerFor<TMessageClient> jobRescuer,
+    public JobRescuerHostedServiceFor(IServiceProvider serviceProvider,
+                                      JobRescuerHostedServiceOptionFor<TMessageClient> options,
                                       ILogger<JobRescuerHostedServiceFor<TMessageClient>> logger)
     {
+        _serviceProvider = serviceProvider;
         _options = options;
-        _jobRescuer = jobRescuer;
         _logger = logger;
     }
 
@@ -49,7 +50,11 @@ internal class JobRescuerHostedServiceFor<TMessageClient> : IHostedService,
         _logger.LogInformation("{ServiceName} is started", nameof(JobRescuerHostedServiceFor<TMessageClient>));
         try
         {
-            _jobRescuer.RescueAsync().GetAwaiter().GetResult();
+            using IServiceScope scope = _serviceProvider.CreateScope();
+            IServiceProvider serviceProvider = scope.ServiceProvider;
+            var jobRescuer = serviceProvider.GetRequiredService<IJobRescuerFor<TMessageClient>>();
+            using var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(60));
+            jobRescuer.RescueAsync(cancellationTokenSource.Token).GetAwaiter().GetResult();
             _logger.LogInformation("{ServiceName} is completed", nameof(JobRescuerHostedServiceFor<TMessageClient>));
         }
         catch (Exception ex)

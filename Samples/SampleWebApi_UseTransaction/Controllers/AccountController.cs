@@ -30,7 +30,7 @@ public class AccountController : ControllerBase
     {
         if (string.IsNullOrEmpty(accountHttpRequest?.Email)) return BadRequest("Email should be given");
 
-        Account account = new Account(accountHttpRequest.Email);
+        var account = new Account(accountHttpRequest.Email);
 
         using (IDbConnection connection = _connectionFactory.CreateConnection())
         {
@@ -45,7 +45,7 @@ public class AccountController : ControllerBase
                                           dbTransaction);
 
 
-            AccountCreated accountCreated = new AccountCreated(account.AccountId, account.Email, account.CreatedOn);
+            var accountCreated = new AccountCreated(account.AccountId, account.Email, account.CreatedOn);
             using IMessageStorageTransaction messageStorageTransaction = _messageStorageClient.UseTransaction(dbTransaction);
             await _messageStorageClient.AddMessageAsync(accountCreated);
 

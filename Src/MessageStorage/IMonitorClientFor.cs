@@ -1,9 +1,10 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace MessageStorage;
 
-public interface IMonitorClient
+public interface IMonitorClient : IDisposable
 {
     Task<int> GetJobCountAsync(JobStatus jobStatus, CancellationToken cancellationToken = default);
 }

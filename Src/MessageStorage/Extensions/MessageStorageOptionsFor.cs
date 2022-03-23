@@ -11,13 +11,19 @@ public class MessageStorageOptionsFor<TMessageStorageClient>
 {
     private readonly IServiceCollection _serviceCollection;
     internal List<MessageHandlerMetaData> MessageHandlerMetaDataList { get; } = new();
+   
     public TimeSpan JobRescuerInterval = TimeSpan.FromMinutes(5);
     public TimeSpan JobRetrierInterval = TimeSpan.FromMinutes(5);
+    public TimeSpan StorageCleanerInterval = TimeSpan.FromMinutes(30);
+    
     public int JobQueueLength = 1000;
     public int JobHandlingConcurrency = 4;
     public int RetryJobFetchCount = 20;
     public TimeSpan WaitAfterFullFetch = TimeSpan.FromSeconds(5);
     public TimeSpan JobExecutionMaxDuration = TimeSpan.FromSeconds(120);
+    public TimeSpan FinalizedEntityRemovedAfter = TimeSpan.FromHours(24);
+    public bool RemoveOnlySucceededJobs = true;
+    public bool RemoveMessages = true;
 
     internal MessageStorageOptionsFor(IServiceCollection serviceCollection)
     {

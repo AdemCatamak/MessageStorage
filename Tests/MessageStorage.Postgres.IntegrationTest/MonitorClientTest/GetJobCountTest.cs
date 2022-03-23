@@ -34,7 +34,7 @@ public class GetJobCountTest : IDisposable
 
         await AsyncHelper.WaitAsync();
 
-        int completedJobCount = await _monitorClient.GetJobCountAsync(JobStatus.Completed);
+        int completedJobCount = await _monitorClient.GetJobCountAsync(JobStatus.Succeeded);
         Assert.True(completedJobCount > 0);
     }
 

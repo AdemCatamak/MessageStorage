@@ -106,4 +106,9 @@ public class PostgresRepositoryContextFor<TMessageStorageClient> : IRepositoryCo
         return false;
     }
 
+    public void Dispose()
+    {
+        _postgresMessageStorageTransaction?.Dispose();
+        _npgsqlConnection?.Dispose();
+    }
 }

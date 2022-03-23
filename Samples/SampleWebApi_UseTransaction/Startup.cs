@@ -33,7 +33,7 @@ public class Startup
 
         services.AddMessageStorage(configurator =>
         {
-            var sqlConnectionStr = _configuration.GetConnectionString("SqlServerConnectionString");
+            string? sqlConnectionStr = _configuration.GetConnectionString("SqlServerConnectionString");
             configurator.UseSqlServer(sqlConnectionStr, "use_transaction_schema");
 
             configurator.RegisterHandler<AccountCreated_SendWelcomeEmail, AccountCreated>(20);

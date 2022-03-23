@@ -1,4 +1,5 @@
 using System.Data;
+using System.Data.Common;
 using Dapper;
 using Microsoft.Data.SqlClient;
 using Npgsql;
@@ -51,7 +52,7 @@ public class Fetch
     {
         using var connection = new SqlConnection(SqlServerConnectionStr);
         await connection.OpenAsync();
-        using var transaction = await connection.BeginTransactionAsync(IsolationLevel.Snapshot);
+        using DbTransaction? transaction = await connection.BeginTransactionAsync(IsolationLevel.Snapshot);
         const string getJobScript = "SELECT * FROM Jobs WHERE Id = @Id";
         var getJobParameters = new
                                {
@@ -66,7 +67,7 @@ public class Fetch
     {
         using var connection = new SqlConnection(SqlServerConnectionStr);
         await connection.OpenAsync();
-        using var transaction = await connection.BeginTransactionAsync(IsolationLevel.Snapshot);
+        using DbTransaction? transaction = await connection.BeginTransactionAsync(IsolationLevel.Snapshot);
         const string getMessageScript = "SELECT * FROM Messages WHERE Id = @Id";
         var getMessageParameters = new
                                    {

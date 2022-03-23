@@ -50,7 +50,6 @@ public class SqlServerMessageStorageTransaction : IMessageStorageTransaction
         IsDisposed = true;
         if (!_isBorrowed)
         {
-            SqlTransaction?.Connection?.Dispose();
             SqlTransaction?.Dispose();
         }
     }

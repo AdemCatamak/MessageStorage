@@ -23,7 +23,7 @@ public class AccountController : ControllerBase
     {
         if (string.IsNullOrEmpty(accountHttpRequest?.Email)) return BadRequest("Email should be given");
 
-        AccountCreated accountCreated = new AccountCreated(Guid.NewGuid(), accountHttpRequest.Email, DateTime.UtcNow);
+        var accountCreated = new AccountCreated(Guid.NewGuid(), accountHttpRequest.Email, DateTime.UtcNow);
         await _messageStorageClient.AddMessageAsync(accountCreated);
 
         return StatusCode((int) HttpStatusCode.Created, accountCreated);

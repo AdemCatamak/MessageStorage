@@ -17,6 +17,8 @@ internal class PostgresJobRepository : IJobRepository
     private readonly NpgsqlConnection _npgsqlConnection;
     private readonly PostgresMessageStorageTransaction? _postgresMessageStorageTransaction;
 
+    private string SchemaPlaceHolder => _repositoryContextConfiguration.Schema == null ? "" : $"\"{_repositoryContextConfiguration.Schema}\".";
+
     public PostgresJobRepository(PostgresRepositoryContextConfiguration repositoryContextConfiguration, NpgsqlConnection npgsqlConnection, PostgresMessageStorageTransaction? postgresMessageStorageTransaction)
     {
         _repositoryContextConfiguration = repositoryContextConfiguration;
@@ -27,11 +29,7 @@ internal class PostgresJobRepository : IJobRepository
     public async Task AddAsync(List<Job> jobs, CancellationToken cancellationToken)
     {
         var scriptBuilder = new StringBuilder("INSERT INTO ");
-        if (_repositoryContextConfiguration.Schema != null)
-        {
-            scriptBuilder.Append($"\"{_repositoryContextConfiguration.Schema}\".");
-        }
-
+        scriptBuilder.Append(SchemaPlaceHolder);
         scriptBuilder.Append("jobs (id, created_on, message_id, message_handler_type_name, job_status, ");
         scriptBuilder.Append("last_operation_time, last_operation_info, ");
         scriptBuilder.Append("max_retry_count, current_retry_count) ");
@@ -70,11 +68,7 @@ internal class PostgresJobRepository : IJobRepository
     public async Task UpdateStatusAsync(Job job, CancellationToken cancellationToken)
     {
         var scriptBuilder = new StringBuilder("UPDATE ");
-        if (_repositoryContextConfiguration.Schema != null)
-        {
-            scriptBuilder.Append($"\"{_repositoryContextConfiguration.Schema}\".");
-        }
-
+        scriptBuilder.Append(SchemaPlaceHolder);
         scriptBuilder.Append("jobs SET job_status = @job_status, last_operation_time = @last_operation_time, last_operation_info = @last_operation_info ");
         scriptBuilder.Append("WHERE id = @id");
         var script = scriptBuilder.ToString();
@@ -93,11 +87,7 @@ internal class PostgresJobRepository : IJobRepository
     public async Task RescueJobsAsync(DateTime lastOperationTimeBeforeThen, CancellationToken cancellationToken)
     {
         var scriptBuilder = new StringBuilder("UPDATE ");
-        if (_repositoryContextConfiguration.Schema != null)
-        {
-            scriptBuilder.Append($"\"{_repositoryContextConfiguration.Schema}\".");
-        }
-
+        scriptBuilder.Append(SchemaPlaceHolder);
         scriptBuilder.Append("jobs SET job_status = @job_status, last_operation_time = @last_operation_time, last_operation_info = @last_operation_info ");
         scriptBuilder.Append("WHERE last_operation_time < @last_operation_time_before_then and job_status = @source_job_status");
 
@@ -117,24 +107,18 @@ internal class PostgresJobRepository : IJobRepository
 
     public async Task<List<Job>> SetInProgressAsync(DateTime lastOperationTimeBeforeThen, int fetchCount, CancellationToken cancellationToken)
     {
-        var schemaPlaceHolder = "";
-        if (_repositoryContextConfiguration.Schema != null)
-        {
-            schemaPlaceHolder = "\"{_repositoryContextConfiguration.Schema}\".";
-        }
-
         var script = $@"
-UPDATE {schemaPlaceHolder}.jobs j
+UPDATE {SchemaPlaceHolder}jobs j
 SET     job_status = @target_status,
         last_operation_time = @target_last_operation_time,
         last_operation_info = @target_last_operation_info,
         current_retry_count = current_retry_count + 1
-FROM {schemaPlaceHolder}.messages as m
+FROM {SchemaPlaceHolder}messages as m
 WHERE m.id = j.message_id and
       j.id =
        (SELECT jo.id
-        FROM   {schemaPlaceHolder}.jobs jo
-        INNER JOIN {schemaPlaceHolder}.messages me on me.id = jo.message_id
+        FROM   {SchemaPlaceHolder}jobs jo
+        INNER JOIN {SchemaPlaceHolder}messages me on me.id = jo.message_id
         WHERE  jo.job_status = @source_job_status and jo.last_operation_time < @last_operation_time_before_then
         ORDER BY jo.id
         LIMIT  {fetchCount}
@@ -181,15 +165,31 @@ RETURNING   j.id, j.message_handler_type_name, j.created_on as job_created_on, j
         return jobs;
     }
 
-    public async Task<int> GetJobCountAsync(JobStatus jobStatus, CancellationToken cancellationToken)
+    public async Task CleanAsync(DateTime lastOperationTimeBeforeThen, bool removeOnlySucceeded, CancellationToken cancellationToken)
     {
-        var schemaPlaceHolder = "";
-        if (_repositoryContextConfiguration.Schema != null)
+        var scriptBuilder = new StringBuilder("DELETE FROM ");
+        scriptBuilder.Append(SchemaPlaceHolder);
+        scriptBuilder.Append("jobs WHERE last_operation_time < @last_operation_time_before_then AND job_status in @job_status_list");
+        var script = scriptBuilder.ToString();
+
+        var jobStatusList = new List<JobStatus> { JobStatus.Succeeded };
+        if (!removeOnlySucceeded)
         {
-            schemaPlaceHolder = $"\"{_repositoryContextConfiguration.Schema}\".";
+            jobStatusList.Add(JobStatus.Failed);
         }
 
-        var script = $"SELECT count(id) as job_count FROM {schemaPlaceHolder}jobs WHERE job_status = @job_status";
+        var parameters = new
+                         {
+                             last_operation_time_before_then = lastOperationTimeBeforeThen,
+                             job_status_list = jobStatusList
+                         };
+        var commandDefinition = new CommandDefinition(script, parameters, cancellationToken: cancellationToken);
+        await ExecuteAsync(commandDefinition);
+    }
+
+    public async Task<int> GetJobCountAsync(JobStatus jobStatus, CancellationToken cancellationToken)
+    {
+        var script = $"SELECT count(id) as job_count FROM {SchemaPlaceHolder}jobs WHERE job_status = @job_status";
         var parameters = new
                          {
                              job_status = (int)jobStatus

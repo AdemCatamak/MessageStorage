@@ -1,12 +1,12 @@
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using MessageStorage.DataAccessLayer;
-using MessageStorage.Processor;
 
 namespace MessageStorage;
 
-public interface IMessageStorageClient
+public interface IMessageStorageClient : IDisposable
 {
     internal IRepositoryContext RepositoryContext { get; }
     

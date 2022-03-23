@@ -11,6 +11,7 @@ public interface IJobRepository
     Task UpdateStatusAsync(Job job, CancellationToken cancellationToken);
     Task RescueJobsAsync(DateTime lastOperationTimeBeforeThen, CancellationToken cancellationToken);
     Task<List<Job>> SetInProgressAsync(DateTime lastOperationTimeBeforeThen, int fetchCount, CancellationToken cancellationToken);
+    Task CleanAsync(DateTime lastOperationTimeBeforeThen, bool removeOnlySucceeded, CancellationToken cancellationToken);
     
     Task<int> GetJobCountAsync(JobStatus jobStatus, CancellationToken cancellationToken);
 }

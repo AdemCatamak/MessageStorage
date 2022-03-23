@@ -40,7 +40,7 @@ public class MessageHandlerTest : IDisposable
 
         dynamic? jobFromDb = await Fetch.JobFromSqlServerAsync(job.Id);
         Assert.NotNull(jobFromDb);
-        Assert.Equal((int)JobStatus.Completed, jobFromDb!.JobStatus);
+        Assert.Equal((int)JobStatus.Succeeded, jobFromDb!.JobStatus);
     }
 
     [Fact(Timeout = 3000)]
