@@ -167,25 +167,13 @@ RETURNING   j.id, j.message_handler_type_name, j.created_on as job_created_on, j
 
     public async Task CleanAsync(DateTime lastOperationTimeBeforeThen, bool removeOnlySucceeded, CancellationToken cancellationToken)
     {
-        var scriptBuilder = new StringBuilder("DELETE FROM ");
-        scriptBuilder.Append(SchemaPlaceHolder);
-        scriptBuilder.Append("jobs WHERE last_operation_time < @last_operation_time_before_then AND job_status in @job_status_list");
-        var script = scriptBuilder.ToString();
-
-        var jobStatusList = new List<JobStatus> { JobStatus.Succeeded };
+        await CleanSucceededAsync(lastOperationTimeBeforeThen, cancellationToken);
         if (!removeOnlySucceeded)
         {
-            jobStatusList.Add(JobStatus.Failed);
+            await CleanFailedAsync(lastOperationTimeBeforeThen, cancellationToken);
         }
-
-        var parameters = new
-                         {
-                             last_operation_time_before_then = lastOperationTimeBeforeThen,
-                             job_status_list = jobStatusList
-                         };
-        var commandDefinition = new CommandDefinition(script, parameters, cancellationToken: cancellationToken);
-        await ExecuteAsync(commandDefinition);
     }
+
 
     public async Task<int> GetJobCountAsync(JobStatus jobStatus, CancellationToken cancellationToken)
     {
@@ -210,5 +198,35 @@ RETURNING   j.id, j.message_handler_type_name, j.created_on as job_created_on, j
         {
             await _npgsqlConnection.ExecuteAsync(commandDefinition);
         }
+    }
+
+    private async Task CleanSucceededAsync(DateTime lastOperationTimeBeforeThen, CancellationToken cancellationToken)
+    {
+        var scriptBuilder = new StringBuilder("DELETE FROM ");
+        scriptBuilder.Append(SchemaPlaceHolder);
+        scriptBuilder.Append("jobs WHERE last_operation_time < @last_operation_time_before_then AND job_status = @job_status");
+        var scriptForSucceeded = scriptBuilder.ToString();
+        var parameterForSucceeded = new
+                                    {
+                                        last_operation_time_before_then = lastOperationTimeBeforeThen,
+                                        job_status = JobStatus.Succeeded
+                                    };
+        var commandDefinition = new CommandDefinition(scriptForSucceeded, parameterForSucceeded, cancellationToken: cancellationToken);
+        await ExecuteAsync(commandDefinition);
+    }
+
+    private async Task CleanFailedAsync(DateTime lastOperationTimeBeforeThen, CancellationToken cancellationToken)
+    {
+        var scriptBuilder = new StringBuilder("DELETE FROM ");
+        scriptBuilder.Append(SchemaPlaceHolder);
+        scriptBuilder.Append("jobs WHERE last_operation_time < @last_operation_time_before_then AND job_status = @job_status AND current_retry_count >= max_retry_count");
+        var scriptForFailed = scriptBuilder.ToString();
+        var parametersForFailed = new
+                                  {
+                                      last_operation_time_before_then = lastOperationTimeBeforeThen,
+                                      job_status = JobStatus.Failed
+                                  };
+        var commandDefinition = new CommandDefinition(scriptForFailed, parametersForFailed, cancellationToken: cancellationToken);
+        await ExecuteAsync(commandDefinition);
     }
 }

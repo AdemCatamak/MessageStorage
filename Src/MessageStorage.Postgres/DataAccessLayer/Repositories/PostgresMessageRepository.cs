@@ -47,14 +47,12 @@ internal class PostgresMessageRepository : IMessageRepository
 
     public async Task CleanAsync(DateTime createdBeforeThen, CancellationToken cancellationToken)
     {
-        var scriptBuilder = new StringBuilder($"DELETE FROM ");
-        scriptBuilder.Append(SchemaPlaceHolder);
-        scriptBuilder.Append("messages m ");
-        scriptBuilder.Append($"LEFT JOIN ");
-        scriptBuilder.Append(SchemaPlaceHolder);
-        scriptBuilder.Append("jobs j ON j.message_id = m.id ");
-        scriptBuilder.Append("WHERE m.created_on < @created_before_then AND j.id IS NULL");
-        var script = scriptBuilder.ToString();
+        string script = $@"
+DELETE FROM {SchemaPlaceHolder}messages WHERE id IN (
+    SELECT m.id FROM {SchemaPlaceHolder}messages m
+        LEFT JOIN {SchemaPlaceHolder}jobs j ON j.message_id = m.id
+    WHERE m.created_on < @created_before_then AND j.id IS NULL
+)";
 
         var parameters = new
                          {

@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="MassTransit" Version="8.0.0" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\Src\MessageStorage.Integration.MassTransit\MessageStorage.Integration.MassTransit.csproj" />
+      <ProjectReference Include="..\..\Src\MessageStorage.Postgres\MessageStorage.Postgres.csproj" />
+      <ProjectReference Include="..\..\Src\MessageStorage.SqlServer\MessageStorage.SqlServer.csproj" />
+      <ProjectReference Include="..\..\Src\MessageStorage\MessageStorage.csproj" />
+    </ItemGroup>
+
+</Project>

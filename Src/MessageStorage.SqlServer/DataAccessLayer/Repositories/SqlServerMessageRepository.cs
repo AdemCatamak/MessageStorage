@@ -47,14 +47,12 @@ internal class SqlServerMessageRepository : IMessageRepository
 
     public async Task CleanAsync(DateTime createdBeforeThen, CancellationToken cancellationToken)
     {
-        var scriptBuilder = new StringBuilder($"DELETE FROM ");
-        scriptBuilder.Append(SchemaPlaceHolder);
-        scriptBuilder.Append("Messages m ");
-        scriptBuilder.Append($"LEFT JOIN ");
-        scriptBuilder.Append(SchemaPlaceHolder);
-        scriptBuilder.Append("Jobs j ON j.MessageId = m.Id ");
-        scriptBuilder.Append("WHERE m.CreatedOn < @CreatedBeforeThen AND j.Id IS NULL");
-        var script = scriptBuilder.ToString();
+        string script = $@"
+DELETE FROM {SchemaPlaceHolder}Messages WHERE Id IN (
+    SELECT m.Id FROM {SchemaPlaceHolder}Messages m
+        LEFT JOIN {SchemaPlaceHolder}Jobs j ON j.MessageId = m.Id
+    WHERE m.CreatedOn < @CreatedBeforeThen AND j.Id IS NULL
+)";
 
         var parameters = new
                          {

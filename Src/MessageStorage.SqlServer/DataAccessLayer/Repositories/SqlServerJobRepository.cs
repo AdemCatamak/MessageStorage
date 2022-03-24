@@ -169,24 +169,11 @@ SELECT  j.Id, j.MessageHandlerTypeName, j.CreatedOn as JobCreatedOn, j.JobStatus
 
     public async Task CleanAsync(DateTime lastOperationTimeBeforeThen, bool removeOnlySucceeded, CancellationToken cancellationToken)
     {
-        var scriptBuilder = new StringBuilder("DELETE FROM ");
-        scriptBuilder.Append(SchemaPlaceHolder);
-        scriptBuilder.Append("Jobs WHERE LastOperationTime < @LastOperationTimeBeforeThen AND JobStatus in @JobStatusList");
-        var script = scriptBuilder.ToString();
-
-        var jobStatusList = new List<JobStatus> { JobStatus.Succeeded };
+        await CleanSucceededAsync(lastOperationTimeBeforeThen, cancellationToken);
         if (!removeOnlySucceeded)
         {
-            jobStatusList.Add(JobStatus.Failed);
+            await CleanFailedAsync(lastOperationTimeBeforeThen, cancellationToken);
         }
-
-        var parameters = new
-                         {
-                             LastOperationTimeBeforeThen = lastOperationTimeBeforeThen,
-                             JobStatusList = jobStatusList
-                         };
-        var commandDefinition = new CommandDefinition(script, parameters, cancellationToken: cancellationToken);
-        await ExecuteAsync(commandDefinition);
     }
 
     public async Task<int> GetJobCountAsync(JobStatus jobStatus, CancellationToken cancellationToken)
@@ -212,5 +199,35 @@ SELECT  j.Id, j.MessageHandlerTypeName, j.CreatedOn as JobCreatedOn, j.JobStatus
         {
             await _sqlConnection.ExecuteAsync(commandDefinition);
         }
+    }
+
+    private async Task CleanSucceededAsync(DateTime lastOperationTimeBeforeThen, CancellationToken cancellationToken)
+    {
+        var scriptBuilder = new StringBuilder("DELETE FROM ");
+        scriptBuilder.Append(SchemaPlaceHolder);
+        scriptBuilder.Append("jobs WHERE LastOperationTime < @LastOperationTimeBeforeThen AND JobStatus = @JobStatus");
+        var scriptForSucceeded = scriptBuilder.ToString();
+        var parameterForSucceeded = new
+                                    {
+                                        LastOperationTimeBeforeThen = lastOperationTimeBeforeThen,
+                                        JobStatus = JobStatus.Succeeded
+                                    };
+        var commandDefinition = new CommandDefinition(scriptForSucceeded, parameterForSucceeded, cancellationToken: cancellationToken);
+        await ExecuteAsync(commandDefinition);
+    }
+
+    private async Task CleanFailedAsync(DateTime lastOperationTimeBeforeThen, CancellationToken cancellationToken)
+    {
+        var scriptBuilder = new StringBuilder("DELETE FROM ");
+        scriptBuilder.Append(SchemaPlaceHolder);
+        scriptBuilder.Append("jobs WHERE LastOperationTime < @LastOperationTimeBeforeThen AND JobStatus = @JobStatus AND CurrentRetryCount >= MaxRetryCount");
+        var scriptForFailed = scriptBuilder.ToString();
+        var parametersForFailed = new
+                                  {
+                                      LastOperationTimeBeforeThen = lastOperationTimeBeforeThen,
+                                      JobStatus = JobStatus.Failed
+                                  };
+        var commandDefinition = new CommandDefinition(scriptForFailed, parametersForFailed, cancellationToken: cancellationToken);
+        await ExecuteAsync(commandDefinition);
     }
 }
