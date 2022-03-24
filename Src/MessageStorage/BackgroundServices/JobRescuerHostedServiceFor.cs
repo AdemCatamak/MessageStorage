@@ -30,7 +30,7 @@ internal class JobRescuerHostedServiceFor<TMessageClient> : IHostedService,
 
     public Task StartAsync(CancellationToken stoppingToken)
     {
-        _timer = new Timer(RescueJobs, null, TimeSpan.Zero, _options.Interval);
+        _timer = new Timer(RescueJobs, null, TimeSpan.FromMinutes(2), _options.Interval);
         return Task.CompletedTask;
     }
 

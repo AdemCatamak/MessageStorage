@@ -8,7 +8,6 @@ using MessageStorage.SqlServer.IntegrationTest.Fixtures;
 using MessageStorage.SqlServer.IntegrationTest.Fixtures.MessageHandlers;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.DependencyInjection;
-using Npgsql;
 using TestUtility;
 using Xunit;
 

@@ -2,7 +2,6 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
-using MessageStorage.DataAccessLayer;
 using MessageStorage.MessageStorageClients;
 using MessageStorage.Postgres.IntegrationTest.Fixtures;
 using MessageStorage.Postgres.IntegrationTest.Fixtures.MessageHandlers;

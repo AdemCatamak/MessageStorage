@@ -28,7 +28,7 @@ internal class StorageCleanerHostedServiceFor<TMessageStorageClient> : IHostedSe
 
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        _timer = new Timer(TryClean, null, TimeSpan.FromMinutes(1), _options.Interval);
+        _timer = new Timer(TryClean, null, TimeSpan.FromMinutes(5), _options.Interval);
         return Task.CompletedTask;
     }
 

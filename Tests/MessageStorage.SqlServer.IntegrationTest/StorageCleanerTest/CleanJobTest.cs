@@ -7,7 +7,6 @@ using MessageStorage.Processor;
 using MessageStorage.SqlServer.IntegrationTest.Fixtures;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.DependencyInjection;
-using Npgsql;
 using TestUtility;
 using Xunit;
 
