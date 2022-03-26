@@ -9,7 +9,7 @@ public class BasicIntegrationCommandConsumer : IConsumer<BasicIntegrationCommand
 {
     public Task Consume(ConsumeContext<BasicIntegrationCommand> context)
     {
-        BasicIntegrationCommand basicIntegrationCommand = context.Message;
+        BasicIntegrationCommand? basicIntegrationCommand = context.Message;
         ConsumedMessageContainer.ConsumedMessageId.Add(basicIntegrationCommand.Guid);
         return Task.CompletedTask;
     }

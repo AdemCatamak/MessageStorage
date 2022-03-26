@@ -39,8 +39,8 @@ internal class JobRetrierFor<TMessageStorageClient> : IJobRetrierFor<TMessageSto
             }
 
             using var cancellationTokenSourceForSetInProgress = new CancellationTokenSource(TimeSpan.FromSeconds(30));
-            List<Job> jobList = await _repositoryContext.GetJobRepository()
-                                                        .SetInProgressAsync(lastOperationTimeBeforeThen, _options.FetchCount, cancellationTokenSourceForSetInProgress.Token);
+            List<Job>? jobList = await _repositoryContext.GetJobRepository()
+                                                         .SetInProgressAsync(lastOperationTimeBeforeThen, _options.FetchCount, cancellationTokenSourceForSetInProgress.Token);
 
             isUnderFetch = jobList.Count < _options.FetchCount;
             Parallel.ForEach(jobList,

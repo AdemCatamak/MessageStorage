@@ -50,8 +50,8 @@ internal class JobRescuerHostedServiceFor<TMessageClient> : IHostedService,
         _logger.LogInformation("{ServiceName} is started", nameof(JobRescuerHostedServiceFor<TMessageClient>));
         try
         {
-            using IServiceScope scope = _serviceProvider.CreateScope();
-            IServiceProvider serviceProvider = scope.ServiceProvider;
+            using IServiceScope? scope = _serviceProvider.CreateScope();
+            IServiceProvider? serviceProvider = scope.ServiceProvider;
             var jobRescuer = serviceProvider.GetRequiredService<IJobRescuerFor<TMessageClient>>();
             using var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(60));
             jobRescuer.RescueAsync(cancellationTokenSource.Token).GetAwaiter().GetResult();

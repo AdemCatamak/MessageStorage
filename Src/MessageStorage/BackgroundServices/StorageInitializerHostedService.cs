@@ -25,8 +25,8 @@ internal class StorageInitializerHostedService : IHostedService
 
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        Task[] initializeTasks = _storageInitializeEngines.Select(engine => InitializeAsync(engine, cancellationToken))
-                                                          .ToArray();
+        Task[]? initializeTasks = _storageInitializeEngines.Select(engine => InitializeAsync(engine, cancellationToken))
+                                                           .ToArray();
         _initializeAllStorageTask = Task.WhenAll(initializeTasks);
         return _initializeAllStorageTask;
     }

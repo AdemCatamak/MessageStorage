@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using TestUtility;
+using TestUtility.DbUtils;
 using Xunit;
 
 namespace MessageStorage.Integration.MassTransit.IntegrationTest.Fixtures;
@@ -29,9 +29,9 @@ public class TestServerFixture : IDisposable
     public TestServerFixture()
     {
         _postgresFixture = new PostgresFixture();
-        Fetch.SetPostgresConnectionStr(_postgresFixture.ConnectionStr);
+        Db.SetPostgresConnectionStr(_postgresFixture.ConnectionStr);
 
-        IHostBuilder hostBuilder = Host.CreateDefaultBuilder();
+        IHostBuilder? hostBuilder = Host.CreateDefaultBuilder();
         hostBuilder.UseEnvironment("Test")
                    .ConfigureWebHost(builder =>
                     {

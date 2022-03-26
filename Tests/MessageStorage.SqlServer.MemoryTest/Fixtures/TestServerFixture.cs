@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using TestUtility;
+using TestUtility.DbUtils;
 
 namespace MessageStorage.SqlServer.MemoryTest.Fixtures;
 
@@ -21,9 +21,9 @@ public class TestServerFixture : IDisposable
     public TestServerFixture()
     {
         _sqlServerFixture = new SqlServerFixture();
-        Fetch.SetSqlServerConnectionStr(_sqlServerFixture.ConnectionStr);
+        Db.SetSqlServerConnectionStr(_sqlServerFixture.ConnectionStr);
 
-        IHostBuilder hostBuilder = Host.CreateDefaultBuilder();
+        IHostBuilder? hostBuilder = Host.CreateDefaultBuilder();
         hostBuilder.UseEnvironment("Test")
                    .ConfigureWebHost(builder =>
                     {
@@ -46,7 +46,7 @@ public class TestServerFixture : IDisposable
 
     public IServiceScope GetServiceScope()
     {
-        IServiceScope serviceScope = _testServer.Services.CreateScope();
+        IServiceScope? serviceScope = _testServer.Services.CreateScope();
         return serviceScope;
     }
 

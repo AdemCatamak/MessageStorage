@@ -9,7 +9,7 @@ public class BasicIntegrationEventConsumer : IConsumer<BasicIntegrationEvent>
 {
     public Task Consume(ConsumeContext<BasicIntegrationEvent> context)
     {
-        BasicIntegrationEvent basicIntegrationEvent = context.Message;
+        BasicIntegrationEvent? basicIntegrationEvent = context.Message;
         ConsumedMessageContainer.ConsumedMessageId.Add(basicIntegrationEvent.Guid);
         return Task.CompletedTask;
     }

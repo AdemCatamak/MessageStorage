@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using MessageStorage.Postgres.IntegrationTest.Fixtures;
 using MessageStorage.Postgres.IntegrationTest.Fixtures.MessageHandlers;
 using Microsoft.Extensions.DependencyInjection;
-using TestUtility;
+using TestUtility.DbUtils;
 using Xunit;
 
 namespace MessageStorage.Postgres.IntegrationTest.MessageStorageClientTest;
@@ -35,9 +35,9 @@ public class AddMessageTest : IDisposable
 
         Assert.Empty(jobs);
 
-        dynamic? messageFromDb = await Fetch.MessageFromPostgresAsync(message.Id);
+        Message? messageFromDb = await Db.Fetch.MessageFromPostgresAsync(message.Id);
         Assert.NotNull(messageFromDb);
-        Assert.Equal(message.Id, messageFromDb!.id);
+        Assert.Equal(message.Id, messageFromDb!.Id);
     }
 
     [Fact(Timeout = 1000)]
@@ -50,13 +50,13 @@ public class AddMessageTest : IDisposable
         Assert.Single(jobs);
         Job job = jobs.First();
 
-        dynamic? messageFromDb = await Fetch.MessageFromPostgresAsync(message.Id);
+        Message? messageFromDb = await Db.Fetch.MessageFromPostgresAsync(message.Id);
         Assert.NotNull(messageFromDb);
-        Assert.Equal(message.Id, messageFromDb!.id);
+        Assert.Equal(message.Id, messageFromDb!.Id);
 
-        dynamic? jobFromDb = await Fetch.JobFromPostgresAsync(job.Id);
+        Job? jobFromDb = await Db.Fetch.JobFromPostgresAsync(job.Id);
         Assert.NotNull(jobFromDb);
-        Assert.Equal(job.Id, jobFromDb!.id);
+        Assert.Equal(job.Id, jobFromDb!.Id);
     }
 
 

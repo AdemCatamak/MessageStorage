@@ -31,7 +31,7 @@ public class PostgresMessageStorageTransaction : IMessageStorageTransaction
     {
         await NpgsqlTransaction.CommitAsync(cancellationToken);
         IsCommitted = true;
-        while (_jobToBeDispatched.TryDequeue(out Job job))
+        while (_jobToBeDispatched.TryDequeue(out Job? job))
         {
             _jobQueue.Enqueue(job);
         }

@@ -7,6 +7,7 @@ using MessageStorage.SqlServer.IntegrationTest.Fixtures;
 using MessageStorage.SqlServer.IntegrationTest.Fixtures.MessageHandlers;
 using Microsoft.Extensions.DependencyInjection;
 using TestUtility;
+using TestUtility.DbUtils;
 using Xunit;
 
 namespace MessageStorage.SqlServer.IntegrationTest.MessageHandlerTest;
@@ -31,32 +32,32 @@ public class MessageHandlerTest : IDisposable
     public async Task WhenThereIsNoError_JobShouldBeMarkedAsCompleted()
     {
         var basicMessage = new BasicMessage("some-message");
-        (_, List<Job> jobs) = await _messageStorageClient.AddMessageAsync(basicMessage, CancellationToken.None);
+        (_, List<Job>? jobs) = await _messageStorageClient.AddMessageAsync(basicMessage, CancellationToken.None);
 
         Assert.Single(jobs);
-        Job job = jobs.First();
+        Job? job = jobs.First();
 
         await AsyncHelper.WaitAsync();
 
-        dynamic? jobFromDb = await Fetch.JobFromSqlServerAsync(job.Id);
+        Job? jobFromDb = await Db.Fetch.JobFromSqlServerAsync(job.Id);
         Assert.NotNull(jobFromDb);
-        Assert.Equal((int)JobStatus.Succeeded, jobFromDb!.JobStatus);
+        Assert.Equal(JobStatus.Succeeded, jobFromDb!.JobStatus);
     }
 
     [Fact(Timeout = 3000)]
     public async Task WhenThereIsError_JobShouldBeMarkedAsFailed()
     {
         var throwExMessage = new ThrowExMessage("some-message");
-        (_, List<Job> jobs) = await _messageStorageClient.AddMessageAsync(throwExMessage);
+        (_, List<Job>? jobs) = await _messageStorageClient.AddMessageAsync(throwExMessage);
 
         Assert.Single(jobs);
-        Job job = jobs.First();
+        Job? job = jobs.First();
 
         await AsyncHelper.WaitAsync();
 
-        dynamic? jobFromDb = await Fetch.JobFromSqlServerAsync(job.Id);
+        Job? jobFromDb = await Db.Fetch.JobFromSqlServerAsync(job.Id);
         Assert.NotNull(jobFromDb);
-        Assert.Equal((int)JobStatus.Failed, jobFromDb!.JobStatus);
+        Assert.Equal(JobStatus.Failed, jobFromDb!.JobStatus);
         Assert.Equal(throwExMessage.ExceptionMessage, jobFromDb.LastOperationInfo);
     }
 

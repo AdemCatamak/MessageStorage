@@ -14,7 +14,7 @@ public class FooCreatedIntegrationEventConsumer : IConsumer<FooCreatedIntegratio
 
     public Task Consume(ConsumeContext<FooCreatedIntegrationEvent> context)
     {
-        FooCreatedIntegrationEvent message = context.Message;
+        FooCreatedIntegrationEvent? message = context.Message;
         _logger.LogInformation("{EventName} is consumed : {Event}", nameof(FooCreatedIntegrationEvent), message);
         
         return Task.CompletedTask;

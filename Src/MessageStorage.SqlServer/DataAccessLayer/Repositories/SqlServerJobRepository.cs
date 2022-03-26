@@ -56,7 +56,7 @@ public class SqlServerJobRepository : IJobRepository
 
         if (_sqlServerMessageStorageTransaction != null)
         {
-            foreach (Job job in jobs)
+            foreach (Job? job in jobs)
             {
                 ((IMessageStorageTransaction)_sqlServerMessageStorageTransaction).AddJobToBeDispatched(job);
             }
@@ -154,16 +154,16 @@ SELECT  j.Id, j.MessageHandlerTypeName, j.CreatedOn as JobCreatedOn, j.JobStatus
                .ToList();
         }
 
-        List<Job> jobList = jobsFromDb.Select(row => new Job(row.Id,
-                                                             new Message((Guid)row.MessageId, PayloadSerializer.Deserialize(row.Payload), (DateTime)row.MessageCreatedOn),
-                                                             (string)row.MessageHandlerTypeName,
-                                                             (JobStatus)row.JobStatus,
-                                                             (DateTime)row.JobCreatedOn,
-                                                             (DateTime)row.LastOperationTime,
-                                                             (string)row.LastOperationInfo,
-                                                             (int)row.CurrentRetryCount,
-                                                             (int)row.MaxRetryCount))
-                                      .ToList();
+        List<Job>? jobList = jobsFromDb.Select(row => new Job(row.Id,
+                                                              new Message((Guid)row.MessageId, PayloadSerializer.Deserialize(row.Payload), (DateTime)row.MessageCreatedOn),
+                                                              (string)row.MessageHandlerTypeName,
+                                                              (JobStatus)row.JobStatus,
+                                                              (DateTime)row.JobCreatedOn,
+                                                              (DateTime)row.LastOperationTime,
+                                                              (string)row.LastOperationInfo,
+                                                              (int)row.CurrentRetryCount,
+                                                              (int)row.MaxRetryCount))
+                                       .ToList();
         return jobList;
     }
 

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using MessageStorage.SqlServer.IntegrationTest.Fixtures;
 using MessageStorage.SqlServer.IntegrationTest.Fixtures.MessageHandlers;
 using Microsoft.Extensions.DependencyInjection;
-using TestUtility;
+using TestUtility.DbUtils;
 using Xunit;
 
 namespace MessageStorage.SqlServer.IntegrationTest.MessageStorageClientTest;
@@ -35,7 +35,7 @@ public class AddMessageTest : IDisposable
 
         Assert.Empty(jobs);
 
-        dynamic? messageFromDb = await Fetch.MessageFromSqlServerAsync(message.Id);
+        Message? messageFromDb = await Db.Fetch.MessageFromSqlServerAsync(message.Id);
         Assert.NotNull(messageFromDb);
         Assert.Equal(message.Id, messageFromDb!.Id);
     }
@@ -50,11 +50,11 @@ public class AddMessageTest : IDisposable
         Assert.Single(jobs);
         Job job = jobs.First();
 
-        dynamic? messageFromDb = await Fetch.MessageFromSqlServerAsync(message.Id);
+        Message? messageFromDb = await Db.Fetch.MessageFromSqlServerAsync(message.Id);
         Assert.NotNull(messageFromDb);
         Assert.Equal(message.Id, messageFromDb!.Id);
 
-        dynamic? jobFromDb = await Fetch.JobFromSqlServerAsync(job.Id);
+        Job? jobFromDb = await Db.Fetch.JobFromSqlServerAsync(job.Id);
         Assert.NotNull(jobFromDb);
         Assert.Equal(job.Id, jobFromDb!.Id);
     }

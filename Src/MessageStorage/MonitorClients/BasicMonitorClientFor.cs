@@ -16,7 +16,7 @@ public class BasicMonitorClientFor<TMessageStorageClient> : IMonitorClientFor<TM
 
     public async Task<int> GetJobCountAsync(JobStatus jobStatus, CancellationToken cancellationToken)
     {
-        IJobRepository jobRepository = _repositoryContext.GetJobRepository();
+        IJobRepository? jobRepository = _repositoryContext.GetJobRepository();
         int result = await jobRepository.GetJobCountAsync(jobStatus, cancellationToken);
         return result;
     }

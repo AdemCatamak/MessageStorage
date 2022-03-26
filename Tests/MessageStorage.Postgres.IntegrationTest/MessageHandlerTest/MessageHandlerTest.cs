@@ -6,6 +6,7 @@ using MessageStorage.Postgres.IntegrationTest.Fixtures;
 using MessageStorage.Postgres.IntegrationTest.Fixtures.MessageHandlers;
 using Microsoft.Extensions.DependencyInjection;
 using TestUtility;
+using TestUtility.DbUtils;
 using Xunit;
 
 namespace MessageStorage.Postgres.IntegrationTest.MessageHandlerTest;
@@ -25,39 +26,39 @@ public class MessageHandlerTest : IDisposable
         _serviceScope = _fixture.GetServiceScope();
         _messageStorageClient = _serviceScope.ServiceProvider.GetRequiredService<IMessageStorageClient>();
     }
-    
+
     [Fact(Timeout = 3000)]
     public async Task WhenThereIsNoError_JobShouldBeMarkedAsCompleted()
     {
         var basicMessage = new BasicMessage("some-message");
-        (_, List<Job> jobs) = await _messageStorageClient.AddMessageAsync(basicMessage);
+        (_, List<Job>? jobs) = await _messageStorageClient.AddMessageAsync(basicMessage);
 
         Assert.Single(jobs);
-        Job job = jobs.First();
+        Job? job = jobs.First();
 
         await AsyncHelper.WaitAsync();
 
-        dynamic? jobFromDb = await Fetch.JobFromPostgresAsync(job.Id);
+        Job? jobFromDb = await Db.Fetch.JobFromPostgresAsync(job.Id);
         Assert.NotNull(jobFromDb);
-        Assert.Equal((int)JobStatus.Succeeded, jobFromDb!.job_status);
+        Assert.Equal(JobStatus.Succeeded, jobFromDb!.JobStatus);
     }
 
     [Fact(Timeout = 3000)]
     public async Task WhenThereIsError_JobShouldBeMarkedAsFailed()
     {
         var throwExMessage = new ThrowExMessage("some-message");
-        (_, List<Job> jobs) = await _messageStorageClient.AddMessageAsync(throwExMessage);
+        (_, List<Job>? jobs) = await _messageStorageClient.AddMessageAsync(throwExMessage);
 
         Assert.Single(jobs);
-        Job job = jobs.First();
+        Job? job = jobs.First();
 
         await AsyncHelper.WaitAsync();
 
 
-        dynamic? jobFromDb = await Fetch.JobFromPostgresAsync(job.Id);
+        Job? jobFromDb = await Db.Fetch.JobFromPostgresAsync(job.Id);
         Assert.NotNull(jobFromDb);
-        Assert.Equal((int)JobStatus.Failed, jobFromDb!.job_status);
-        Assert.Equal(throwExMessage.ExceptionMessage, jobFromDb.last_operation_info);
+        Assert.Equal(JobStatus.Failed, jobFromDb!.JobStatus);
+        Assert.Equal(throwExMessage.ExceptionMessage, jobFromDb.LastOperationInfo);
     }
 
     public void Dispose()

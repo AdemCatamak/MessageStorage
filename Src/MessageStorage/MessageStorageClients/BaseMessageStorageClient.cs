@@ -39,12 +39,12 @@ public abstract class BaseMessageStorageClient<TMessageStorageClient> : IMessage
 
     public async Task<(Message, List<Job>)> AddMessageAsync(object payload, CancellationToken cancellationToken)
     {
-        (Message message, List<Job> jobList) = CreateEntity(payload);
+        (Message? message, List<Job>? jobList) = CreateEntity(payload);
 
         if (_repositoryContext.CurrentMessageStorageTransaction == null)
         {
             var stopwatch = Stopwatch.StartNew();
-            using IMessageStorageTransaction transaction = _repositoryContext.StartTransaction();
+            using IMessageStorageTransaction? transaction = _repositoryContext.StartTransaction();
             await AddMessageInternalAsync(message, jobList, cancellationToken);
             await transaction.CommitAsync(cancellationToken);
             stopwatch.Stop();
@@ -68,8 +68,8 @@ public abstract class BaseMessageStorageClient<TMessageStorageClient> : IMessage
     private (Message, List<Job>) CreateEntity(object payload)
     {
         var message = new Message(payload);
-        IReadOnlyList<MessageHandlerMetaData> availableMessageHandlerMetaDataList = _metaDataHolder.GetAvailableMessageHandlerMetaDataCollection(payload.GetType());
-        List<Job> jobs = availableMessageHandlerMetaDataList.Select(metaData => new Job(message, metaData.MessageHandlerType.FullName!, metaData.MaxRetryCount)).ToList();
+        IReadOnlyList<MessageHandlerMetaData>? availableMessageHandlerMetaDataList = _metaDataHolder.GetAvailableMessageHandlerMetaDataCollection(payload.GetType());
+        List<Job>? jobs = availableMessageHandlerMetaDataList.Select(metaData => new Job(message, metaData.MessageHandlerType.FullName!, metaData.MaxRetryCount)).ToList();
         jobs.ForEach(j => j.SetInProgress());
         return (message, jobs);
     }

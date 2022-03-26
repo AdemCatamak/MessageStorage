@@ -27,7 +27,7 @@ public class SqlServerFixture : IDisposable
         const string password = "Passw0rd";
         int port = NetworkUtility.GetAvailablePort();
 
-        ITestcontainersBuilder<MsSqlTestcontainer> sqlServerTestContainerBuilder
+        ITestcontainersBuilder<MsSqlTestcontainer>? sqlServerTestContainerBuilder
             = new TestcontainersBuilder<MsSqlTestcontainer>()
                .WithDatabase(new MsSqlTestcontainerConfiguration
                              {

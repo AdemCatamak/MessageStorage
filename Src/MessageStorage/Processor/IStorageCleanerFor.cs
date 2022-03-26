@@ -24,13 +24,13 @@ public class StorageCleanerFor<TMessageStorageClient> : IStorageCleanerFor<TMess
 
     public async Task CleanJobsAsync(DateTime lastOperationTimeBeforeThen, bool removeOnlySucceeded, CancellationToken cancellationToken)
     {
-        IJobRepository jobRepository = _repositoryContext.GetJobRepository();
+        IJobRepository? jobRepository = _repositoryContext.GetJobRepository();
         await jobRepository.CleanAsync(lastOperationTimeBeforeThen, removeOnlySucceeded, cancellationToken);
     }
 
     public async Task CleanMessageAsync(DateTime createdBeforeThen, CancellationToken cancellationToken)
     {
-        IMessageRepository messageRepository = _repositoryContext.GetMessageRepository();
+        IMessageRepository? messageRepository = _repositoryContext.GetMessageRepository();
         await messageRepository.CleanAsync(createdBeforeThen, cancellationToken);
     }
 }

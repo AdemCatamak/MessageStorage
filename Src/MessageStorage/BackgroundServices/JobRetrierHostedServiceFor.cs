@@ -45,8 +45,8 @@ internal class JobRetrierHostedServiceFor<TMessageStorageClient> : IHostedServic
         _logger.LogInformation("{ServiceName} is started", nameof(JobRetrierHostedServiceFor<TMessageStorageClient>));
         try
         {
-            using IServiceScope scope = _serviceProvider.CreateScope();
-            IServiceProvider serviceProvider = scope.ServiceProvider;
+            using IServiceScope? scope = _serviceProvider.CreateScope();
+            IServiceProvider? serviceProvider = scope.ServiceProvider;
             var jobRetrier = serviceProvider.GetRequiredService<IJobRetrierFor<TMessageStorageClient>>();
             jobRetrier.RetryAsync().GetAwaiter().GetResult();
 

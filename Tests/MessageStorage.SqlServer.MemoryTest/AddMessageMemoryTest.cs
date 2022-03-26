@@ -35,11 +35,11 @@ public class AddMessageMemoryTest
                      },
                      i =>
                      {
-                         using IServiceScope scope = _testServerFixture.GetServiceScope();
+                         using IServiceScope? scope = _testServerFixture.GetServiceScope();
                          using var messageStorageClient = scope.ServiceProvider.GetRequiredService<IMessageStorageClient>();
                          var logger = scope.ServiceProvider.GetRequiredService<ILogger<TestServer>>();
                          var basicMessage = new BasicMessage($"{i}---{Guid.NewGuid().ToString()}");
-                         var stopWatch = Stopwatch.StartNew(); 
+                         var stopWatch = Stopwatch.StartNew();
                          messageStorageClient.AddMessageAsync(basicMessage).GetAwaiter().GetResult();
                          stopWatch.Stop();
                          logger.LogInformation("{Index} | ElapsedTime : {ElapsedTime} ms", i, stopWatch.ElapsedMilliseconds);

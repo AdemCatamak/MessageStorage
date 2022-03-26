@@ -33,9 +33,9 @@ public class FooController : ControllerBase
     [HttpPost("sql-server")]
     public async Task<IActionResult> CreateFooInSqlServerAsync([FromBody] PostFooRequest request, CancellationToken cancellationToken)
     {
-        using (SqlConnection sqlConnection = await _sqlConnectionFactory.CreateAsync(cancellationToken))
-        using (SqlTransaction sqlTransaction = sqlConnection.BeginTransaction())
-        using (IMessageStorageTransaction messageStorageTransaction = _messageStorageClient.UseTransaction(sqlTransaction))
+        using (SqlConnection? sqlConnection = await _sqlConnectionFactory.CreateAsync(cancellationToken))
+        using (SqlTransaction? sqlTransaction = sqlConnection.BeginTransaction())
+        using (IMessageStorageTransaction? messageStorageTransaction = _messageStorageClient.UseTransaction(sqlTransaction))
         {
             var fooCreatedMessage = new FooCreatedEvent(Guid.NewGuid().ToString(), request.StrValue);
             var fooCreatedIntegrationEvent = new FooCreatedIntegrationEvent(fooCreatedMessage.Id, fooCreatedMessage.StrValue);
@@ -51,9 +51,9 @@ public class FooController : ControllerBase
     [HttpPost("postgres")]
     public async Task<IActionResult> CreateFooInPostgresAsync([FromBody] PostFooRequest request, CancellationToken cancellationToken)
     {
-        using (NpgsqlConnection npgsqlConnection = await _postgresConnectionFactory.CreateAsync(cancellationToken))
-        using (NpgsqlTransaction npgsqlTransaction = await npgsqlConnection.BeginTransactionAsync(cancellationToken))
-        using (IMessageStorageTransaction messageStorageTransaction = _secondaryMessageStorageClient.UseTransaction(npgsqlTransaction))
+        using (NpgsqlConnection? npgsqlConnection = await _postgresConnectionFactory.CreateAsync(cancellationToken))
+        using (NpgsqlTransaction? npgsqlTransaction = await npgsqlConnection.BeginTransactionAsync(cancellationToken))
+        using (IMessageStorageTransaction? messageStorageTransaction = _secondaryMessageStorageClient.UseTransaction(npgsqlTransaction))
         {
             var fooCreatedMessage = new FooCreatedEvent(Guid.NewGuid().ToString(), request.StrValue);
             await _secondaryMessageStorageClient.AddMessageAsync(fooCreatedMessage, cancellationToken);

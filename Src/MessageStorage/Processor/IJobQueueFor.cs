@@ -38,7 +38,7 @@ internal class JobQueueFor<TMessageStorageClient> : IJobQueueFor<TMessageStorage
     {
         while (await _channelReader.WaitToReadAsync(cancellationToken))
         {
-            Job job = await _channelReader.ReadAsync(cancellationToken);
+            Job? job = await _channelReader.ReadAsync(cancellationToken);
             await _jobExecutor.ExecuteAsync(job, cancellationToken);
         }
     }

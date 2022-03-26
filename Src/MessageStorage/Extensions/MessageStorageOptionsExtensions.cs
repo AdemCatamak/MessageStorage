@@ -22,8 +22,8 @@ public static class MessageStorageOptionsExtensions
                                                                params Assembly[] assemblies)
         where TMessageStorageClient : IMessageStorageClient
     {
-        List<(Type, Type)> types = GetAllBaseMessageHandlers(assemblies);
-        foreach ((Type messageHandlerType, Type messageType) in types)
+        List<(Type, Type)>? types = GetAllBaseMessageHandlers(assemblies);
+        foreach ((Type? messageHandlerType, Type? messageType) in types)
         {
             messageStorageOptions.RegisterHandler(messageHandlerType, messageType, maxRetryCount);
         }
@@ -33,9 +33,9 @@ public static class MessageStorageOptionsExtensions
     {
         var result = new ConcurrentBag<(Type, Type)>();
 
-        List<Type> types = assemblies.SelectMany(a => a.GetTypes())
-                                     .Where(t => !t.IsInterface && !t.IsAbstract)
-                                     .ToList();
+        List<Type>? types = assemblies.SelectMany(a => a.GetTypes())
+                                      .Where(t => !t.IsInterface && !t.IsAbstract)
+                                      .ToList();
 
 
         Parallel.ForEach(types, type =>

@@ -20,7 +20,7 @@ internal class PayloadJsonSerializer : IPayloadSerializer
 
     public string Serialize(object payload)
     {
-        string result = JsonConvert.SerializeObject(payload, _jsonSerializerSettings);
+        string? result = JsonConvert.SerializeObject(payload, _jsonSerializerSettings);
         return result;
     }
 

@@ -39,8 +39,8 @@ public class SqlServerRepositoryContextFor<TMessageStorageClient> : IRepositoryC
                 throw new TransactionAlreadyStartedException();
             }
 
-            SqlConnection sqlConnection = GetConnection();
-            SqlTransaction sqlTransaction = sqlConnection.BeginTransaction();
+            SqlConnection? sqlConnection = GetConnection();
+            SqlTransaction? sqlTransaction = sqlConnection.BeginTransaction();
             _sqlServerMessageStorageTransaction = new SqlServerMessageStorageTransaction(sqlTransaction, false, _jobQueueFor);
         }
 

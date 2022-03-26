@@ -18,7 +18,7 @@ public class LogFooCreatedMessageHandler : BaseMessageHandler<FooCreatedEvent>
 
     protected override Task HandleAsync(IMessageContext<FooCreatedEvent> messageContext, CancellationToken cancellationToken)
     {
-        FooCreatedEvent fooCreatedEvent = messageContext.Message;
+        FooCreatedEvent? fooCreatedEvent = messageContext.Message;
         _logger.LogInformation("{EventName} : {Message}", nameof(FooCreatedEvent), fooCreatedEvent);
         return Task.CompletedTask;
     }

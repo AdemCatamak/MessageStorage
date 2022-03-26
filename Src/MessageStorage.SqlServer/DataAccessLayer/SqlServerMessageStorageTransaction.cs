@@ -32,7 +32,7 @@ public class SqlServerMessageStorageTransaction : IMessageStorageTransaction
     {
         SqlTransaction.Commit();
         IsCommitted = true;
-        while (_jobToBeDispatched.TryDequeue(out Job job))
+        while (_jobToBeDispatched.TryDequeue(out Job? job))
         {
             _jobQueue.Enqueue(job);
         }

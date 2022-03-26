@@ -16,7 +16,7 @@ public class IntegrationCommandHandler : BaseMessageHandler<IIntegrationCommand>
 
     protected override async Task HandleAsync(IMessageContext<IIntegrationCommand> messageContext, CancellationToken cancellationToken)
     {
-        IIntegrationCommand message = messageContext.Message;
+        IIntegrationCommand? message = messageContext.Message;
         await _busControl.Send(message, message.GetType(), cancellationToken);
     }
 }

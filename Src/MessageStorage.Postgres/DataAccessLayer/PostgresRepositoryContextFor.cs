@@ -39,8 +39,8 @@ public class PostgresRepositoryContextFor<TMessageStorageClient> : IRepositoryCo
                 throw new TransactionAlreadyStartedException();
             }
 
-            NpgsqlConnection npgsqlConnection = GetConnection();
-            NpgsqlTransaction npgsqlTransaction = npgsqlConnection.BeginTransaction();
+            NpgsqlConnection? npgsqlConnection = GetConnection();
+            NpgsqlTransaction? npgsqlTransaction = npgsqlConnection.BeginTransaction();
             _postgresMessageStorageTransaction = new PostgresMessageStorageTransaction(npgsqlTransaction, false, _jobQueueFor);
         }
 
@@ -67,7 +67,7 @@ public class PostgresRepositoryContextFor<TMessageStorageClient> : IRepositoryCo
 
     public IMessageRepository GetMessageRepository()
     {
-        NpgsqlConnection connection = IsMessageStorageTransactionUsable() ? _postgresMessageStorageTransaction!.NpgsqlTransaction!.Connection! : GetConnection();
+        NpgsqlConnection? connection = IsMessageStorageTransactionUsable() ? _postgresMessageStorageTransaction!.NpgsqlTransaction!.Connection! : GetConnection();
         var postgresMessageRepository = new PostgresMessageRepository(_repositoryContextConfiguration,
                                                                       connection,
                                                                       _postgresMessageStorageTransaction);
@@ -76,7 +76,7 @@ public class PostgresRepositoryContextFor<TMessageStorageClient> : IRepositoryCo
 
     public IJobRepository GetJobRepository()
     {
-        NpgsqlConnection connection = IsMessageStorageTransactionUsable() ? _postgresMessageStorageTransaction!.NpgsqlTransaction!.Connection! : GetConnection();
+        NpgsqlConnection? connection = IsMessageStorageTransactionUsable() ? _postgresMessageStorageTransaction!.NpgsqlTransaction!.Connection! : GetConnection();
         var postgresJobRepository = new PostgresJobRepository(_repositoryContextConfiguration,
                                                               connection,
                                                               _postgresMessageStorageTransaction);

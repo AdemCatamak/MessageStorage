@@ -21,7 +21,7 @@ public class PostgresFixture : IDisposable
         const string password = "postgres";
         int port = NetworkUtility.GetAvailablePort();
 
-        ITestcontainersBuilder<PostgreSqlTestcontainer> postgreSqlTestContainerBuilder
+        ITestcontainersBuilder<PostgreSqlTestcontainer>? postgreSqlTestContainerBuilder
             = new TestcontainersBuilder<PostgreSqlTestcontainer>()
                .WithDatabase(new PostgreSqlTestcontainerConfiguration
                              {

@@ -58,7 +58,7 @@ internal class PostgresJobRepository : IJobRepository
 
         if (_postgresMessageStorageTransaction != null)
         {
-            foreach (Job job in jobs)
+            foreach (Job? job in jobs)
             {
                 ((IMessageStorageTransaction)_postgresMessageStorageTransaction).AddJobToBeDispatched(job);
             }
@@ -151,16 +151,16 @@ RETURNING   j.id, j.message_handler_type_name, j.created_on as job_created_on, j
                .ToList();
         }
 
-        List<Job> jobs = jobsFromDb.Select(row => new Job(row.id,
-                                                          new Message((Guid)row.message_id, PayloadSerializer.Deserialize(row.payload), (DateTime)row.message_created_on),
-                                                          (string)row.message_handler_type_name,
-                                                          (JobStatus)row.job_status,
-                                                          (DateTime)row.job_created_on,
-                                                          (DateTime)row.last_operation_time,
-                                                          (string)row.last_operation_info,
-                                                          (int)row.current_retry_count,
-                                                          (int)row.max_retry_count))
-                                   .ToList();
+        List<Job>? jobs = jobsFromDb.Select(row => new Job(row.id,
+                                                           new Message((Guid)row.message_id, PayloadSerializer.Deserialize(row.payload), (DateTime)row.message_created_on),
+                                                           (string)row.message_handler_type_name,
+                                                           (JobStatus)row.job_status,
+                                                           (DateTime)row.job_created_on,
+                                                           (DateTime)row.last_operation_time,
+                                                           (string)row.last_operation_info,
+                                                           (int)row.current_retry_count,
+                                                           (int)row.max_retry_count))
+                                    .ToList();
 
         return jobs;
     }

@@ -6,7 +6,7 @@ using MessageStorage.MultiClient.IntegrationTest.Fixtures;
 using MessageStorage.MultiClient.IntegrationTest.Fixtures.MessageHandlers;
 using MessageStorage.MultiClient.IntegrationTest.Fixtures.SecondaryMessageStorageSection;
 using Microsoft.Extensions.DependencyInjection;
-using TestUtility;
+using TestUtility.DbUtils;
 using Xunit;
 
 namespace MessageStorage.MultiClient.IntegrationTest.MessageStorageClientTest;
@@ -38,34 +38,34 @@ public class AddMessageTest : IDisposable
         var sqlServerBasicMessage = new BasicMessage("some-message");
         var postgresBasicMessage = new BasicMessage("some-message");
 
-        (sqlServerMessage, List<Job> sqlServerJobs) = await _messageStorageClient.AddMessageAsync(sqlServerBasicMessage);
-        (postgresMessage, List<Job> postgresJobs) = await _secondaryMessageStorageClient.AddMessageAsync(postgresBasicMessage);
+        (sqlServerMessage, List<Job>? sqlServerJobs) = await _messageStorageClient.AddMessageAsync(sqlServerBasicMessage);
+        (postgresMessage, List<Job>? postgresJobs) = await _secondaryMessageStorageClient.AddMessageAsync(postgresBasicMessage);
 
         Assert.Single(sqlServerJobs);
         Assert.Single(postgresJobs);
-        Job sqlServerJob = sqlServerJobs.First();
-        Job postgresJob = postgresJobs.First();
+        Job? sqlServerJob = sqlServerJobs.First();
+        Job? postgresJob = postgresJobs.First();
 
-        dynamic? messageFromSqlServer = await Fetch.MessageFromSqlServerAsync(sqlServerMessage.Id);
+        Message? messageFromSqlServer = await Db.Fetch.MessageFromSqlServerAsync(sqlServerMessage.Id);
         Assert.NotNull(messageFromSqlServer);
         Assert.Equal(sqlServerMessage.Id, messageFromSqlServer!.Id);
 
-        dynamic? jobFromSqlServer = await Fetch.JobFromSqlServerAsync(sqlServerJob.Id);
+        Job? jobFromSqlServer = await Db.Fetch.JobFromSqlServerAsync(sqlServerJob.Id);
         Assert.NotNull(jobFromSqlServer);
         Assert.Equal(sqlServerJob.Id, jobFromSqlServer!.Id);
 
-        dynamic? messageFromPostgres = await Fetch.MessageFromPostgresAsync(postgresMessage.Id);
+        Message? messageFromPostgres = await Db.Fetch.MessageFromPostgresAsync(postgresMessage.Id);
         Assert.NotNull(messageFromPostgres);
-        Assert.Equal(postgresMessage.Id, messageFromPostgres!.id);
+        Assert.Equal(postgresMessage.Id, messageFromPostgres!.Id);
 
-        dynamic? jobFromPostgres = await Fetch.JobFromPostgresAsync(postgresJob.Id);
+        Job? jobFromPostgres = await Db.Fetch.JobFromPostgresAsync(postgresJob.Id);
         Assert.NotNull(jobFromPostgres);
-        Assert.Equal(postgresJob.Id, jobFromPostgres!.id);
+        Assert.Equal(postgresJob.Id, jobFromPostgres!.Id);
 
-        dynamic? postgresMessageFromSqlServer = await Fetch.MessageFromSqlServerAsync(postgresMessage.Id);
+        Message? postgresMessageFromSqlServer = await Db.Fetch.MessageFromSqlServerAsync(postgresMessage.Id);
         Assert.Null(postgresMessageFromSqlServer);
 
-        dynamic? sqlServerMessageFromPostgres = await Fetch.MessageFromPostgresAsync(sqlServerMessage.Id);
+        Message? sqlServerMessageFromPostgres = await Db.Fetch.MessageFromPostgresAsync(sqlServerMessage.Id);
         Assert.Null(sqlServerMessageFromPostgres);
     }
 

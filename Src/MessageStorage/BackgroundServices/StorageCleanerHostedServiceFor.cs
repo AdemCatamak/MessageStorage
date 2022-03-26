@@ -53,8 +53,8 @@ internal class StorageCleanerHostedServiceFor<TMessageStorageClient> : IHostedSe
             return;
         }
 
-        IServiceScope scope = _serviceProvider.CreateScope();
-        IServiceProvider serviceProvider = scope.ServiceProvider;
+        IServiceScope? scope = _serviceProvider.CreateScope();
+        IServiceProvider? serviceProvider = scope.ServiceProvider;
         var storageCleaner = serviceProvider.GetRequiredService<IStorageCleanerFor<TMessageStorageClient>>();
 
         DateTime timeThreshold = DateTime.UtcNow.Add(_options.FinalizedEntityRemovedAfter.Value.Negate());

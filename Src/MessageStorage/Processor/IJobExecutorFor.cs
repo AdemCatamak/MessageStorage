@@ -27,7 +27,7 @@ internal class JobExecutorFor<TMessageStorageClient> : IJobExecutorFor<TMessageS
 
     public async Task ExecuteAsync(Job job, CancellationToken? cancellationToken = null)
     {
-        IServiceScope scope = _serviceProvider.CreateScope();
+        IServiceScope? scope = _serviceProvider.CreateScope();
         var logger = scope.ServiceProvider.GetRequiredService<ILogger<JobExecutorOptionsFor<TMessageStorageClient>>>();
         var messageHandlerMetaDataHolder = scope.ServiceProvider.GetRequiredService<IMessageHandlerMetaDataHolderFor<TMessageStorageClient>>();
         var repositoryContext = scope.ServiceProvider.GetRequiredService<IRepositoryContextFor<TMessageStorageClient>>();
@@ -36,7 +36,7 @@ internal class JobExecutorFor<TMessageStorageClient> : IJobExecutorFor<TMessageS
                                                                .FirstOrDefault(metaData => metaData.MessageHandlerType.FullName == job.MessageHandlerTypeName)
                                                               ?.MessageHandlerType;
 
-        using CancellationTokenSource cancellationTokenSource = CancellationTokenSource(cancellationToken, jobExecutorOptionsFor);
+        using CancellationTokenSource? cancellationTokenSource = CancellationTokenSource(cancellationToken, jobExecutorOptionsFor);
 
         if (messageHandlerType == null)
         {
@@ -70,9 +70,9 @@ internal class JobExecutorFor<TMessageStorageClient> : IJobExecutorFor<TMessageS
     private static CancellationTokenSource CancellationTokenSource(CancellationToken? cancellationToken, JobExecutorOptionsFor<TMessageStorageClient> jobExecutorOptionsFor)
     {
         var jobExecutionCancellationToken = new CancellationTokenSource(jobExecutorOptionsFor.JobExecutionMaxDuration);
-        CancellationTokenSource linkedCancellationToken = cancellationToken != null
-                                                              ? System.Threading.CancellationTokenSource.CreateLinkedTokenSource(jobExecutionCancellationToken.Token, cancellationToken.Value)
-                                                              : System.Threading.CancellationTokenSource.CreateLinkedTokenSource(jobExecutionCancellationToken.Token);
+        CancellationTokenSource? linkedCancellationToken = cancellationToken != null
+                                                               ? System.Threading.CancellationTokenSource.CreateLinkedTokenSource(jobExecutionCancellationToken.Token, cancellationToken.Value)
+                                                               : System.Threading.CancellationTokenSource.CreateLinkedTokenSource(jobExecutionCancellationToken.Token);
 
         return linkedCancellationToken;
     }
@@ -81,7 +81,7 @@ internal class JobExecutorFor<TMessageStorageClient> : IJobExecutorFor<TMessageS
     {
         try
         {
-            IJobRepository jobRepository = repositoryContext.GetJobRepository();
+            IJobRepository? jobRepository = repositoryContext.GetJobRepository();
             await jobRepository.UpdateStatusAsync(job, cancellationToken);
         }
         catch (Exception e)

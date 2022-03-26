@@ -26,4 +26,8 @@
         <ProjectReference Include="..\TestUtility\TestUtility.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="ProcessorTest" />
+    </ItemGroup>
+
 </Project>

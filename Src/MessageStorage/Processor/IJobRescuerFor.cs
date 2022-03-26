@@ -30,7 +30,7 @@ internal class JobRescuerFor<TMessageStorageClient> : IJobRescuerFor<TMessageSto
 
         DateTime lastOperationTimeBeforeThen = DateTime.UtcNow.Add(goBack);
 
-        IJobRepository jobRepository = _repositoryContext.GetJobRepository();
+        IJobRepository? jobRepository = _repositoryContext.GetJobRepository();
         await jobRepository.RescueJobsAsync(lastOperationTimeBeforeThen, cancellationToken);
     }
 }

@@ -19,7 +19,7 @@ public class BasicMessageHandler : BaseMessageHandler<BasicMessage>
 
     protected override Task HandleAsync(IMessageContext<BasicMessage> messageContext, CancellationToken cancellationToken)
     {
-        BasicMessage payload = messageContext.Message;
+        BasicMessage? payload = messageContext.Message;
         _logger.LogInformation("{DateTime} | {Message}", DateTime.UtcNow, payload.Message);
         return Task.CompletedTask;
     }

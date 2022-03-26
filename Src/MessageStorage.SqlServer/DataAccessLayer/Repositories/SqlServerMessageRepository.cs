@@ -26,7 +26,7 @@ internal class SqlServerMessageRepository : IMessageRepository
 
     public async Task AddAsync(Message message, CancellationToken cancellationToken)
     {
-        string payloadStr = PayloadSerializer.Serialize(message.Payload);
+        string? payloadStr = PayloadSerializer.Serialize(message.Payload);
 
         var scriptBuilder = new StringBuilder("INSERT INTO ");
         scriptBuilder.Append(SchemaPlaceHolder);
@@ -47,7 +47,7 @@ internal class SqlServerMessageRepository : IMessageRepository
 
     public async Task CleanAsync(DateTime createdBeforeThen, CancellationToken cancellationToken)
     {
-        string script = $@"
+        var script = $@"
 DELETE FROM {SchemaPlaceHolder}Messages WHERE Id IN (
     SELECT m.Id FROM {SchemaPlaceHolder}Messages m
         LEFT JOIN {SchemaPlaceHolder}Jobs j ON j.MessageId = m.Id

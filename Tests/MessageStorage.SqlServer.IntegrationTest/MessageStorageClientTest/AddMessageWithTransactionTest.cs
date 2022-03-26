@@ -10,7 +10,7 @@ using MessageStorage.SqlServer.IntegrationTest.Fixtures;
 using MessageStorage.SqlServer.IntegrationTest.Fixtures.MessageHandlers;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.DependencyInjection;
-using TestUtility;
+using TestUtility.DbUtils;
 using Xunit;
 
 namespace MessageStorage.SqlServer.IntegrationTest.MessageStorageClientTest;
@@ -50,10 +50,10 @@ public class AddMessageWithTransactionTest : IDisposable
             }
         }
 
-        dynamic? messageFromDb = await Fetch.MessageFromSqlServerAsync(message.Id);
+        Message? messageFromDb = await Db.Fetch.MessageFromSqlServerAsync(message.Id);
         Assert.Null(messageFromDb);
 
-        dynamic? jobFromDb = await Fetch.JobFromSqlServerAsync(job.Id);
+        Job? jobFromDb = await Db.Fetch.JobFromSqlServerAsync(job.Id);
         Assert.Null(jobFromDb);
     }
 
@@ -71,10 +71,10 @@ public class AddMessageWithTransactionTest : IDisposable
             Assert.Equal(JobStatus.InProgress, job.JobStatus);
         }
 
-        dynamic? messageFromDb = await Fetch.MessageFromSqlServerAsync(message.Id);
+        Message? messageFromDb = await Db.Fetch.MessageFromSqlServerAsync(message.Id);
         Assert.Null(messageFromDb);
 
-        dynamic? jobFromDb = await Fetch.JobFromSqlServerAsync(job.Id);
+        Job? jobFromDb = await Db. Fetch.JobFromSqlServerAsync(job.Id);
         Assert.Null(jobFromDb);
     }
 
@@ -98,10 +98,10 @@ public class AddMessageWithTransactionTest : IDisposable
             }
         }
 
-        dynamic? messageFromDb = await Fetch.MessageFromSqlServerAsync(message.Id);
+        Message? messageFromDb = await Db.Fetch.MessageFromSqlServerAsync(message.Id);
         Assert.NotNull(messageFromDb);
 
-        dynamic? jobFromDb = await Fetch.JobFromSqlServerAsync(job.Id);
+        Job? jobFromDb = await Db.Fetch.JobFromSqlServerAsync(job.Id);
         Assert.NotNull(jobFromDb);
     }
 
@@ -120,10 +120,10 @@ public class AddMessageWithTransactionTest : IDisposable
             await messageStorageTransaction.CommitAsync(CancellationToken.None);
         }
 
-        dynamic? messageFromDb = await Fetch.MessageFromSqlServerAsync(message.Id);
+        Message? messageFromDb = await Db.Fetch.MessageFromSqlServerAsync(message.Id);
         Assert.NotNull(messageFromDb);
 
-        dynamic? jobFromDb = await Fetch.JobFromSqlServerAsync(job.Id);
+        Job? jobFromDb = await Db.Fetch.JobFromSqlServerAsync(job.Id);
         Assert.NotNull(jobFromDb);
     }
 
@@ -163,16 +163,16 @@ public class AddMessageWithTransactionTest : IDisposable
             }
         }
 
-        dynamic? message1FromDb = await Fetch.MessageFromSqlServerAsync(message1.Id);
+        Message? message1FromDb = await Db.Fetch.MessageFromSqlServerAsync(message1.Id);
         Assert.Null(message1FromDb);
 
-        dynamic? job1FromDb = await Fetch.JobFromSqlServerAsync(job1.Id);
+        Job? job1FromDb = await Db.Fetch.JobFromSqlServerAsync(job1.Id);
         Assert.Null(job1FromDb);
 
-        dynamic? message2FromDb = await Fetch.MessageFromSqlServerAsync(message2.Id);
+        Message? message2FromDb = await Db.Fetch.MessageFromSqlServerAsync(message2.Id);
         Assert.NotNull(message2FromDb);
 
-        dynamic? job2FromDb = await Fetch.JobFromSqlServerAsync(job2.Id);
+        Job? job2FromDb = await Db.Fetch.JobFromSqlServerAsync(job2.Id);
         Assert.NotNull(job2FromDb);
     }
 
@@ -194,20 +194,20 @@ public class AddMessageWithTransactionTest : IDisposable
             Assert.Equal(JobStatus.InProgress, job1.JobStatus);
             Assert.Equal(JobStatus.InProgress, job2.JobStatus);
 
-            dynamic? message1FromDbInner = await Fetch.MessageFromSqlServerAsync(message1.Id);
+            Message? message1FromDbInner = await Db.Fetch.MessageFromSqlServerAsync(message1.Id);
             Assert.Null(message1FromDbInner);
 
-            dynamic? message2FromDbInner = await Fetch.MessageFromSqlServerAsync(message2.Id);
+            Message? message2FromDbInner = await Db.Fetch.MessageFromSqlServerAsync(message2.Id);
             Assert.Null(message2FromDbInner);
 
             await messageStorageTransaction.CommitAsync();
         }
 
 
-        dynamic? message1FromDb = await Fetch.MessageFromSqlServerAsync(message1.Id);
+        Message? message1FromDb = await Db.Fetch.MessageFromSqlServerAsync(message1.Id);
         Assert.NotNull(message1FromDb);
 
-        dynamic? message2FromDb = await Fetch.MessageFromSqlServerAsync(message2.Id);
+        Message? message2FromDb = await Db.Fetch.MessageFromSqlServerAsync(message2.Id);
         Assert.NotNull(message2FromDb);
     }
 

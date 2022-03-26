@@ -16,8 +16,8 @@ internal class MessageHandlerMetaDataHolderFor<TMessageStorageClient> : IMessage
 
     public IReadOnlyList<MessageHandlerMetaData> GetAvailableMessageHandlerMetaDataCollection(Type messageType)
     {
-        List<MessageHandlerMetaData> availableMetaDataList = MetaDataCollection.Where(m => m.MessageType.IsAssignableFrom(messageType))
-                                                                               .ToList();
+        List<MessageHandlerMetaData>? availableMetaDataList = MetaDataCollection.Where(m => m.MessageType.IsAssignableFrom(messageType))
+                                                                                .ToList();
         return availableMetaDataList;
     }
 }

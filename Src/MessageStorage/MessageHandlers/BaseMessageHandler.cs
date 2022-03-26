@@ -8,7 +8,7 @@ public abstract class BaseMessageHandler<TMessage> : IMessageHandler where TMess
 {
     public Task BaseHandleOperationAsync(IMessageContext<object> messageContext, CancellationToken cancellationToken)
     {
-        TMessage t = Convert(messageContext.Message);
+        TMessage? t = Convert(messageContext.Message);
         var typedMessageContext = new MessageContext<TMessage>(messageContext.JobId, t);
         return HandleAsync(typedMessageContext, cancellationToken);
     }
