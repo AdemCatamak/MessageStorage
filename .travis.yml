@@ -1,5 +1,5 @@
 language: csharp
-dotnet: 5.0
+dotnet: 6.0
 mono: none
 script:
   - ./build.sh --branchName=$TRAVIS_BRANCH --ciPlatform='travis' --nugetApiKey=$NugetApiKey
