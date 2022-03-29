@@ -16,7 +16,7 @@ MessageStorage is a library prepared to be used in projects that want to apply t
 
 ## Structure Overview
 
-<img src="./Doc/MessageStorage.png" alt="message-storage structure overview">
+<img src="./Doc/MessageStorage.drawio.png" alt="message-storage structure overview">
 
 ## Getting Started
 
@@ -58,3 +58,5 @@ using (IDbConnection connection = _connectionFactory.CreateConnection())
     transaction.CommitAsync(cancellationToken);
 }
 ```
+
+After `transaction.CommitAsync`, created job will be dispatched and executed
