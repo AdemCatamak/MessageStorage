@@ -1,7 +1,6 @@
-namespace SampleWebApi.Controllers
+namespace SampleWebApi.Controllers;
+
+public class PostAccountHttpRequest
 {
-    public class PostAccountHttpRequest
-    {
-        public string Email { get; set; } = string.Empty;
-    }
+    public string Email { get; set; } = string.Empty;
 }

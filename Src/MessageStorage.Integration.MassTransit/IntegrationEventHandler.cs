@@ -3,20 +3,20 @@ using System.Threading.Tasks;
 using MassTransit;
 using MessageStorage.MessageHandlers;
 
-namespace MessageStorage.Integration.MassTransit
+namespace MessageStorage.Integration.MassTransit;
+
+public class IntegrationEventHandler : BaseMessageHandler<IIntegrationEvent>
 {
-    public class IntegrationEventHandler : BaseMessageHandler<IIntegrationEvent>
+    private readonly IBusControl _busControl;
+
+    public IntegrationEventHandler(IBusControl busControl)
     {
-        private readonly IBusControl _busControl;
+        _busControl = busControl;
+    }
 
-        public IntegrationEventHandler(IBusControl busControl)
-        {
-            _busControl = busControl;
-        }
-
-        public override async Task HandleAsync(IIntegrationEvent payload, CancellationToken cancellationToken = default)
-        {
-            await _busControl.Publish(payload, payload.GetType(), cancellationToken);
-        }
+    protected override async Task HandleAsync(IMessageContext<IIntegrationEvent> messageContext, CancellationToken cancellationToken)
+    {
+        IIntegrationEvent? message = messageContext.Message;
+        await _busControl.Publish(message, message.GetType(), cancellationToken);
     }
 }

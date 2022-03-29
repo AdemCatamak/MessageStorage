@@ -5,16 +5,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Dapper" Version="2.0.90" />
-        <PackageReference Include="Microsoft.Data.SqlClient" Version="3.0.0" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.1" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\Src\MessageStorage.DependencyInjection\MessageStorage.DependencyInjection.csproj" />
-      <ProjectReference Include="..\..\Src\MessageStorage.AspNetCore\MessageStorage.AspNetCore.csproj" />
-      <ProjectReference Include="..\..\Src\MessageStorage.Postgres.DependencyInjection\MessageStorage.Postgres.DependencyInjection.csproj" />
-      <ProjectReference Include="..\..\Src\MessageStorage.SqlServer.DependencyInjection\MessageStorage.SqlServer.DependencyInjection.csproj" />
+        <ProjectReference Include="..\..\Src\MessageStorage.Postgres\MessageStorage.Postgres.csproj" />
+        <ProjectReference Include="..\..\Src\MessageStorage.SqlServer\MessageStorage.SqlServer.csproj" />
     </ItemGroup>
 
 </Project>

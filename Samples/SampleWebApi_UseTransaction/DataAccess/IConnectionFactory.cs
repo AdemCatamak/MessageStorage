@@ -1,9 +1,8 @@
 using System.Data;
 
-namespace SampleWebApi_UseTransaction.DataAccess
+namespace SampleWebApi_UseTransaction.DataAccess;
+
+public interface IConnectionFactory
 {
-    public interface IConnectionFactory
-    {
-        IDbConnection CreateConnection();
-    }
+    IDbConnection CreateConnection();
 }

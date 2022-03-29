@@ -3,22 +3,23 @@ using System.Threading.Tasks;
 using MessageStorage.MessageHandlers;
 using SampleWebApi_UseTransaction.EmailService;
 
-namespace SampleWebApi_UseTransaction.BackgroundJobs
+namespace SampleWebApi_UseTransaction.BackgroundJobs;
+
+public class AccountCreated_SendWelcomeEmail
+    : BaseMessageHandler<AccountCreated>
 {
-    public class AccountCreated_SendWelcomeEmail
-        : BaseMessageHandler<AccountCreated>
+    private readonly IEmailSender _emailSender;
+
+    public AccountCreated_SendWelcomeEmail(IEmailSender emailSender)
     {
-        private readonly IEmailSender _emailSender;
+        _emailSender = emailSender;
+    }
 
-        public AccountCreated_SendWelcomeEmail(IEmailSender emailSender)
-        {
-            _emailSender = emailSender;
-        }
 
-        public override async Task HandleAsync(AccountCreated payload, CancellationToken cancellationToken = default)
-        {
-            Email email = new Email(payload.Email, "Welcome", $"Your account created on : {payload.CreatedOn} with Id : {payload.AccountId}");
-            await _emailSender.SendAsync(email, cancellationToken);
-        }
+    protected override async Task HandleAsync(IMessageContext<AccountCreated> messageContext, CancellationToken cancellationToken)
+    {
+        AccountCreated? payload = messageContext.Message;
+        var email = new Email(payload.Email, "Welcome", $"Your account created on : {payload.CreatedOn} with Id : {payload.AccountId}");
+        await _emailSender.SendAsync(email, cancellationToken);
     }
 }

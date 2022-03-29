@@ -1,16 +1,10 @@
-using System;
-using System.Threading.Tasks;
+namespace TestUtility;
 
-namespace TestUtility
+public class AsyncHelper
 {
-    public static class AsyncHelper
+    public static async Task WaitAsync(TimeSpan? timeSpan = null)
     {
-        public static async Task WaitFor(TimeSpan wait, double times = 1)
-        {
-            double waitTotalMilliseconds = wait.TotalMilliseconds * times;
-            TimeSpan result = TimeSpan.FromMilliseconds(waitTotalMilliseconds);
-
-            await Task.Delay(result);
-        }
+        TimeSpan wait = timeSpan ?? TimeSpan.FromSeconds(1);
+        await Task.Delay(wait);
     }
 }

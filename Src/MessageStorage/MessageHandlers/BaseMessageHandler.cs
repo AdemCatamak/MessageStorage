@@ -1,68 +1,27 @@
-using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using MessageStorage.Exceptions;
 
-namespace MessageStorage.MessageHandlers
+namespace MessageStorage.MessageHandlers;
+
+public abstract class BaseMessageHandler<TMessage> : IMessageHandler where TMessage : class
 {
-    public abstract class BaseMessageHandler<T> : IMessageHandler<T>
+    public Task BaseHandleOperationAsync(IMessageContext<object> messageContext, CancellationToken cancellationToken)
     {
-        public IEnumerable<Type> PayloadTypes => new[] {typeof(T)};
+        TMessage? t = Convert(messageContext.Message);
+        var typedMessageContext = new MessageContext<TMessage>(messageContext.JobId, t);
+        return HandleAsync(typedMessageContext, cancellationToken);
+    }
 
-        public Task BaseHandleOperationAsync(object payload, CancellationToken cancellationToken = default)
+    protected abstract Task HandleAsync(IMessageContext<TMessage> messageContext, CancellationToken cancellationToken);
+
+    private static TMessage Convert(object payload)
+    {
+        if (payload is not TMessage t)
         {
-            T t = Convert(payload);
-            return HandleAsync(t, cancellationToken);
+            throw new ArgumentNotCompatibleException(payload.GetType(), typeof(TMessage));
         }
 
-        public abstract Task HandleAsync(T payload, CancellationToken cancellationToken = default);
-
-        public void Dispose()
-        {
-        }
-
-        private static T Convert(object payload)
-        {
-            object val = payload;
-            try
-            {
-                Type typeT = typeof(T);
-                if (typeT == typeof(short))
-                {
-                    if (short.TryParse(payload.ToString(), out short v))
-                    {
-                        val = v;
-                    }
-                }
-
-                if (typeT == typeof(int))
-                {
-                    if (int.TryParse(payload.ToString(), out int v))
-                    {
-                        val = v;
-                    }
-                }
-
-                if (typeT == typeof(long))
-                {
-                    if (long.TryParse(payload.ToString(), out long v))
-                    {
-                        val = v;
-                    }
-                }
-            }
-            catch
-            {
-                // ignore
-            }
-
-            if (val is not T t)
-            {
-                throw new ArgumentNotCompatibleException(payload.GetType().Name, nameof(T));
-            }
-
-            return t;
-        }
+        return t;
     }
 }

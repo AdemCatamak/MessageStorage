@@ -1,6 +1,5 @@
-﻿namespace MessageStorage.Integration.MassTransit
+﻿namespace MessageStorage.Integration.MassTransit;
+
+public interface IIntegrationEvent
 {
-    public interface IIntegrationEvent
-    {
-    }
 }

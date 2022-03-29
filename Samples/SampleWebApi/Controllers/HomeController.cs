@@ -1,16 +1,15 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace SampleWebApi.Controllers
+namespace SampleWebApi.Controllers;
+
+[Route("")]
+[ApiExplorerSettings(IgnoreApi = true)]
+[ApiController]
+public class HomeController : ControllerBase
 {
-    [Route("")]
-    [ApiExplorerSettings(IgnoreApi = true)]
-    [ApiController]
-    public class HomeController : ControllerBase
+    [HttpGet("")]
+    public IActionResult Home()
     {
-        [HttpGet("")]
-        public IActionResult Home()
-        {
-            return Redirect($"{Request.Scheme}://{Request.Host.ToUriComponent()}/swagger");
-        }
+        return Redirect($"{Request.Scheme}://{Request.Host.ToUriComponent()}/swagger");
     }
 }

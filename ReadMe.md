@@ -10,31 +10,23 @@ MessageStorage is a library prepared to be used in projects that want to apply t
 
 | NuGet Package Name | Version |
 | ------- | ----- |
-| MessageStorage.AspNetCore | ![Nuget](https://img.shields.io/nuget/v/MessageStorage.AspNetCore.svg) | 
 | MessageStorage.SqlServer | ![Nuget](https://img.shields.io/nuget/v/MessageStorage.SqlServer.svg) |
-| MessageStorage.SqlServer.DependencyInjection | ![Nuget](https://img.shields.io/nuget/v/MessageStorage.SqlServer.DependencyInjection.svg) |
 | MessageStorage.Postgres | ![Nuget](https://img.shields.io/nuget/v/MessageStorage.Postgres.svg) |
-| MessageStorage.Postgres.DependencyInjection | ![Nuget](https://img.shields.io/nuget/v/MessageStorage.Postgres.DependencyInjection.svg) |
 | MessageStorage.Integration.MassTransit | ![Nuget](https://img.shields.io/nuget/v/MessageStorage.Integration.MassTransit.svg) |
 
 ## Structure Overview
 
-<img src="./Doc/MessageStorage.png" alt="message-storage structure overview">
+<img src="./Doc/MessageStorage.drawio.png" alt="message-storage structure overview">
 
 ## Getting Started
 
-You can download the _MessageStorage.SqlServer.DependencyInjection_ or _MessageStorage.Postgres.DependencyInjection_ package
+You can download the _MessageStorage.SqlServer_ or _MessageStorage.Postgres_ package
 according to the storage environment you will use.
 
 `UseSqlServer` / `UsePostgres` method lets you introduce SqlServer or Postgres is used for system's data storage.
 
-`Register` method lets you introduce MessageHandlers that is used. When the message is recorded, the tasks that will be
+`RegisterHandler` / `RegisterHandlers` method lets you introduce MessageHandlers that is used. When the message is recorded, the tasks that will be
 executed in the background will be introduced through these classes.
-
-`AddMessageStoragePrerequisiteExecutor` method lets you execute a predefined prerequisites like db migrations.
-
-`AddMessageStorageJobProcessorHostedService` method lets you introduce a predefined background service to the system. This
-service fetches tasks from db and executes.
 
 ### Sample Startup
 
@@ -42,11 +34,8 @@ service fetches tasks from db and executes.
  services.AddMessageStorage(configurator =>
  {
     configurator.UseSqlServer("SqlServerConnectionString");
-    configurator.Register(messageHandlerAssemblies);
+    configurator.RegisterHandlers(messageHandlerAssemblies);
  })
- // order is important
- .AddMessageStoragePrerequisiteExecutor()
- .AddMessageStorageJobDispatcher();
  ```
 
 After these steps, you can use the object that is an implementation of `IMessageStorageClient` interface.
@@ -59,11 +48,15 @@ Example of registering SomeEntity and saving SomeEntityCreatedEvent message in t
 using (IDbConnection connection = _connectionFactory.CreateConnection())
 {
     using IDbTransaction dbTransaction = connection.BeginTransaction(IsolationLevel.ReadCommitted);
+    using IMessageStorageTransaction transaction = _messageStorageClient.UseTransaction(dbTransaction);
+    
     await connection.ExecuteAsync( sqlCommandText, sqlCommandParameters, dbTransaction);
 
     SomeEntityCreated someEntityCreated = new (someEntity.Id, someEntity.SomeProperty, someEntity.CreatedOn); 
-    await _messageStorageClient.AddMessageAsync(someEntityCreated, dbTransaction);
+    await _messageStorageClient.AddMessageAsync(someEntityCreated);
 
-    dbTransaction.Commit();
+    transaction.CommitAsync(cancellationToken);
 }
 ```
+
+After `transaction.CommitAsync`, created job will be dispatched and executed

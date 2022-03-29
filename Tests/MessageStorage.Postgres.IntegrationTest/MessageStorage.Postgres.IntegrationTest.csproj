@@ -1,30 +1,29 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net5.0</TargetFramework>
+        <TargetFramework>net6.0</TargetFramework>
+
         <IsPackable>false</IsPackable>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Dapper" Version="2.0.90" />
         <PackageReference Include="DotNet.Testcontainers" Version="1.5.0" />
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
-        <PackageReference Include="Npgsql" Version="5.0.7" />
+        <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="6.0.3" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.1.0" />
         <PackageReference Include="xunit" Version="2.4.1" />
         <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
-        <PackageReference Include="coverlet.collector" Version="3.1.0">
+        <PackageReference Include="coverlet.collector" Version="3.1.2">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\Src\MessageStorage.AspNetCore\MessageStorage.AspNetCore.csproj" />
-      <ProjectReference Include="..\..\Src\MessageStorage.Postgres\MessageStorage.Postgres.csproj" />
-      <ProjectReference Include="..\TestUtility\TestUtility.csproj" />
+        <ProjectReference Include="..\..\Src\MessageStorage.Postgres\MessageStorage.Postgres.csproj" />
+        <ProjectReference Include="..\TestUtility\TestUtility.csproj" />
     </ItemGroup>
 
 </Project>
