@@ -10,12 +10,8 @@ string SolutionName = "MessageStorage";
 var ProjectsToBePacked  = new Project[]
 {
   new Project("MessageStorage"),
-  new Project("MessageStorage.DependencyInjection"),
-  new Project("MessageStorage.AspNetCore"),
   new Project("MessageStorage.SqlServer"),
-  new Project("MessageStorage.SqlServer.DependencyInjection"),
   new Project("MessageStorage.Postgres"),
-  new Project("MessageStorage.Postgres.DependencyInjection"),
   new Project("MessageStorage.Integration.MassTransit"),  
 };
 
