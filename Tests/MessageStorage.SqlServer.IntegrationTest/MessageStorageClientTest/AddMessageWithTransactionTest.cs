@@ -146,10 +146,10 @@ public class AddMessageWithTransactionTest : IDisposable
             }
         }
 
-        Message? messageFromDb = await Db.Fetch.MessageFromPostgresAsync(message.Id);
+        Message? messageFromDb = await Db.Fetch.MessageFromSqlServerAsync(message.Id);
         Assert.NotNull(messageFromDb);
 
-        Job? jobFromDb = await Db.Fetch.JobFromPostgresAsync(job.Id);
+        Job? jobFromDb = await Db.Fetch.JobFromSqlServerAsync(job.Id);
         Assert.NotNull(jobFromDb);
     }
 
