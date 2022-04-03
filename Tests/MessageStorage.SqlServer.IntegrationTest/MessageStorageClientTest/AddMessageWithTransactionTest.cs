@@ -74,7 +74,7 @@ public class AddMessageWithTransactionTest : IDisposable
         Message? messageFromDb = await Db.Fetch.MessageFromSqlServerAsync(message.Id);
         Assert.Null(messageFromDb);
 
-        Job? jobFromDb = await Db. Fetch.JobFromSqlServerAsync(job.Id);
+        Job? jobFromDb = await Db.Fetch.JobFromSqlServerAsync(job.Id);
         Assert.Null(jobFromDb);
     }
 
@@ -124,6 +124,32 @@ public class AddMessageWithTransactionTest : IDisposable
         Assert.NotNull(messageFromDb);
 
         Job? jobFromDb = await Db.Fetch.JobFromSqlServerAsync(job.Id);
+        Assert.NotNull(jobFromDb);
+    }
+
+    [Fact(Timeout = 1000)]
+    public async Task WhenTransactionCommitted_WithCreatedBeginTransaction_MessageAndJobShouldBeInserted()
+    {
+        Message message;
+        Job job;
+        using (var connection = new SqlConnection(_fixture.ConnectionStr))
+        {
+            await connection.OpenAsync();
+            using (IMessageStorageTransaction messageStorageTransaction = connection.BeginTransaction(_messageStorageClient))
+            {
+                var basicMessage = new BasicMessage("some-message");
+                (message, List<Job> jobs) = await _messageStorageClient.AddMessageAsync(basicMessage);
+                Assert.Single(jobs);
+                job = jobs.First();
+                Assert.Equal(JobStatus.InProgress, job.JobStatus);
+                await messageStorageTransaction.CommitAsync(CancellationToken.None);
+            }
+        }
+
+        Message? messageFromDb = await Db.Fetch.MessageFromPostgresAsync(message.Id);
+        Assert.NotNull(messageFromDb);
+
+        Job? jobFromDb = await Db.Fetch.JobFromPostgresAsync(job.Id);
         Assert.NotNull(jobFromDb);
     }
 
