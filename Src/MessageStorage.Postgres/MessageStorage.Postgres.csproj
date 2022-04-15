@@ -13,7 +13,7 @@
         <Description>Message and Job Storage</Description>
         <LangVersion>latest</LangVersion>
 
-        <VersionPrefix>5.0.1</VersionPrefix>
+        <VersionPrefix>5.0.2</VersionPrefix>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
     </PropertyGroup>
 
