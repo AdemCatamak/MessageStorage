@@ -17,6 +17,7 @@ public class IntegrationEventHandler : BaseMessageHandler<IIntegrationEvent>
     protected override async Task HandleAsync(IMessageContext<IIntegrationEvent> messageContext, CancellationToken cancellationToken)
     {
         IIntegrationEvent? message = messageContext.Message;
-        await _busControl.Publish(message, message.GetType(), cancellationToken);
+        var jobId = messageContext.JobId;
+        await _busControl.Publish(message, message.GetType(), context => { context.Headers.Set(HeaderConstant.JOB_ID_HEADER, jobId); }, cancellationToken);
     }
 }

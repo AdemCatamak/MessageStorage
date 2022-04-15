@@ -1,6 +1,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using MassTransit;
+using MassTransit.Middleware;
 using MessageStorage.MessageHandlers;
 
 namespace MessageStorage.Integration.MassTransit;
@@ -17,6 +18,7 @@ public class IntegrationCommandHandler : BaseMessageHandler<IIntegrationCommand>
     protected override async Task HandleAsync(IMessageContext<IIntegrationCommand> messageContext, CancellationToken cancellationToken)
     {
         IIntegrationCommand? message = messageContext.Message;
-        await _busControl.Send(message, message.GetType(), cancellationToken);
+        string jobId = messageContext.JobId;
+        await _busControl.Send(message, message.GetType(), Pipe.Execute<SendContext>(context => { context.Headers.Set(HeaderConstant.JOB_ID_HEADER, jobId); }), cancellationToken);
     }
 }

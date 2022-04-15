@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using MassTransit;
 
@@ -9,7 +10,13 @@ public class BasicIntegrationCommandConsumer : IConsumer<BasicIntegrationCommand
 {
     public Task Consume(ConsumeContext<BasicIntegrationCommand> context)
     {
-        BasicIntegrationCommand? basicIntegrationCommand = context.Message;
+        BasicIntegrationCommand basicIntegrationCommand = context.Message;
+        context.Headers.TryGetHeader("ms-job-id", out object? jobId);
+        if (jobId == null || !Guid.TryParse(jobId?.ToString(), out Guid _))
+        {
+            throw new ApplicationException("JobId could not detected");
+        }
+
         ConsumedMessageContainer.ConsumedMessageId.Add(basicIntegrationCommand.Guid);
         return Task.CompletedTask;
     }
